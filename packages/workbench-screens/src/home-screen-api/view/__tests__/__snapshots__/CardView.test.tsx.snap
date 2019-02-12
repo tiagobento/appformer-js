@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CardView snapshot with access granted, should render consistently 1`] = `
+<div
+  className="kie-hero-card"
+  data-field="card"
+  id="home-action-welcome!"
+  onClick={[Function]}
+  role="button"
+>
+  <div
+    className="kie-hero-card__icon kie-circle-icon kie-circle-icon--lg foo-clasz bar-clasz"
+    data-field="icon"
+  />
+  <div
+    className="kie-hero-card__text"
+  >
+    <h2
+      data-field="heading"
+    >
+      welcome!
+    </h2>
+    <CardDescriptionView
+      description={
+        CardDescription {
+          "elements": Array [
+            CardDescriptionTextElement {
+              "text": "hey!",
+            },
+          ],
+        }
+      }
+    />
+  </div>
+</div>
+`;
+
+exports[`CardView snapshot with access not granted, should render consistently 1`] = `
+<div
+  className="kie-hero-card"
+  data-field="card"
+  id="home-action-welcome!"
+  role="button"
+>
+  <div
+    className="kie-hero-card__icon kie-circle-icon kie-circle-icon--lg foo-clasz bar-clasz"
+    data-field="icon"
+  />
+  <div
+    className="kie-hero-card__text"
+  >
+    <h2
+      data-field="heading"
+    >
+      welcome!
+    </h2>
+    <CardDescriptionView
+      description={
+        CardDescription {
+          "elements": Array [
+            CardDescriptionTextElement {
+              "text": "hey!",
+            },
+          ],
+        }
+      }
+    />
+  </div>
+</div>
+`;

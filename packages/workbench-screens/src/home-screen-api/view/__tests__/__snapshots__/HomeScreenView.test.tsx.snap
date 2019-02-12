@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snapshot with a profile, should render consistently 1`] = `
+<div
+  id="home-page"
+>
+  <div
+    className="kie-page"
+  >
+    <div
+      className="kie-page__content kie-content--bg-image kie-blank-slate"
+      data-field="container"
+      style={
+        Object {
+          "backgroundImage": "url(foo_bg.png)",
+        }
+      }
+    >
+      <div
+        className="container-fluid kie-container-fluid--blank-slate"
+      >
+        <div
+          className="blank-slate-pf row"
+        >
+          <h1
+            data-field="welcome"
+          >
+            welcome!
+          </h1>
+          <p
+            data-field="description"
+          >
+            this is a description
+          </p>
+          <div
+            className="blank-slate-pf-secondary-action"
+            data-field="shortcuts"
+          >
+            <CardView
+              key="0"
+              model={
+                Card {
+                  "description": CardDescription {
+                    "elements": Array [
+                      CardDescriptionTextElement {
+                        "text": "main card description",
+                      },
+                    ],
+                  },
+                  "iconCssClasses": Array [],
+                  "onMayClick": undefined,
+                  "perspectiveId": "main-perspective",
+                  "title": "first card",
+                }
+              }
+            />
+            <CardView
+              key="1"
+              model={
+                Card {
+                  "description": CardDescription {
+                    "elements": Array [
+                      CardDescriptionTextElement {
+                        "text": "main card description",
+                      },
+                    ],
+                  },
+                  "iconCssClasses": Array [],
+                  "onMayClick": undefined,
+                  "perspectiveId": "main-perspective",
+                  "title": "second card",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

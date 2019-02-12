@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CardDescriptionView snapshot with a description containing a link element with access, should set correct parameter to child component 1`] = `
+<Fragment>
+  <LinkElement
+    hasAccess={true}
+    key="0"
+    model={
+      CardDescriptionLinkElement {
+        "targetId": "foo",
+        "text": "click_me",
+      }
+    }
+  />
+</Fragment>
+`;
+
+exports[`CardDescriptionView snapshot with a description containing a link element without access, should set correct parameter to child component 1`] = `
+<Fragment>
+  <LinkElement
+    hasAccess={false}
+    key="0"
+    model={
+      CardDescriptionLinkElement {
+        "targetId": "foo",
+        "text": "click_me",
+      }
+    }
+  />
+</Fragment>
+`;
+
+exports[`CardDescriptionView snapshot with a description, should render correct description elements 1`] = `
+<Fragment>
+  <TextElement
+    key="0"
+    model={
+      CardDescriptionTextElement {
+        "text": "This is a description with a link to ",
+      }
+    }
+  />
+  <LinkElement
+    hasAccess={true}
+    key="1"
+    model={
+      CardDescriptionLinkElement {
+        "targetId": "foo",
+        "text": "click_me",
+      }
+    }
+  />
+  <TextElement
+    key="2"
+    model={
+      CardDescriptionTextElement {
+        "text": ".",
+      }
+    }
+  />
+</Fragment>
+`;
+
+exports[`LinkElement snapshot with a link element with access 1`] = `
+<a
+  className="kie-hero-card__link "
+  data-field="link"
+  onClick={[Function]}
+>
+  click_me
+</a>
+`;
+
+exports[`LinkElement snapshot with a link element without access 1`] = `
+<a
+  className="kie-hero-card__link disabled"
+  data-field="link"
+>
+  click_me
+</a>
+`;
+
+exports[`TextElement snapshot with a text element 1`] = `
+<span
+  data-field="text"
+>
+  foo
+</span>
+`;
