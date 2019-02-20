@@ -7,7 +7,7 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tiagobento/appformer-js.git"
+    "url": "https://github.com/kiegroup/appformer-js.git"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.common.json 'src/**/*.{ts,tsx,js,jsx}'",
