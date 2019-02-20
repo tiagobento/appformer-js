@@ -38,7 +38,7 @@ describe("marshall", () => {
     const expectedJson = JSON.stringify(inputErraiObject);
 
     // skip actual marshaller implementation
-    const mockedMarshaller = { marshall: jest.fn(() => inputErraiObject), unmarshall: jest.fn(() => undefined) };
+    const mockedMarshaller = { marshall: jest.fn(() => inputErraiObject), unmarshall: jest.fn() };
     MarshallerProvider.getForObject = jest.fn(() => mockedMarshaller);
 
     // ==
@@ -95,10 +95,7 @@ describe("unmarshall", () => {
     const expectedOutput = new JavaInteger("1");
 
     // skip actual marshaller implementation
-    const mockedMarshaller = {
-      unmarshall: jest.fn(() => expectedOutput),
-      marshall: jest.fn(() => undefined)
-    };
+    const mockedMarshaller = { unmarshall: jest.fn(() => expectedOutput), marshall: jest.fn() };
     MarshallerProvider.getForFqcn = jest.fn(() => mockedMarshaller);
 
     // ==
