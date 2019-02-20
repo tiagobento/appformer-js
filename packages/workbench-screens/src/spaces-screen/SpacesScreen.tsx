@@ -57,7 +57,7 @@ export class SpacesScreen extends React.Component<Props, State> {
     };
 
     this.props.preferenceBeanServerStore.save6<LibraryPreference, LibraryPreferencePortable>(newPreference).then(i => {
-      AppFormer.fireEvent(AppFormer.marshall(new WorkspaceProjectContextChangeEvent({ ou: space })));
+      AppFormer.fireEvent(new WorkspaceProjectContextChangeEvent({ ou: space }));
       (AppFormer as any).LibraryPlaces.goToLibrary();
     });
   }

@@ -86,14 +86,12 @@ export class NewSpacePopup extends React.Component<Props, State> {
         .then(() => this.props.organizationalUnitService.createOrganizationalUnit0(newSpace))
         .then(i => {
           AppFormer.fireEvent(
-            AppFormer.marshall(
               new NotificationEvent({
                 type: NotificationType.SUCCESS,
                 notification: AppFormer.translate("OrganizationalUnitSaveSuccess", [
                   AppFormer.translate("OrganizationalUnitDefaultAliasInSingular", [])
                 ])
               })
-            )
           );
           return this.props.onClose();
         })
