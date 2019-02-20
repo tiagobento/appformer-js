@@ -20,7 +20,7 @@ import { findChildContainers } from "../util";
 import { Component } from "./Component";
 import { Perspective } from "./Perspective";
 import { Screen } from "./Screen";
-import { Portable } from "../marshalling";
+import {marshall, Portable} from "../marshalling";
 
 export * from "./AppFormer";
 export * from "./Components";
@@ -77,7 +77,7 @@ export function render(element: Element, container: HTMLElement, callback = (): 
 }
 
 export function fireEvent<T>(obj: Portable<T>) {
-  singleton!.fireEvent(obj);
+  singleton!.fireEvent(marshall(obj) as any);
 }
 
 export function rpc(path: string, args: Array<Portable<any>>) {
