@@ -16,3 +16,9 @@ Build results will appear on `packages/core/dist`
 2. `mvn clean install`
 
 Build results will appear on `packages/ts-exporter/target`
+
+##### 1. Workbench Screens
+1. `cd packages/core`
+2. `yarn run init && yarn run build`
+
+Build results will appear on `packages/workbench-screens/dist`
