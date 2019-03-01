@@ -24,7 +24,7 @@
   "dependencies": {
     "@types/react": "16.4.18",
     "react": "16.6.0",
-    "appformer-js": "0.2.5-ALPHA",
+    "appformer-js": "0.2.6-ALPHA",
     "@kiegroup-ts-generated/errai-security-server-rpc": "1.0.0",
     "@kiegroup-ts-generated/kie-wb-common-library-api-rpc": "1.0.0",
     "@kiegroup-ts-generated/uberfire-preferences-api-rpc": "1.0.0",
