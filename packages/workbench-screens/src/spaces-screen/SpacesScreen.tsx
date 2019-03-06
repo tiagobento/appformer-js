@@ -18,8 +18,6 @@ import * as React from "react";
 import * as AppFormer from "appformer-js";
 import { LibraryService } from "@kiegroup-ts-generated/kie-wb-common-library-api-rpc";
 import { OrganizationalUnitService } from "@kiegroup-ts-generated/uberfire-structure-api-rpc";
-import { OrganizationalUnit, OrganizationalUnitImpl } from "@kiegroup-ts-generated/uberfire-structure-api";
-import { WorkspaceProjectContextChangeEvent } from "@kiegroup-ts-generated/uberfire-project-api";
 import { AuthenticationService } from "@kiegroup-ts-generated/errai-security-server-rpc";
 import { NewSpacePopup } from "./NewSpacePopup";
 import { PreferenceBeanServerStore } from "@kiegroup-ts-generated/uberfire-preferences-api-rpc";
@@ -37,8 +35,14 @@ interface Props {
 }
 
 interface State {
-  spaces: OrganizationalUnit[];
+  spaces: Space[];
   newSpacePopupOpen: boolean;
+}
+
+interface Space {
+  name: string;
+  contributors: any[];
+  repositories: any[];
 }
 
 export class SpacesScreen extends React.Component<Props, State> {
@@ -48,7 +52,7 @@ export class SpacesScreen extends React.Component<Props, State> {
     this.props.exposing(() => this);
   }
 
-  private goToSpace(space: OrganizationalUnitImpl) {
+  private goToSpace(space: Space) {
     const newPreference = {
       portablePreference: new LibraryPreferencePortable({
         projectExplorerExpanded: false,
@@ -57,8 +61,7 @@ export class SpacesScreen extends React.Component<Props, State> {
     };
 
     this.props.preferenceBeanServerStore.save6<LibraryPreference, LibraryPreferencePortable>(newPreference).then(i => {
-      AppFormer.fireEvent(new WorkspaceProjectContextChangeEvent({ ou: space }));
-      (AppFormer as any).LibraryPlaces.goToLibrary();
+      (AppFormer as any).LibraryPlaces.goToSpace(space.name);
     });
   }
 
@@ -77,9 +80,11 @@ export class SpacesScreen extends React.Component<Props, State> {
   }
 
   public refreshSpaces() {
-    this.props.libraryService.getOrganizationalUnits({}).then(spaces => {
-      this.setState({ spaces });
-    });
+    fetch("rest/spaces-screen/spaces")
+      .then(response => response.json())
+      .then(spaces => {
+        this.setState({ spaces: spaces as Space[] });
+      });
   }
 
   public componentDidMount() {
@@ -118,12 +123,8 @@ export class SpacesScreen extends React.Component<Props, State> {
               </div>
               <div className={"container-fluid container-cards-pf"}>
                 <div className={"row row-cards-pf"}>
-                  {this.state.spaces.map(s => (
-                    <Tile
-                      key={(s as OrganizationalUnitImpl).name}
-                      space={s as OrganizationalUnitImpl}
-                      onSelect={() => this.goToSpace(s as OrganizationalUnitImpl)}
-                    />
+                  {this.state.spaces.map(space => (
+                    <Tile key={space.name} space={space} onSelect={() => this.goToSpace(space)} />
                   ))}
                 </div>
               </div>
@@ -161,7 +162,7 @@ function EmptySpacesScreen(props: { onAddSpace: () => void }) {
   );
 }
 
-function Tile(props: { space: OrganizationalUnitImpl; onSelect: () => void }) {
+function Tile(props: { space: Space; onSelect: () => void }) {
   return (
     <>
       <div className={"col-xs-12 col-sm-6 col-md-4 col-lg-3"}>
