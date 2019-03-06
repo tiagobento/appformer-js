@@ -32,6 +32,7 @@ import org.uberfire.jsbridge.tsexporter.Main;
 import org.uberfire.jsbridge.tsexporter.decorators.DecoratorStore;
 import org.uberfire.jsbridge.tsexporter.decorators.ImportEntryForDecorator;
 import org.uberfire.jsbridge.tsexporter.dependency.ImportEntryJava;
+import org.uberfire.jsbridge.tsexporter.util.TsExporterException;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
@@ -64,7 +65,7 @@ public class JavaType {
 
     public JavaType(final TypeMirror type, final TypeMirror owner) {
         if (type == null || owner == null) {
-            throw new RuntimeException("null arguments");
+            throw new TsExporterException("null arguments");
         }
         this.type = type;
         this.owner = owner;
@@ -166,7 +167,7 @@ public class JavaType {
                     case "java.math.BigDecimal":
                         return new TranslatableDefault(JAVA_BIG_DECIMAL.getUniqueTsIdentifier(), singleton(JAVA_BIG_DECIMAL), emptyList());
                     case "java.util.OptionalInt":
-                        return new TranslatableSimple("number"); //FIXME: !
+                        return new TranslatableSimple("number");
                     case "java.lang.Object":
                         return new TranslatableSimple("any /* object */");
                     case "java.util.Date":

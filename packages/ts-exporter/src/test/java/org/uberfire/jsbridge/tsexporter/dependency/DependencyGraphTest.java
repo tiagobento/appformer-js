@@ -16,12 +16,9 @@
 
 package org.uberfire.jsbridge.tsexporter.dependency;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import javax.lang.model.element.Element;
 
 import com.google.testing.compile.CompilationRule;
 import org.junit.Before;
@@ -144,47 +141,47 @@ public class DependencyGraphTest {
         assertEquals(list("A1B1", "A2B1"), simpleNames(graph.vertex(element(B0.class)).dependents.keySet()));
     }
 
-    class c0 {
+    class C0 {
 
-        c1 field;
+        C1 field;
     }
 
-    class c1 {
+    class C1 {
 
-        c0 field;
+        C0 field;
     }
 
     @Test
     public void testCycle() {
         final DependencyGraph graph = new DependencyGraph(Stream.empty(), NO_DECORATORS);
-        graph.add(element(c0.class));
+        graph.add(element(C0.class));
         assertEquals(2, graph.vertices().size());
-        graph.add(element(c1.class));
+        graph.add(element(C1.class));
         assertEquals(2, graph.vertices().size());
 
-        assertEquals(list("c0", "c1"), simpleNames(graph.findAllDependencies(singleton(element(c0.class)))));
-        assertEquals(list("c0", "c1"), simpleNames(graph.findAllDependencies(singleton(element(c1.class)))));
+        assertEquals(list("C0", "C1"), simpleNames(graph.findAllDependencies(singleton(element(C0.class)))));
+        assertEquals(list("C0", "C1"), simpleNames(graph.findAllDependencies(singleton(element(C1.class)))));
 
-        assertEquals(list("c0", "c1"), simpleNames(graph.findAllDependents(singleton(element(c0.class)))));
-        assertEquals(list("c0", "c1"), simpleNames(graph.findAllDependents(singleton(element(c1.class)))));
+        assertEquals(list("C0", "C1"), simpleNames(graph.findAllDependents(singleton(element(C0.class)))));
+        assertEquals(list("C0", "C1"), simpleNames(graph.findAllDependents(singleton(element(C1.class)))));
     }
 
-    class a2b2 implements A1B1 {
+    class A2B2 implements A1B1 {
 
-        a3b2 field;
+        A3B2 field;
     }
 
-    class a3b2 implements A2B1 {
+    class A3B2 implements A2B1 {
 
-        a2b2 field;
+        A2B2 field;
     }
 
     @Test
     public void testCycleComplex() {
         final DependencyGraph graph = new DependencyGraph(Stream.empty(), NO_DECORATORS);
-        graph.add(element(a2b2.class));
+        graph.add(element(A2B2.class));
         assertEquals(7, graph.vertices().size());
-        graph.add(element(a3b2.class));
+        graph.add(element(A3B2.class));
         assertEquals(7, graph.vertices().size());
 
         assertEquals(list("A0"), simpleNames(graph.findAllDependencies(singleton(element(A0.class)))));
@@ -192,16 +189,16 @@ public class DependencyGraphTest {
         assertEquals(list("A0", "A1B1", "B0"), simpleNames(graph.findAllDependencies(singleton(element(A1B1.class)))));
         assertEquals(list("A0", "A1", "A2B1", "B0"), simpleNames(graph.findAllDependencies(singleton(element(A2B1.class)))));
         assertEquals(list("B0"), simpleNames(graph.findAllDependencies(singleton(element(B0.class)))));
-        assertEquals(list("A0", "A1", "A1B1", "A2B1", "B0", "a2b2", "a3b2"), simpleNames(graph.findAllDependencies(singleton(element(a2b2.class)))));
-        assertEquals(list("A0", "A1", "A1B1", "A2B1", "B0", "a2b2", "a3b2"), simpleNames(graph.findAllDependencies(singleton(element(a3b2.class)))));
+        assertEquals(list("A0", "A1", "A1B1", "A2B1", "A2B2", "A3B2", "B0"), simpleNames(graph.findAllDependencies(singleton(element(A2B2.class)))));
+        assertEquals(list("A0", "A1", "A1B1", "A2B1", "A2B2", "A3B2", "B0"), simpleNames(graph.findAllDependencies(singleton(element(A3B2.class)))));
 
-        assertEquals(list("A0", "A1", "A1B1", "A2B1", "a2b2", "a3b2"), simpleNames(graph.findAllDependents(singleton(element(A0.class)))));
-        assertEquals(list("A1", "A2B1", "a2b2", "a3b2"), simpleNames(graph.findAllDependents(singleton(element(A1.class)))));
-        assertEquals(list("A1B1", "a2b2", "a3b2"), simpleNames(graph.findAllDependents(singleton(element(A1B1.class)))));
-        assertEquals(list("A2B1", "a2b2", "a3b2"), simpleNames(graph.findAllDependents(singleton(element(A2B1.class)))));
-        assertEquals(list("A1B1", "A2B1", "B0", "a2b2", "a3b2"), simpleNames(graph.findAllDependents(singleton(element(B0.class)))));
-        assertEquals(list("a2b2", "a3b2"), simpleNames(graph.findAllDependents(singleton(element(a2b2.class)))));
-        assertEquals(list("a2b2", "a3b2"), simpleNames(graph.findAllDependents(singleton(element(a3b2.class)))));
+        assertEquals(list("A0", "A1", "A1B1", "A2B1", "A2B2", "A3B2"), simpleNames(graph.findAllDependents(singleton(element(A0.class)))));
+        assertEquals(list("A1", "A2B1", "A2B2", "A3B2"), simpleNames(graph.findAllDependents(singleton(element(A1.class)))));
+        assertEquals(list("A1B1", "A2B2", "A3B2"), simpleNames(graph.findAllDependents(singleton(element(A1B1.class)))));
+        assertEquals(list("A2B1", "A2B2", "A3B2"), simpleNames(graph.findAllDependents(singleton(element(A2B1.class)))));
+        assertEquals(list("A1B1", "A2B1", "A2B2", "A3B2", "B0"), simpleNames(graph.findAllDependents(singleton(element(B0.class)))));
+        assertEquals(list("A2B2", "A3B2"), simpleNames(graph.findAllDependents(singleton(element(A2B2.class)))));
+        assertEquals(list("A2B2", "A3B2"), simpleNames(graph.findAllDependents(singleton(element(A3B2.class)))));
     }
 
     private static List<String> simpleNames(final Set<DependencyGraph.Vertex> vertex) {

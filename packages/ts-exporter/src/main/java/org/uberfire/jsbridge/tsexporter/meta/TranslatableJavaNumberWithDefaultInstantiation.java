@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.uberfire.jsbridge.tsexporter.dependency.ImportEntry;
 import org.uberfire.jsbridge.tsexporter.dependency.ImportEntryBuiltIn;
+import org.uberfire.jsbridge.tsexporter.util.TsExporterException;
 
-import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 
 public class TranslatableJavaNumberWithDefaultInstantiation implements Translatable {
@@ -41,7 +41,7 @@ public class TranslatableJavaNumberWithDefaultInstantiation implements Translata
             case TYPE_ARGUMENT_DECLARATION:
                 return translated;
             default:
-                throw new RuntimeException();
+                throw new TsExporterException("No behavior defined for " + sourceUsage.name());
         }
     }
 

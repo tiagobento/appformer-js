@@ -19,7 +19,7 @@ Simply add its dependency on an existing Maven module and the Annotation Process
 
 > **NOTE:** We recommend using [verdaccio](https://github.com/verdaccio/verdaccio) as your local npm registry. To install it simply run `npm install -g verdaccio`. To run it, simply run `verdaccio`. The `app` module must have at least one class annotated with `@EntryPoint`, `@Portable`, or `@Remote`.
 >
-> **NOTE:** `app` modules require a special configuration to actually generate and lcoally publish the generated TypeScript code:
+> **NOTE:** `app` modules require a special configuration to actually generate and locally publish the generated TypeScript code:
 >
 >-  **ts-exporter-output-dir** must be configured with the directory where the root of generated code will be.
 >

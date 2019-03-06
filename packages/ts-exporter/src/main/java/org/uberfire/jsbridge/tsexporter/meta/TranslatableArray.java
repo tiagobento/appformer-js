@@ -19,9 +19,9 @@ package org.uberfire.jsbridge.tsexporter.meta;
 import java.util.List;
 
 import org.uberfire.jsbridge.tsexporter.dependency.ImportEntry;
+import org.uberfire.jsbridge.tsexporter.util.TsExporterException;
 
 import static java.lang.String.format;
-import static org.uberfire.jsbridge.tsexporter.meta.Translatable.SourceUsage.TYPE_ARGUMENT_USE;
 
 public class TranslatableArray implements Translatable {
 
@@ -40,7 +40,7 @@ public class TranslatableArray implements Translatable {
             case IMPORT_STATEMENT:
                 return componentTranslatable.toTypeScript(sourceUsage);
             default:
-                throw new RuntimeException();
+                throw new TsExporterException("No behavior defined for " + sourceUsage.name());
         }
     }
 

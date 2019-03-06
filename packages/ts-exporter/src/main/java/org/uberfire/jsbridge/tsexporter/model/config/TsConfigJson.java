@@ -16,9 +16,6 @@
 
 package org.uberfire.jsbridge.tsexporter.model.config;
 
-import java.util.List;
-
-import org.uberfire.jsbridge.tsexporter.model.TsClass;
 import org.uberfire.jsbridge.tsexporter.model.TsExporterResource;
 
 import static org.uberfire.jsbridge.tsexporter.util.Utils.lines;

@@ -64,10 +64,6 @@ public class ImportEntryForDecorator implements ImportEntry {
         return decoratedFqcn;
     }
 
-    public String getDecoratorPath() {
-        return decoratorPath;
-    }
-
     @Override
     public boolean represents(final DeclaredType type) {
         return false;

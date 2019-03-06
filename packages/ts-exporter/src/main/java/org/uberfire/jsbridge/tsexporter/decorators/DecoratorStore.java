@@ -56,7 +56,7 @@ public class DecoratorStore {
     private Map<String, ImportEntryForDecorator> asMap(final Set<ImportEntryForDecorator> decorators) {
         return decorators.stream()
                 .collect(toMap(ImportEntryForDecorator::getDecoratedFqcn, identity(), (kept, discarded) -> {
-                    System.out.println(format("Found more than one decorator for %s. Keeping %s and discarding %s.", kept.getDecoratedFqcn(), kept.getDecoratorPath(), discarded.getDecoratorPath()));
+                    System.out.println(format("Found more than one decorator for %s. Keeping %s and discarding %s.", kept.getDecoratedFqcn(), kept.getRelativePath(), discarded.getRelativePath()));
                     return kept;
                 }));
     }

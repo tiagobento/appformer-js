@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.uberfire.jsbridge.tsexporter.dependency.ImportEntry;
+import org.uberfire.jsbridge.tsexporter.util.TsExporterException;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.concat;
-import static org.uberfire.jsbridge.tsexporter.meta.Translatable.SourceUsage.TYPE_ARGUMENT_USE;
 
 public class TranslatableDefault implements Translatable {
 
@@ -50,7 +50,7 @@ public class TranslatableDefault implements Translatable {
             case TYPE_ARGUMENT_DECLARATION:
                 return translate(sourceUsage);
             default:
-                throw new RuntimeException();
+                throw new TsExporterException("No behavior defined for " + sourceUsage.name());
         }
     }
 

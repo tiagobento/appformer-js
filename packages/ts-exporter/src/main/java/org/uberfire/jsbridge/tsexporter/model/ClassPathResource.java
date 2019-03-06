@@ -16,16 +16,6 @@
 
 package org.uberfire.jsbridge.tsexporter.model;
 
-import java.util.Set;
-
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-
-import org.uberfire.jsbridge.tsexporter.dependency.DependencyRelation;
-import org.uberfire.jsbridge.tsexporter.model.TsClass;
-import org.uberfire.jsbridge.tsexporter.model.TsExporterResource;
-
-import static java.util.Collections.emptySet;
 import static org.uberfire.jsbridge.tsexporter.util.Utils.readClasspathResource;
 
 public class ClassPathResource implements TsExporterResource {

@@ -148,7 +148,7 @@ public class RpcCallerTsMethod {
                         .map(Element::asType)
                         .map(type -> Optional.ofNullable(types.erasure(type)))
                         .filter(Optional::isPresent).map(Optional::get)
-                        .map(element -> element.toString() + ":") //FIXME: This is probably not 100% right
+                        .map(element -> element.toString() + ":")
                         .collect(joining("")) +
                 '"';
     }

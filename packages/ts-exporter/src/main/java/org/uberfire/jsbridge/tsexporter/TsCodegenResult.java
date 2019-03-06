@@ -26,7 +26,6 @@ import org.uberfire.jsbridge.tsexporter.model.config.PackageJsonRoot;
 
 import static org.uberfire.jsbridge.tsexporter.config.AppFormerLib.Type.LIB;
 import static org.uberfire.jsbridge.tsexporter.model.NpmPackage.Type.FINAL;
-import static org.uberfire.jsbridge.tsexporter.model.NpmPackage.Type.UNDECORATED;
 
 public class TsCodegenResult {
 

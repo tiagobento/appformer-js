@@ -23,6 +23,7 @@ import javax.lang.model.type.TypeVariable;
 
 import org.uberfire.jsbridge.tsexporter.decorators.DecoratorStore;
 import org.uberfire.jsbridge.tsexporter.dependency.ImportEntry;
+import org.uberfire.jsbridge.tsexporter.util.TsExporterException;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
@@ -75,7 +76,7 @@ public class TranslatableTypeVar implements Translatable {
                 return translatedDeclaration;
             case IMPORT_STATEMENT:
             default:
-                throw new RuntimeException();
+                throw new TsExporterException("No behavior defined for " + sourceUsage.name());
         }
     }
 
