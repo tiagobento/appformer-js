@@ -15,11 +15,10 @@
  */
 
 import * as HomeApi from "../home-screen-api";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
 import * as AppFormer from "appformer-js";
 
 export class BusinessCentralCommunityHomePageProvider implements HomeApi.HomeScreenProvider {
-  public get(profile: Profile): HomeApi.HomeScreen {
+  public get(profile: HomeApi.Profile): HomeApi.HomeScreen {
     const welcomeText = AppFormer.translate("Heading", []);
     const description = AppFormer.translate("SubHeading", []);
     const backgroundImageUrl = "images/community_home_bg.jpg";
@@ -27,11 +26,11 @@ export class BusinessCentralCommunityHomePageProvider implements HomeApi.HomeScr
     return new HomeApi.HomeScreen(welcomeText, description, backgroundImageUrl, this.buildCardsForProfile(profile));
   }
 
-  private buildCardsForProfile(profile: Profile) {
+  private buildCardsForProfile(profile: HomeApi.Profile) {
     switch (profile) {
-      case Profile.PLANNER_AND_RULES:
+      case HomeApi.Profile.PLANNER_AND_RULES:
         return [this.plannerAndRulesProfileDesignCard(), this.deployCard()];
-      case Profile.FULL:
+      case HomeApi.Profile.FULL:
       default:
         return [this.fullProfileDesignCard(), this.deployCard(), this.manageCard(), this.trackCard()];
     }

@@ -15,10 +15,9 @@
  */
 
 import * as HomeApi from "../home-screen-api";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
 
 export class DroolsWbHomeScreenProvider implements HomeApi.HomeScreenProvider {
-  public get(profile: Profile): HomeApi.HomeScreen {
+  public get(profile: HomeApi.Profile): HomeApi.HomeScreen {
     const welcomeText = "Welcome to KIE Workbench";
 
     const description =

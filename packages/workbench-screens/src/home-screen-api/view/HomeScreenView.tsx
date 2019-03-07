@@ -15,14 +15,8 @@
  */
 
 import * as React from "react";
-import {
-  Profile,
-  ProfilePreferences,
-  ProfilePreferencesPortableGeneratedImpl
-} from "@kiegroup-ts-generated/kie-wb-common-profile-api";
-import { PreferenceBeanServerStore } from "@kiegroup-ts-generated/uberfire-preferences-api-rpc";
 import { CardView } from "./CardView";
-import { HomeScreen, HomeScreenProvider } from "../model";
+import { HomeScreen, HomeScreenProvider, Profile } from "../model";
 
 interface Props {
   contentProvider: HomeScreenProvider;
@@ -38,7 +32,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     this.state = {};
 
-    this.retrieveCurrentProfile(new PreferenceBeanServerStore())
+    this.retrieveCurrentProfile()
       .then(profile => {
         this.setState({ model: props.contentProvider.get(profile) });
       })
@@ -80,11 +74,9 @@ export class HomeScreenView extends React.Component<Props, State> {
     );
   }
 
-  private retrieveCurrentProfile(preferencesStore: PreferenceBeanServerStore): Promise<Profile> {
-    const args = { emptyPortablePreference: new ProfilePreferencesPortableGeneratedImpl({}) };
-
-    return preferencesStore
-      .load2<ProfilePreferences, ProfilePreferencesPortableGeneratedImpl>(args)
-      .then(pref => pref.profile!);
+  public retrieveCurrentProfile(): Promise<Profile> {
+    return fetch("rest/spaces-screen/profilePreference")
+      .then(res => res.json())
+      .then(profile => (profile.toString() === "FULL" ? Profile.FULL : Profile.PLANNER_AND_RULES));
   }
 }

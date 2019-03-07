@@ -15,15 +15,14 @@
  */
 
 import * as HomeApi from "../home-screen-api";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
 import * as AppFormer from "appformer-js";
 
 export class BusinessMonitoringProductHomePageProvider implements HomeApi.HomeScreenProvider {
-  public get(profile: Profile): HomeApi.HomeScreen {
+  public get(profile: HomeApi.Profile): HomeApi.HomeScreen {
     switch (profile) {
-      case Profile.PLANNER_AND_RULES:
+      case HomeApi.Profile.PLANNER_AND_RULES:
         return this.buildPlannerAndRulesScreen();
-      case Profile.FULL:
+      case HomeApi.Profile.FULL:
       default:
         return this.buildFullScreen();
     }

@@ -17,15 +17,10 @@
 import * as React from "react";
 import * as AppFormer from "appformer-js";
 import { Popup } from "./Popup";
-import { OrganizationalUnitService } from "@kiegroup-ts-generated/uberfire-structure-api-rpc";
-import { AuthenticationService } from "@kiegroup-ts-generated/errai-security-server-rpc";
-import { UserImpl } from "@kiegroup-ts-generated/errai-security-server";
 import { NotificationEvent, NotificationType } from "@kiegroup-ts-generated/uberfire-api";
 
 interface Props {
   onClose: () => void;
-  organizationalUnitService: OrganizationalUnitService;
-  authenticationService: AuthenticationService;
 }
 
 interface State {
@@ -41,12 +36,9 @@ export class NewSpacePopup extends React.Component<Props, State> {
   }
 
   private async add() {
-    const user = await this.props.authenticationService.getUser({});
-
     const newSpace = {
       name: this.state.name,
-      owner: (user as UserImpl).name!,
-      defaultGroupId: `com.${this.state.name.toLowerCase()}`
+      groupId: `com.${this.state.name.toLowerCase()}`
     };
 
     const emptyName = Promise.resolve().then(() => {
@@ -59,9 +51,9 @@ export class NewSpacePopup extends React.Component<Props, State> {
     });
 
     const duplicatedName = Promise.resolve()
-      .then(() => this.props.organizationalUnitService.getOrganizationalUnit({ name: newSpace.name }))
-      .then(space => {
-        if (space) {
+      .then(() => fetch(`rest/spaces-screen/spaces/${newSpace.name}`).then(response => response.status === 200))
+      .then(spaceAlreadyExists => {
+        if (spaceAlreadyExists) {
           this.addErrorMessage(AppFormer.translate("DuplicatedOrganizationalUnitValidation", ["Space"]));
           return Promise.reject();
         } else {
@@ -69,10 +61,11 @@ export class NewSpacePopup extends React.Component<Props, State> {
         }
       });
 
-    const validGroupId = Promise.resolve()
-      .then(() => this.props.organizationalUnitService.isValidGroupId({ proposedGroupId: newSpace.defaultGroupId }))
-      .then(valid => {
-        if (!valid) {
+    const validGroupId = Promise.resolve(true)
+      .then(() => fetch(`rest/spaces-screen/spaces/validGroupId?groupId=${newSpace.groupId}`).then(r => r.json()))
+      .then(isValidGroupId => {
+        console.info(isValidGroupId);
+        if (!isValidGroupId) {
           this.addErrorMessage(AppFormer.translate("InvalidSpaceName", []));
           return Promise.reject();
         } else {
@@ -83,15 +76,21 @@ export class NewSpacePopup extends React.Component<Props, State> {
     this.setState({ errorMessages: [] }, () =>
       Promise.resolve()
         .then(() => Promise.all([emptyName, duplicatedName, validGroupId]))
-        .then(() => this.props.organizationalUnitService.createOrganizationalUnit0(newSpace))
+        .then(() =>
+          fetch("rest/spaces-screen/spaces", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newSpace)
+          })
+        )
         .then(i => {
           AppFormer.fireEvent(
-              new NotificationEvent({
-                type: NotificationType.SUCCESS,
-                notification: AppFormer.translate("OrganizationalUnitSaveSuccess", [
-                  AppFormer.translate("OrganizationalUnitDefaultAliasInSingular", [])
-                ])
-              })
+            new NotificationEvent({
+              type: NotificationType.SUCCESS,
+              notification: AppFormer.translate("OrganizationalUnitSaveSuccess", [
+                AppFormer.translate("OrganizationalUnitDefaultAliasInSingular", [])
+              ])
+            })
           );
           return this.props.onClose();
         })

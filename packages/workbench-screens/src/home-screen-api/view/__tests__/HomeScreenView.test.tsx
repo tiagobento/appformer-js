@@ -14,12 +14,10 @@
  *  limitations under the License.
  */
 
-import { Card, CardDescriptionBuilder, HomeScreen, HomeScreenProvider } from "../../model";
-import { Profile, ProfilePreferencesPortableGeneratedImpl } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
+import { Card, CardDescriptionBuilder, HomeScreen, HomeScreenProvider, Profile } from "../../model";
 import { shallow } from "enzyme";
 import * as React from "react";
 import { HomeScreenView } from "../HomeScreenView";
-import { PreferenceBeanServerStore } from "@kiegroup-ts-generated/uberfire-preferences-api-rpc";
 
 describe("behaviour", () => {
   afterEach(() => {
@@ -31,16 +29,14 @@ describe("behaviour", () => {
 
     const getSpy = jest.spyOn(provider, "get");
 
-    const pref = new ProfilePreferencesPortableGeneratedImpl({ profile: Profile.FULL });
-    const promise = Promise.resolve(pref);
+    const promise = Promise.resolve(Profile.FULL);
 
-    PreferenceBeanServerStore.prototype.load2 = jest.fn(() => promise);
+    HomeScreenView.prototype.retrieveCurrentProfile = jest.fn(() => promise);
 
     const component = shallow(<HomeScreenView contentProvider={provider} />);
 
     await Promise.all([promise]);
 
-    expect(PreferenceBeanServerStore.prototype.load2).toHaveBeenCalledTimes(1);
     expect(getSpy).toHaveBeenCalledWith(Profile.FULL);
 
     expect(component.prop("id")).toEqual("home-page");
@@ -94,11 +90,9 @@ describe("behaviour", () => {
 describe("snapshot", () => {
   test("with a profile, should render consistently", async () => {
     const provider = new FooHomeScreenProvider();
+    const promise = Promise.resolve(Profile.FULL);
 
-    const pref = new ProfilePreferencesPortableGeneratedImpl({ profile: Profile.FULL });
-    const promise = Promise.resolve(pref);
-
-    PreferenceBeanServerStore.prototype.load2 = jest.fn(() => promise);
+    HomeScreenView.prototype.retrieveCurrentProfile = jest.fn(() => promise);
 
     const component = shallow(<HomeScreenView contentProvider={provider} />);
 

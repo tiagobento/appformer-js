@@ -15,7 +15,7 @@
  */
 
 import { StunnerShowcaseHomeScreenProvider } from "../StunnerShowcaseHomeScreenProvider";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
+import { Profile } from "../../home-screen-api";
 import { CardDescriptionLinkElement, CardDescriptionTextElement } from "../../home-screen-api/model";
 
 describe("StunnerShowcaseHomeScreenProvider", () => {

@@ -16,22 +16,10 @@
 
 import * as React from "react";
 import * as AppFormer from "appformer-js";
-import { LibraryService } from "@kiegroup-ts-generated/kie-wb-common-library-api-rpc";
-import { OrganizationalUnitService } from "@kiegroup-ts-generated/uberfire-structure-api-rpc";
-import { AuthenticationService } from "@kiegroup-ts-generated/errai-security-server-rpc";
 import { NewSpacePopup } from "./NewSpacePopup";
-import { PreferenceBeanServerStore } from "@kiegroup-ts-generated/uberfire-preferences-api-rpc";
-import {
-  LibraryInternalPreferences as LibraryPreference,
-  LibraryInternalPreferencesPortableGeneratedImpl as LibraryPreferencePortable
-} from "@kiegroup-ts-generated/kie-wb-common-library-api";
 
 interface Props {
   exposing: (self: () => SpacesScreen) => void;
-  organizationalUnitService: OrganizationalUnitService;
-  authenticationService: AuthenticationService;
-  libraryService: LibraryService;
-  preferenceBeanServerStore: PreferenceBeanServerStore;
 }
 
 interface State {
@@ -39,7 +27,7 @@ interface State {
   newSpacePopupOpen: boolean;
 }
 
-interface Space {
+export interface Space {
   name: string;
   contributors: any[];
   repositories: any[];
@@ -53,14 +41,14 @@ export class SpacesScreen extends React.Component<Props, State> {
   }
 
   private goToSpace(space: Space) {
-    const newPreference = {
-      portablePreference: new LibraryPreferencePortable({
+    fetch("rest/spaces-screen/libraryPreference", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         projectExplorerExpanded: false,
         lastOpenedOrganizationalUnit: space.name
       })
-    };
-
-    this.props.preferenceBeanServerStore.save6<LibraryPreference, LibraryPreferencePortable>(newPreference).then(i => {
+    }).then(s => {
       (AppFormer as any).LibraryPlaces.goToSpace(space.name);
     });
   }
@@ -94,13 +82,7 @@ export class SpacesScreen extends React.Component<Props, State> {
   public render() {
     return (
       <>
-        {this.state.newSpacePopupOpen && (
-          <NewSpacePopup
-            organizationalUnitService={this.props.organizationalUnitService}
-            authenticationService={this.props.authenticationService}
-            onClose={() => this.closeNewSpacePopup()}
-          />
-        )}
+        {this.state.newSpacePopupOpen && <NewSpacePopup onClose={() => this.closeNewSpacePopup()} />}
 
         {this.state.spaces.length <= 0 && <EmptySpacesScreen onAddSpace={() => this.openNewSpacePopup()} />}
 

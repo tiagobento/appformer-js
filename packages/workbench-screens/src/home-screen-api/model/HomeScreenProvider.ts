@@ -15,7 +15,10 @@
  */
 
 import { HomeScreen } from "./HomeScreen";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
+
+export enum Profile {
+  PLANNER_AND_RULES, FULL
+}
 
 export interface HomeScreenProvider {
   get(profile: Profile): HomeScreen;

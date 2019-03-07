@@ -15,7 +15,7 @@
  */
 
 import { BusinessCentralCommunityHomePageProvider } from "../BusinessCentralCommunityHomePageProvider";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
+import { Profile } from "../../home-screen-api";
 import { AppFormer } from "appformer-js";
 import { CardDescriptionLinkElement, CardDescriptionTextElement } from "../../home-screen-api/model";
 import { AuthorizationManager } from "../../home-screen-api/util";

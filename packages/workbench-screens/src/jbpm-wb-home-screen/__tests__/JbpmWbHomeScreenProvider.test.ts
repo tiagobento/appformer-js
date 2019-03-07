@@ -15,7 +15,7 @@
  */
 
 import { JbpmWbHomeScreenProvider } from "../JbpmWbHomeScreenProvider";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
+import { Profile } from "../../home-screen-api";
 import { AppFormer } from "appformer-js";
 import { CardDescriptionTextElement } from "../../home-screen-api/model";
 

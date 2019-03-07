@@ -15,11 +15,10 @@
  */
 
 import * as HomeApi from "../home-screen-api";
-import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
 import * as AppFormer from "appformer-js";
 
 export class JbpmWbHomeScreenProvider implements HomeApi.HomeScreenProvider {
-  public get(profile: Profile): HomeApi.HomeScreen {
+  public get(profile: HomeApi.Profile): HomeApi.HomeScreen {
     const welcomeText = AppFormer.translate("Heading", []);
     const description = AppFormer.translate("SubHeading", []);
     const backgroundImageUrl = "images/home_bg.jpg";
