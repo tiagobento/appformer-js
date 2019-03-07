@@ -17,7 +17,8 @@
 import * as React from "react";
 import * as AppFormer from "appformer-js";
 import { Popup } from "./Popup";
-import { NotificationEvent, NotificationType } from "@kiegroup-ts-generated/uberfire-api";
+import { NotificationEvent } from "./NotificationEvent";
+import { NotificationType } from "./NotificationType";
 
 interface Props {
   onClose: () => void;
