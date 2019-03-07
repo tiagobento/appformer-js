@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+target/
 
 yarn.lock
 package-lock.json
