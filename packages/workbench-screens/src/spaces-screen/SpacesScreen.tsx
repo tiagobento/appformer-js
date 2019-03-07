@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import * as AppFormer from "appformer-js";
+import * as Service from "./service";
 import { NewSpacePopup } from "./NewSpacePopup";
 
 interface Props {
@@ -23,14 +24,8 @@ interface Props {
 }
 
 interface State {
-  spaces: Space[];
+  spaces: Service.Space[];
   newSpacePopupOpen: boolean;
-}
-
-export interface Space {
-  name: string;
-  contributors: any[];
-  repositories: any[];
 }
 
 export class SpacesScreen extends React.Component<Props, State> {
@@ -40,15 +35,11 @@ export class SpacesScreen extends React.Component<Props, State> {
     this.props.exposing(() => this);
   }
 
-  private goToSpace(space: Space) {
-    fetch("rest/spaces-screen/libraryPreference", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        projectExplorerExpanded: false,
-        lastOpenedOrganizationalUnit: space.name
-      })
-    }).then(s => {
+  private goToSpace(space: Service.Space) {
+    Service.updateLibraryPreference({
+      projectExplorerExpanded: false,
+      lastOpenedOrganizationalUnit: space.name
+    }).then(() => {
       (AppFormer as any).LibraryPlaces.goToSpace(space.name);
     });
   }
@@ -68,11 +59,9 @@ export class SpacesScreen extends React.Component<Props, State> {
   }
 
   public refreshSpaces() {
-    fetch("rest/spaces-screen/spaces")
-      .then(response => response.json())
-      .then(spaces => {
-        this.setState({ spaces: spaces as Space[] });
-      });
+    Service.fetchSpaces().then(spaces => {
+      this.setState({ spaces: spaces as Service.Space[] });
+    });
   }
 
   public componentDidMount() {
@@ -144,7 +133,7 @@ function EmptySpacesScreen(props: { onAddSpace: () => void }) {
   );
 }
 
-function Tile(props: { space: Space; onSelect: () => void }) {
+function Tile(props: { space: Service.Space; onSelect: () => void }) {
   return (
     <>
       <div className={"col-xs-12 col-sm-6 col-md-4 col-lg-3"}>

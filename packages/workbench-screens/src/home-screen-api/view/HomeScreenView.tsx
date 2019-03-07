@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import * as Service from "../service";
 import { CardView } from "./CardView";
 import { HomeScreen, HomeScreenProvider, Profile } from "../model";
 
@@ -75,8 +76,6 @@ export class HomeScreenView extends React.Component<Props, State> {
   }
 
   public retrieveCurrentProfile(): Promise<Profile> {
-    return fetch("rest/spaces-screen/profilePreference")
-      .then(res => res.json())
-      .then(profile => (profile.toString() === "FULL" ? Profile.FULL : Profile.PLANNER_AND_RULES));
+    return Service.fetchProfilePreference();
   }
 }

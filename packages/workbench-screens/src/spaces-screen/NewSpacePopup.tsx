@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import * as AppFormer from "appformer-js";
+import * as Service from "./service";
 import { Popup } from "./Popup";
 import { NotificationEvent } from "./NotificationEvent";
 import { NotificationType } from "./NotificationType";
@@ -52,7 +53,7 @@ export class NewSpacePopup extends React.Component<Props, State> {
     });
 
     const duplicatedName = Promise.resolve()
-      .then(() => fetch(`rest/spaces-screen/spaces/${newSpace.name}`).then(response => response.status === 200))
+      .then(() => Service.fetchIsDuplicatedSpaceName(newSpace.name))
       .then(spaceAlreadyExists => {
         if (spaceAlreadyExists) {
           this.addErrorMessage(AppFormer.translate("DuplicatedOrganizationalUnitValidation", ["Space"]));
@@ -63,7 +64,7 @@ export class NewSpacePopup extends React.Component<Props, State> {
       });
 
     const validGroupId = Promise.resolve(true)
-      .then(() => fetch(`rest/spaces-screen/spaces/validGroupId?groupId=${newSpace.groupId}`).then(r => r.json()))
+      .then(() => Service.fetchIsValidGroupIdName(newSpace.groupId))
       .then(isValidGroupId => {
         console.info(isValidGroupId);
         if (!isValidGroupId) {
@@ -77,13 +78,7 @@ export class NewSpacePopup extends React.Component<Props, State> {
     this.setState({ errorMessages: [] }, () =>
       Promise.resolve()
         .then(() => Promise.all([emptyName, duplicatedName, validGroupId]))
-        .then(() =>
-          fetch("rest/spaces-screen/spaces", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newSpace)
-          })
-        )
+        .then(() => Service.createSpace(newSpace))
         .then(i => {
           AppFormer.fireEvent(
             new NotificationEvent({
