@@ -1,5 +1,5 @@
-import { JsonEditor } from "./JsonEditor";
 import * as AppFormer from "appformer-js-core";
+import { JsonEditor } from "./JsonEditor";
 import { AppFormerSubmarine } from "appformer-js-submarine";
 
 //This function can be replaced by an async import
