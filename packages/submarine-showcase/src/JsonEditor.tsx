@@ -1,8 +1,8 @@
 import * as React from "react";
 import { FormEvent } from "react";
 import * as AppFormer from "appformer-js-core";
-import JSONEditor from "jsoneditor";
-import { AppContext, AppContextDef } from "./App";
+import JSONEditor from "JsonEditor";
+import { AppContext, AppContextDef } from "appformer-js-submarine";
 
 export class JsonEditor extends AppFormer.Editor {
   public af_componentTitle: string;

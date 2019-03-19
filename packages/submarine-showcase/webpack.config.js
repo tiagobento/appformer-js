@@ -20,13 +20,14 @@ const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 module.exports = {
   mode: "development",
+  devtool: "inline-source-map",
   entry: {
     index: "./src/index.tsx"
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "index.js",
-    library: "AppFormer.Submarine",
+    library: "AppFormer.SubmarineShowcase",
     libraryTarget: "umd",
     umdNamedDefine: true
   },
@@ -55,6 +56,7 @@ module.exports = {
     ]
   },
   devServer: {
+    watchContentBase: true,
     contentBase: [
       path.join(__dirname, "static"),
       path.join(__dirname, "../../node_modules/@patternfly/patternfly/"),

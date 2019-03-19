@@ -9,9 +9,14 @@ export class ComponentWrapper extends React.Component<Props, {}> {
   private ref: HTMLDivElement;
 
   public componentDidMount(): void {
-    if (!this.props.component.af_isReact) {
-      this.ref.appendChild(this.props.component.af_componentRoot() as any);
+    if (this.props.component.af_isReact) {
+      return;
     }
+
+    while (this.ref.firstChild) {
+      this.ref.removeChild(this.ref.firstChild);
+    }
+    this.ref.appendChild(this.props.component.af_componentRoot() as HTMLElement);
   }
 
   public render() {

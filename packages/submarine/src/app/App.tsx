@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as AppFormer from "appformer-js-core";
-import { NavBar } from "./NavBar";
 import { Main } from "./Main";
 
 interface Props {
@@ -44,7 +43,7 @@ export class App extends React.Component<Props, State> {
   public render() {
     return (
       <>
-        <div className="pf-c-background-image" />
+        <div className={"pf-c-background-image"} />
         <div className={"pf-c-page"}>
           <AppContext.Provider
             value={{
@@ -54,7 +53,6 @@ export class App extends React.Component<Props, State> {
             }}
           >
             <Title text={this.state.title} />
-            <NavBar />
             <Main editor={this.state.editor} />
           </AppContext.Provider>
         </div>
@@ -63,7 +61,7 @@ export class App extends React.Component<Props, State> {
   }
 
   public register(editor: AppFormer.Editor) {
-    this.setState({ editor: editor });
+    return Promise.resolve().then(() => new Promise(res => this.setState({ editor: editor }, res)));
   }
 
   public getEditor() {

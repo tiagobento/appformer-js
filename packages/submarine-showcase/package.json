@@ -1,6 +1,6 @@
 {
-  "name": "qs",
-  "version": "0.0.1",
+  "name": "appformer-js-submarine-showcase",
+  "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
@@ -11,20 +11,21 @@
   },
   "dependencies": {
     "@patternfly/patternfly": "^1.0.227",
+    "appformer-js-core": "0.0.0",
+    "appformer-js-submarine": "0.0.0",
+    "jsoneditor": "^5.31.1",
     "@types/jsoneditor": "^5.28.0",
     "@types/react": "^16.8.8",
     "@types/react-dom": "^16.8.2",
-    "appformer-js-core": "0.0.0",
-    "jsoneditor": "^5.31.1",
     "react": "16.8.0",
-    "react-dom": "16.8.0"
+    "react-dom": "16.8.4"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
     "test": "jest",
     "init": "yarn",
-    "build": "yarn run lint && yarn test && webpack --mode production",
-    "showcase": "webpack-dev-server --open"
+    "build": "yarn run lint && yarn test && webpack",
+    "showcase": "webpack-dev-server -d --open"
   },
   "babel": {
     "presets": [

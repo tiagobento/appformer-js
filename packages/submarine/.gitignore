@@ -3,5 +3,3 @@ dist/
 coverage/
 target/
 .idea
-**/.DS_Store
-.log

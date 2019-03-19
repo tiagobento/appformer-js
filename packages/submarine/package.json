@@ -1,5 +1,5 @@
 {
-  "name": "appformer-js-gwt",
+  "name": "appformer-js-submarine",
   "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
@@ -7,20 +7,21 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kiegroup/appformer.git"
+    "url": "https://github.com/kiegroup/appformer-js.git"
   },
   "dependencies": {
+    "@patternfly/patternfly": "^1.0.227",
+    "@types/jsoneditor": "^5.28.0",
+    "appformer-js-core": "0.0.0",
     "@types/react": "^16.8.8",
     "@types/react-dom": "^16.8.2",
     "react": "16.8.0",
-    "react-dom": "16.8.4",
-    "appformer-js-core": "0.0.0",
-    "bignumber.js": "7.2.1"
+    "react-dom": "16.8.4"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
     "test": "jest",
-    "init": "yarn -f",
+    "init": "yarn",
     "build": "yarn run lint && yarn test && webpack"
   },
   "babel": {
@@ -30,10 +31,10 @@
     ]
   },
   "jest-junit": {
-    "outputDirectory": "../../target"
+    "outputDirectory": "./target"
   },
   "devDependencies": {
-    "@types/jest": "23.3.1",
+    "@types/jest": "^24.0.11",
     "babel-core": "6.26.3",
     "babel-loader": "7.1.5",
     "babel-preset-env": "1.7.0",
@@ -52,6 +53,7 @@
     "typescript": "2.9.2",
     "watch": "1.0.2",
     "webpack": "4.15.1",
-    "webpack-cli": "3.0.8"
+    "webpack-cli": "3.0.8",
+    "webpack-dev-server": "^3.2.1"
   }
 }

@@ -10,14 +10,16 @@
     "url": "https://github.com/kiegroup/appformer.git"
   },
   "dependencies": {
-    "@types/react": "16.4.18",
-    "react": "16.6.0"
+    "@types/react": "^16.8.8",
+    "@types/react-dom": "^16.8.2",
+    "react": "16.8.0",
+    "react-dom": "16.8.4"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
     "test": "jest",
     "init": "yarn -f",
-    "build": "yarn run lint && yarn test && webpack --mode production"
+    "build": "yarn run lint && yarn test && webpack"
   },
   "babel": {
     "presets": [
