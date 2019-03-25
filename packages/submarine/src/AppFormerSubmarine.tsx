@@ -20,8 +20,28 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
   }
 
   public registerEditor(Editor: { new (): AppFormer.Editor }) {
+    //TODO: No-op when same Editor class?
+
     const editor = new Editor();
-    return this.app!.register(editor).then(() => editor);
+    const previousEditor = this.getEditor();
+
+    if (previousEditor) {
+      previousEditor.af_onClose();
+      console.info(`${previousEditor.af_componentId} - CLOSE`);
+
+      previousEditor!.af_onShutdown();
+      console.info(`${previousEditor!.af_componentId} - SHUTDOWN`);
+    }
+
+    editor.af_onStartup();
+    console.info(`${editor.af_componentId} - STARTUP`);
+
+    return this.app!.register(editor).then(() => {
+      editor.af_onOpen();
+      console.info(`${editor.af_componentId} - OPEN`);
+
+      return editor;
+    });
   }
 
   public getEditor(): AppFormer.Editor | undefined {

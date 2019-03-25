@@ -9,10 +9,12 @@ export class ComponentWrapper extends React.Component<Props, {}> {
   private ref: HTMLDivElement;
 
   public componentDidMount(): void {
-    if (this.props.component.af_isReact) {
-      return;
+    if (!this.props.component.af_isReact) {
+      this.renderDomComponent();
     }
+  }
 
+  private renderDomComponent() {
     while (this.ref.firstChild) {
       this.ref.removeChild(this.ref.firstChild);
     }

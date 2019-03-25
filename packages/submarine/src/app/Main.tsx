@@ -7,7 +7,7 @@ export function Main(props: { editor?: AppFormer.Editor }) {
     <main role="main" className={"pf-c-page__main"}>
       <section className={"pf-c-page__main-section pf-m-light"}>
         <div className={"pf-c-content"}>
-          {props.editor && <ComponentWrapper component={props.editor} />}
+          {props.editor && <ComponentWrapper key={props.editor.af_componentId} component={props.editor} />}
           {!props.editor && <span>No Editors registered...</span>}
         </div>
       </section>
