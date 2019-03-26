@@ -22,7 +22,7 @@ export class JsonEditor extends AppFormer.Editor {
     return false;
   }
 
-  public getContent(): string {
+  public getContent(): Promise<string> {
     return this.self.getContent();
   }
 
@@ -55,8 +55,8 @@ class MyJsonEditor extends React.Component<Props, State> {
     };
   }
 
-  public getContent(): string {
-    return this.editor.getText();
+  public getContent(): Promise<string> {
+    return Promise.resolve(this.editor.getText());
   }
 
   public setContent(content: string): void {

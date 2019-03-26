@@ -58,7 +58,7 @@ export abstract class Editor extends Component {
 
   public abstract setContent(content: string): void;
 
-  public abstract getContent(): string;
+  public abstract getContent(): Promise<string>;
 
   public abstract isDirty(): boolean;
 }

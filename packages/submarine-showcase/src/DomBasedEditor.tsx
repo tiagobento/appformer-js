@@ -40,8 +40,8 @@ export class DomBasedEditor extends AppFormer.Editor {
     return false;
   }
 
-  public getContent(): string {
-    return this.contentDiv.innerHTML!;
+  public getContent() : Promise<string> {
+    return Promise.resolve(this.contentDiv.innerHTML!);
   }
 
   public setContent(content: string): void {
