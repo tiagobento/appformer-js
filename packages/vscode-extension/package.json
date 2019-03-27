@@ -1,0 +1,35 @@
+{
+	"name": "vscode-extension",
+	"displayName": "KIE Submarine :: VsCode Extension",
+	"description": "",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "1.32.3"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/extension.js",
+	"contributes": {},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"build": "npm run compile",
+		"compile": "webpack",
+		"watch": ""
+	},
+	"devDependencies": {
+		"@types/mocha": "2.2.42",
+		"@types/node": "10.12.21",
+		"tslint": "5.12.1",
+		"typescript": "3.3.1",
+		"webpack": "4.15.1",
+		"webpack-cli": "3.0.8"
+	},
+	"dependencies": {
+		"@types/vscode": "^1.32.0",
+		"vscode": "1.1.28"
+	}
+}

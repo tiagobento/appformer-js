@@ -15,7 +15,7 @@
  */
 
 import { AppFormerSubmarine } from "appformer-js-submarine";
-import { AppFormerGwtEditor, BusinessCentralClientEditorFactory } from "./vscode/AppFormerGwtEditor";
+import { AppFormerGwtEditor, BusinessCentralClientEditorFactory } from "./vscode-ext2/AppFormerGwtEditor";
 
 //Exposed API of AppFormerGwt
 declare global {
