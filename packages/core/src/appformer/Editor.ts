@@ -56,7 +56,7 @@ export abstract class Editor extends Component {
     //
   }
 
-  public abstract setContent(content: string): void;
+  public abstract setContent(content: string): Promise<void>;
 
   public abstract getContent(): Promise<string>;
 

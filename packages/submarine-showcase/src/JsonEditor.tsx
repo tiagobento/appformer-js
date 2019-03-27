@@ -26,8 +26,9 @@ export class JsonEditor extends AppFormer.Editor {
     return this.self.getContent();
   }
 
-  public setContent(content: string): void {
+  public setContent(content: string): Promise<void> {
     this.self.setContent(content);
+    return Promise.resolve();
   }
 }
 

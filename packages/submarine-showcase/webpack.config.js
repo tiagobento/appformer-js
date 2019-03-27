@@ -22,11 +22,12 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    index: "./src/index.tsx"
+    index: "./src/index.tsx",
+    "index-vscode": "./src/index-vscode.tsx"
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
-    filename: "index.js",
+    filename: "[name].js",
     library: "AppFormer.SubmarineShowcase",
     libraryTarget: "umd",
     umdNamedDefine: true
@@ -56,6 +57,7 @@ module.exports = {
     ]
   },
   devServer: {
+    disableHostCheck: true,
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",

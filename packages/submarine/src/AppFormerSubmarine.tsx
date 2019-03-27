@@ -19,10 +19,10 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
     throw new Error("Screens are not supported by this AppFormer.js distribution.");
   }
 
-  public registerEditor(Editor: { new (): AppFormer.Editor }) {
+  public registerEditor(editorFactory: () => AppFormer.Editor) {
     //TODO: No-op when same Editor class?
 
-    const editor = new Editor();
+    const editor = editorFactory.apply(this);
     const previousEditor = this.getEditor();
 
     if (previousEditor) {
