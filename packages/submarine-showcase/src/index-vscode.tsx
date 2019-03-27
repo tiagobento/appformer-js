@@ -28,7 +28,11 @@ declare global {
 
 //Exposed API of Visual Studio Code
 declare global {
-  export const acquireVsCodeApi: () => any;
+  export const acquireVsCodeApi: () => VsCodeApi;
+}
+
+interface VsCodeApi {
+  postMessage(message: any): any;
 }
 
 function loadGwtEditor(gwtModuleName: string): Promise<void> {
@@ -58,13 +62,21 @@ function handleEvents(vscode: any, appFormer: AppFormerSubmarine, event: any) {
   }
 }
 
-AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
-  let vscode: any;
+function initVsCodeApi() {
+  const noOpVsCodeApi = {
+    postMessage: (...args: any[]) => {
+      /**/
+    }
+  };
+
   try {
-    vscode = acquireVsCodeApi ? acquireVsCodeApi() : undefined;
+    return acquireVsCodeApi ? acquireVsCodeApi() : noOpVsCodeApi;
   } catch (e) {
-    vscode = { postMessage: (...args: any[]) => { /**/ } };
+    return noOpVsCodeApi;
   }
+}
+AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
+  const vscode = initVsCodeApi();
 
   window.erraiBusApplicationRoot = "http://localhost:8080";
   window.appFormerGwtFinishedLoading = () => {
