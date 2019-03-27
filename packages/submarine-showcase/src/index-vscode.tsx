@@ -41,7 +41,7 @@ function loadGwtEditor(gwtModuleName: string): Promise<void> {
 }
 
 function handleEvents(vscode: any, appFormer: AppFormerSubmarine, event: any) {
-  const message = event.data; // The JSON data our extension sent
+  const message = event.data; // The JSON data VsCode sent
   const editor = appFormer.getEditor();
 
   if (!editor) {
