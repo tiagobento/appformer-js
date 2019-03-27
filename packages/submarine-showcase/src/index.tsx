@@ -1,10 +1,10 @@
 import * as AppFormer from "appformer-js-core";
-import { JsonEditor } from "./JsonEditor";
+import { AppFormerJsonEditor } from "./AppFormerJsonEditor";
 import { AppFormerSubmarine } from "appformer-js-submarine";
 
 //This function can be replaced by an async import
 function asyncLoadReactEditorModule(): Promise<{ JsonEditor: { new (): AppFormer.Editor } }> {
-  return new Promise(res => setTimeout(() => res({ JsonEditor: JsonEditor }), 1000));
+  return new Promise(res => setTimeout(() => res({ JsonEditor: AppFormerJsonEditor }), 1000));
 }
 
 AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {

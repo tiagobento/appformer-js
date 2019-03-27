@@ -1,17 +1,17 @@
 import * as React from "react";
 import { FormEvent } from "react";
 import * as AppFormer from "appformer-js-core";
-import JSONEditor from "JsonEditor";
+import JSONEditor from "jsoneditor";
 import { AppContext, AppContextDef } from "appformer-js-submarine";
 
-export class JsonEditor extends AppFormer.Editor {
+export class AppFormerJsonEditor extends AppFormer.Editor {
   public af_componentTitle: string;
   public self: MyJsonEditor;
 
   constructor() {
-    super("xml-editor");
+    super("json-editor");
     this.af_isReact = true;
-    this.af_componentTitle = "XML Editor";
+    this.af_componentTitle = "JSON Editor";
   }
 
   public af_componentRoot(): AppFormer.Element {
