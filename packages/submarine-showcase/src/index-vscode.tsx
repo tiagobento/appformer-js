@@ -17,8 +17,6 @@
 import { AppFormerSubmarine } from "appformer-js-submarine";
 import { AppFormerGwtEditor, BusinessCentralClientEditorFactory } from "./vscode/AppFormerGwtEditor";
 
-const baseDomain = "http://localhost:9000";
-
 //Exposed API of AppFormerGwt
 declare global {
   interface Window {
@@ -35,7 +33,7 @@ declare global {
 
 function loadGwtEditor(gwtModuleName: string): Promise<void> {
   const script = document.createElement("script");
-  script.src = `${baseDomain}/${gwtModuleName}/${gwtModuleName}.nocache.js`;
+  script.src = `${window.erraiBusApplicationRoot}/${gwtModuleName}/${gwtModuleName}.nocache.js`;
   document.body.appendChild(script);
   return Promise.resolve();
 }
@@ -49,28 +47,33 @@ function handleEvents(vscode: any, appFormer: AppFormerSubmarine, event: any) {
     return;
   }
 
+  console.info("index: " + message.type);
   switch (message.type) {
-    case "SET_CONTENT":
-      editor.setContent(message.content);
+    case "RETURN_SET_CONTENT":
+      editor.setContent(message.data);
       break;
-    case "GET_CONTENT":
-      editor.getContent().then(content => vscode.postMessage({ type: "CONTENT", content: content }));
+    case "REQUEST_GET_CONTENT":
+      editor.getContent().then(content => vscode.postMessage({ type: "RETURN_GET_CONTENT", data: content }));
       break;
   }
 }
 
 AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
-  const vscode = acquireVsCodeApi();
+  let vscode: any;
+  try {
+    vscode = acquireVsCodeApi ? acquireVsCodeApi() : undefined;
+  } catch (e) {
+    vscode = { postMessage: (...args: any[]) => {} };
+  }
+  
   window.erraiBusApplicationRoot = "http://localhost:8080";
   window.appFormerGwtFinishedLoading = () => {
-    appFormer.registerEditor(() => new AppFormerGwtEditor("EditorPresenter"));
+    appFormer
+      .registerEditor(() => new AppFormerGwtEditor("EditorPresenter"))
+      .then(() => vscode.postMessage({ type: "REQUEST_SET_CONTENT" }));
   };
 
   return loadGwtEditor("org.uberfire.editor.StandaloneEditor").then(() => {
     window.addEventListener("message", event => handleEvents(vscode, appFormer, event));
-
-    //FIXME: Remove this line. This method will be called by
-    //       AppFormerGwt when its startup blockers are all removed.
-    setTimeout(() => window.appFormerGwtFinishedLoading(), 6000);
   });
 });
