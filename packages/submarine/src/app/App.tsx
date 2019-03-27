@@ -43,8 +43,7 @@ export class App extends React.Component<Props, State> {
   public render() {
     return (
       <>
-        <div className={"pf-c-background-image"} />
-        <div className={"pf-c-page"}>
+        <div>
           <AppContext.Provider
             value={{
               title: this.state.title,

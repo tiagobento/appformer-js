@@ -63,9 +63,9 @@ AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
   try {
     vscode = acquireVsCodeApi ? acquireVsCodeApi() : undefined;
   } catch (e) {
-    vscode = { postMessage: (...args: any[]) => {} };
+    vscode = { postMessage: (...args: any[]) => { /**/ } };
   }
-  
+
   window.erraiBusApplicationRoot = "http://localhost:8080";
   window.appFormerGwtFinishedLoading = () => {
     appFormer

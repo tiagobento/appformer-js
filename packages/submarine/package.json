@@ -10,11 +10,11 @@
     "url": "https://github.com/kiegroup/appformer-js.git"
   },
   "dependencies": {
-    "@patternfly/patternfly": "^1.0.227",
-    "@types/jsoneditor": "^5.28.0",
+    "@patternfly/patternfly": "1.0.227",
+    "@types/jsoneditor": "5.28.0",
     "appformer-js-core": "0.0.0",
-    "@types/react": "^16.8.8",
-    "@types/react-dom": "^16.8.2",
+    "@types/react": "16.8.8",
+    "@types/react-dom": "16.8.2",
     "react": "16.8.0",
     "react-dom": "16.8.4"
   },
@@ -34,7 +34,7 @@
     "outputDirectory": "./target"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.11",
+    "@types/jest": "24.0.11",
     "babel-core": "6.26.3",
     "babel-loader": "7.1.5",
     "babel-preset-env": "1.7.0",
@@ -54,6 +54,6 @@
     "watch": "1.0.2",
     "webpack": "4.15.1",
     "webpack-cli": "3.0.8",
-    "webpack-dev-server": "^3.2.1"
+    "webpack-dev-server": "3.2.1"
   }
 }
