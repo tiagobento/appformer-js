@@ -6,6 +6,7 @@ import { App } from "./app/App";
 
 export class AppFormerSubmarine implements AppFormer.AppFormer {
   private app?: App;
+  private vscode?: VsCodeExtensionApi;
 
   public goTo(af_componentId: string, args?: Map<string, any>): void {
     throw new Error("Go-tos are not supported by this AppFormer.js distribution.");
@@ -17,6 +18,11 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
 
   public registerScreen(screen: AppFormer.Screen): void {
     throw new Error("Screens are not supported by this AppFormer.js distribution.");
+  }
+
+  public handleMessages(handler: (appFormer: AppFormerSubmarine, event: any) => Promise<void>) {
+    window.addEventListener("message", event => handler(this, event));
+    return Promise.resolve();
   }
 
   public registerEditor(editorFactory: () => AppFormer.Editor) {
@@ -48,6 +54,30 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
     return this.app!.getEditor();
   }
 
+  private initVsCodeApi() {
+    const noOpVsCodeApi = {
+      postMessage: <T extends {}>(message: AppFormerBusMessage<T>) => {
+        console.info(`MOCK: Sent message:`);
+        console.info(message);
+      }
+    };
+
+    try {
+      return acquireVsCodeApi ? acquireVsCodeApi() : noOpVsCodeApi;
+    } catch (e) {
+      return noOpVsCodeApi;
+    }
+  }
+
+  public postMessage<T>(message: AppFormerBusMessage<T>) {
+    if (!this.vscode) {
+      this.vscode = this.initVsCodeApi();
+    }
+
+    this.vscode.postMessage(message);
+    return Promise.resolve();
+  }
+
   public static init(container: HTMLElement): Promise<AppFormerSubmarine> {
     return Promise.resolve().then(() => {
       const appFormerSubmarine = new AppFormerSubmarine();
@@ -56,4 +86,19 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
       ).then(() => (window.AppFormer.Submarine = appFormerSubmarine));
     });
   }
+}
+
+
+//Exposed API of Visual Studio Code
+declare global {
+  export const acquireVsCodeApi: () => VsCodeExtensionApi;
+}
+
+interface VsCodeExtensionApi {
+  postMessage<T>(message: AppFormerBusMessage<T>): any;
+}
+
+export interface AppFormerBusMessage<T> {
+   type: string;
+   data: T;
 }

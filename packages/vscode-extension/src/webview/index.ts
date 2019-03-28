@@ -26,15 +26,6 @@ declare global {
   }
 }
 
-//Exposed API of Visual Studio Code
-declare global {
-  export const acquireVsCodeApi: () => VsCodeExtensionApi;
-}
-
-interface VsCodeExtensionApi {
-  postMessage(message: any): any;
-}
-
 function loadGwtEditor(gwtModuleName: string): Promise<void> {
   const script = document.createElement("script");
   script.src = `${window.erraiBusApplicationRoot}/${gwtModuleName}/${gwtModuleName}.nocache.js`;
@@ -42,36 +33,22 @@ function loadGwtEditor(gwtModuleName: string): Promise<void> {
   return Promise.resolve();
 }
 
-function handleMessages(vscode: any, appFormer: AppFormerSubmarine, event: any) {
-  const message = event.data; // The JSON data VsCode sent
+function messageHandler(appFormer: AppFormerSubmarine, event: any) {
+  const message = event.data;
   const editor = appFormer.getEditor();
 
   if (!editor) {
     console.info(`Message was received when no editor was registered: "${message.type}"`);
-    return;
+    return Promise.resolve();
   }
 
   switch (message.type) {
     case "RETURN_SET_CONTENT":
-      editor.setContent(message.data);
-      break;
+      return editor.setContent(message.data);
     case "REQUEST_GET_CONTENT":
-      editor.getContent().then(content => vscode.postMessage({ type: "RETURN_GET_CONTENT", data: content }));
-      break;
-  }
-}
-
-function initVsCodeApi() {
-  const noOpVsCodeApi = {
-    postMessage: (message: any) => {
-      /**/
-    }
-  };
-
-  try {
-    return acquireVsCodeApi ? acquireVsCodeApi() : noOpVsCodeApi;
-  } catch (e) {
-    return noOpVsCodeApi;
+      return editor.getContent().then(content => appFormer.postMessage({ type: "RETURN_GET_CONTENT", data: content }));
+    default:
+      return Promise.resolve();
   }
 }
 
@@ -86,18 +63,16 @@ function removeWorkbenchHeaderPanel() {
 }
 
 AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
-
-  const vscode = initVsCodeApi();
-
   window.erraiBusApplicationRoot = "http://localhost:8080";
   window.appFormerGwtFinishedLoading = () => {
     removeWorkbenchHeaderPanel();
     appFormer
+      //FIXME: Make request to appformer-js-router with file path as argument.
+      //FIXME: Use data received from appformer-js-router to create AppFormerGwtEditor.
       .registerEditor(() => new AppFormerGwtEditor("EditorPresenter"))
-      .then(() => vscode.postMessage({ type: "REQUEST_SET_CONTENT" }));
+      .then(() => appFormer.handleMessages(messageHandler))
+      .then(() => appFormer.postMessage({ type: "REQUEST_SET_CONTENT", data: undefined }));
   };
 
-  return loadGwtEditor("org.uberfire.editor.StandaloneEditor").then(() => {
-    window.addEventListener("message", event => handleMessages(vscode, appFormer, event));
-  });
+  return loadGwtEditor("org.uberfire.editor.StandaloneEditor");
 });
