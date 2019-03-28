@@ -18,7 +18,7 @@ import * as React from "react";
 import * as AppFormer from "appformer-js-core";
 
 export interface BusinessCentralClientEditorFactory {
-  newInstance(): BusinessCentralClientEditor;
+  get(): BusinessCentralClientEditor;
 }
 
 export interface BusinessCentralClientEditor {
@@ -37,7 +37,7 @@ export class AppFormerGwtEditor extends AppFormer.Editor {
     super("appformer-gwt-editor");
     this.af_componentTitle = "AppFormerGwtEditor";
     this.af_isReact = true;
-    this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.newInstance();
+    this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.get();
   }
 
   public af_componentRoot(): AppFormer.Element {

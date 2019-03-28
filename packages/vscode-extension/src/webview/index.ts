@@ -80,11 +80,11 @@ AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
   const vscode = initVsCodeApi();
 
   window.erraiBusApplicationRoot = "http://localhost:8080";
-  window.appFormerGwtFinishedLoading = () => {
+  setTimeout(() => {
     appFormer
       .registerEditor(() => new AppFormerGwtEditor("EditorPresenter"))
       .then(() => vscode.postMessage({ type: "REQUEST_SET_CONTENT" }));
-  };
+  }, 6000);
 
   return loadGwtEditor("org.uberfire.editor.StandaloneEditor").then(() => {
     window.addEventListener("message", event => handleMessages(vscode, appFormer, event));
