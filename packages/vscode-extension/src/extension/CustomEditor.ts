@@ -119,12 +119,10 @@ export class CustomEditor {
   }
 
   private async setupWebviewContent(context: vscode.ExtensionContext) {
-    console.info("AEW");
 
-    const onDiskPath = vscode.Uri.file(__path.join(context.extensionPath, "dist", "webview", "index.js"));
-    const indexPath = onDiskPath.with({ scheme: "vscode-resource" });
-
-    console.info(indexPath.toString());
+    const webviewIndexPath = vscode.Uri.file(__path.join(context.extensionPath, "dist", "webview", "index.js")).with({
+      scheme: "vscode-resource"
+    });
 
     this._panel.webview.html = `
         <!DOCTYPE html>
@@ -153,7 +151,7 @@ export class CustomEditor {
             <script src="http://localhost:8080/org.uberfire.editor.StandaloneEditor/ace/ace.js" type="text/javascript" charset="utf-8"></script>
             <script src="http://localhost:8080/org.uberfire.editor.StandaloneEditor/ace/theme-chrome.js" type="text/javascript" charset="utf-8"></script>
             
-            <script src="${indexPath.toString()}"></script>
+            <script src="${webviewIndexPath.toString()}"></script>
             </body>
         </html>
     `;
