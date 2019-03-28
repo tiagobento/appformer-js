@@ -75,12 +75,23 @@ function initVsCodeApi() {
   }
 }
 
+function removeWorkbenchHeaderPanel() {
+  const elementById = document.getElementById("workbenchHeaderPanel");
+  if (elementById) {
+    const parentNode = elementById.parentNode as HTMLElement;
+    if (parentNode) {
+      parentNode.remove();
+    }
+  }
+}
+
 AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
 
   const vscode = initVsCodeApi();
 
   window.erraiBusApplicationRoot = "http://localhost:8080";
   window.appFormerGwtFinishedLoading = () => {
+    removeWorkbenchHeaderPanel();
     appFormer
       .registerEditor(() => new AppFormerGwtEditor("EditorPresenter"))
       .then(() => vscode.postMessage({ type: "REQUEST_SET_CONTENT" }));
