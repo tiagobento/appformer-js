@@ -51,7 +51,6 @@ function handleMessages(vscode: any, appFormer: AppFormerSubmarine, event: any) 
     return;
   }
 
-  console.info("index: " + message.type);
   switch (message.type) {
     case "RETURN_SET_CONTENT":
       editor.setContent(message.data);
@@ -77,6 +76,7 @@ function initVsCodeApi() {
 }
 
 AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
+
   const vscode = initVsCodeApi();
 
   window.erraiBusApplicationRoot = "http://localhost:8080";

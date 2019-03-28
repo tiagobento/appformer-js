@@ -1,0 +1,1 @@
+/Users/tiagobento/redhat/appformer-js/packages/vscode-extension/dist/webview/index.js

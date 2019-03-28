@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as React from "react";
 import * as AppFormer from "appformer-js-core";
 
 export interface BusinessCentralClientEditorFactory {
@@ -21,7 +22,6 @@ export interface BusinessCentralClientEditorFactory {
 }
 
 export interface BusinessCentralClientEditor {
-  getView(): HTMLElement;
   getContent(): Promise<string>;
   setContent(content: string): void;
   isDirty(): boolean;
@@ -36,12 +36,13 @@ export class AppFormerGwtEditor extends AppFormer.Editor {
   constructor(erraiCdiBeanName: string) {
     super("appformer-gwt-editor");
     this.af_componentTitle = "AppFormerGwtEditor";
-    this.af_isReact = false;
+    this.af_isReact = true;
     this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.newInstance();
   }
 
   public af_componentRoot(): AppFormer.Element {
-    return this.businessCentralClientEditor.getView();
+    //Component will already be rendered when the script loads.
+    return <></>;
   }
 
   public getContent(): Promise<string> {
