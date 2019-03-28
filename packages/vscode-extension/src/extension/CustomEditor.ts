@@ -51,14 +51,16 @@ export class CustomEditor {
         if (!textEditor) {
           return;
         }
-
-        if (textEditor.document.languageId !== "dmn") {
-          return;
+        
+        const languages = vscode.extensions.getExtension("undefined_publisher.appformer-js-vscode-extension")!.packageJSON.contributes.languages;
+        for (const language of languages) {
+          if (language.extensions.indexOf("." + textEditor.document.languageId) > -1) {
+            vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
+              return CustomEditor.create(textEditor.document.uri.path, context);
+            });
+            break;
+          }
         }
-
-        vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
-          return CustomEditor.create(textEditor.document.uri.path, context);
-        });
       }
     );
 
