@@ -22,7 +22,7 @@ export class CustomEditor {
   public static activeCustomEditor: CustomEditor | undefined;
 
   private _panel: vscode.WebviewPanel;
-  private _path: string;
+  private readonly _path: string;
 
   private constructor(panel: vscode.WebviewPanel, path: string) {
     this._panel = panel;
@@ -87,7 +87,6 @@ export class CustomEditor {
     context.subscriptions.push(
       this._panel.webview.onDidReceiveMessage(
         (message: any) => {
-          console.info("vscode: " + message.type);
           switch (message.type) {
             case "RETURN_GET_CONTENT":
               fs.writeFileSync(this._path, message.data);
@@ -137,7 +136,7 @@ export class CustomEditor {
                 }
                 </style>
     
-                <title>KIE Editor</title>
+                <title></title>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -147,6 +146,7 @@ export class CustomEditor {
             <body>
     
             <div id="app"></div>
+            
             
             <script src="http://localhost:8080/org.uberfire.editor.StandaloneEditor/ace/ace.js" type="text/javascript" charset="utf-8"></script>
             <script src="http://localhost:8080/org.uberfire.editor.StandaloneEditor/ace/theme-chrome.js" type="text/javascript" charset="utf-8"></script>

@@ -42,7 +42,7 @@ function loadGwtEditor(gwtModuleName: string): Promise<void> {
   return Promise.resolve();
 }
 
-function handleEvents(vscode: any, appFormer: AppFormerSubmarine, event: any) {
+function handleMessages(vscode: any, appFormer: AppFormerSubmarine, event: any) {
   const message = event.data; // The JSON data VsCode sent
   const editor = appFormer.getEditor();
 
@@ -87,6 +87,6 @@ AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
   };
 
   return loadGwtEditor("org.uberfire.editor.StandaloneEditor").then(() => {
-    window.addEventListener("message", event => handleEvents(vscode, appFormer, event));
+    window.addEventListener("message", event => handleMessages(vscode, appFormer, event));
   });
 });
