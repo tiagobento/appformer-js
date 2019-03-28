@@ -18,15 +18,10 @@ const path = require("path");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
-module.exports = {
-  target: "node",
-  mode: "development",
-  devtool: "inline-source-map",
-  entry: {
-    "extension": "./src/extension.ts"
-  },
+const commonConfig = {
+  mode: "production",
   output: {
-    path: path.resolve(__dirname, "./out"),
+    path: path.resolve(__dirname, "./dist"),
     filename: "[name].js",
     library: "AppFormer.VsCode",
     libraryTarget: "umd",
@@ -36,7 +31,6 @@ module.exports = {
     vscode: "commonjs vscode"
   },
   plugins: [
-    new CleanWebpackPlugin(["out"]),
     new CircularDependencyPlugin({
       exclude: /node_modules/, // exclude detection of files based on a RegExp
       failOnError: false, // add errors to webpack instead of warnings
@@ -64,3 +58,26 @@ module.exports = {
     modules: [path.resolve("../../node_modules"), path.resolve("./node_modules"), path.resolve("./src")]
   }
 };
+
+module.exports = [
+  {
+    ...commonConfig,
+    target: "node",
+    entry: {
+      "extension/extension": "./src/extension/extension.ts"
+    },
+    plugins: [
+      new CleanWebpackPlugin(["dist/extension"]),
+    ]
+  },
+  {
+    ...commonConfig,
+    target: "web",
+    entry: {
+      "webview/index": "./src/webview/index.ts"
+    },
+    plugins: [
+      new CleanWebpackPlugin(["dist/webview"]),
+    ]
+  }
+];

@@ -22,8 +22,7 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    index: "./src/index.tsx",
-    "index-vscode": "./src/index-vscode.tsx"
+    index: "./src/index.tsx"
   },
   output: {
     path: path.resolve(__dirname, "./dist"),

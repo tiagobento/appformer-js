@@ -1,5 +1,22 @@
+/*
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import * as vscode from "vscode";
 import * as fs from "fs";
+import * as __path from "path";
 
 export class CustomEditor {
   public static activeCustomEditor: CustomEditor | undefined;
@@ -25,7 +42,7 @@ export class CustomEditor {
 
     CustomEditor.activeCustomEditor = new CustomEditor(panel, path);
     CustomEditor.activeCustomEditor.setupPanelEvents(context);
-    return CustomEditor.activeCustomEditor.setupWebviewContent(path);
+    return CustomEditor.activeCustomEditor.setupWebviewContent(context);
   }
 
   public static registerCommand(context: vscode.ExtensionContext) {
@@ -40,7 +57,7 @@ export class CustomEditor {
         }
 
         vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
-          CustomEditor.create(textEditor.document.uri.path, context);
+          return CustomEditor.create(textEditor.document.uri.path, context);
         });
       }
     );
@@ -49,7 +66,7 @@ export class CustomEditor {
   }
 
   public static registerCustomSaveCommand(context: vscode.ExtensionContext) {
-    var customSaveCommand = vscode.commands.registerCommand("workbench.action.files.save", function() {
+    const customSaveCommand = vscode.commands.registerCommand("workbench.action.files.save", function() {
       // If a custom editor is active, its content is saved manually.
       if (CustomEditor.activeCustomEditor && CustomEditor.activeCustomEditor._path.length > 0) {
         CustomEditor.activeCustomEditor._panel.webview.postMessage({ type: "REQUEST_GET_CONTENT" });
@@ -101,7 +118,14 @@ export class CustomEditor {
     );
   }
 
-  private async setupWebviewContent(path: string) {
+  private async setupWebviewContent(context: vscode.ExtensionContext) {
+    console.info("AEW");
+
+    const onDiskPath = vscode.Uri.file(__path.join(context.extensionPath, "dist", "webview", "index.js"));
+    const indexPath = onDiskPath.with({ scheme: "vscode-resource" });
+
+    console.info(indexPath.toString());
+
     this._panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -129,7 +153,7 @@ export class CustomEditor {
             <script src="http://localhost:8080/org.uberfire.editor.StandaloneEditor/ace/ace.js" type="text/javascript" charset="utf-8"></script>
             <script src="http://localhost:8080/org.uberfire.editor.StandaloneEditor/ace/theme-chrome.js" type="text/javascript" charset="utf-8"></script>
             
-            <script src="http://localhost:9000/index-vscode.js"></script>
+            <script src="${indexPath.toString()}"></script>
             </body>
         </html>
     `;

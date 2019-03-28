@@ -15,7 +15,7 @@
  */
 
 import { AppFormerSubmarine } from "appformer-js-submarine";
-import { AppFormerGwtEditor, BusinessCentralClientEditorFactory } from "./vscode-ext2/AppFormerGwtEditor";
+import { AppFormerGwtEditor, BusinessCentralClientEditorFactory } from "./AppFormerGwtEditor";
 
 //Exposed API of AppFormerGwt
 declare global {
@@ -28,10 +28,10 @@ declare global {
 
 //Exposed API of Visual Studio Code
 declare global {
-  export const acquireVsCodeApi: () => VsCodeApi;
+  export const acquireVsCodeApi: () => VsCodeExtensionApi;
 }
 
-interface VsCodeApi {
+interface VsCodeExtensionApi {
   postMessage(message: any): any;
 }
 
@@ -64,7 +64,7 @@ function handleEvents(vscode: any, appFormer: AppFormerSubmarine, event: any) {
 
 function initVsCodeApi() {
   const noOpVsCodeApi = {
-    postMessage: (...args: any[]) => {
+    postMessage: (message: any) => {
       /**/
     }
   };
@@ -75,6 +75,7 @@ function initVsCodeApi() {
     return noOpVsCodeApi;
   }
 }
+
 AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
   const vscode = initVsCodeApi();
 
