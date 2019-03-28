@@ -13,7 +13,20 @@
 		"*"
 	],
 	"main": "./dist/extension/extension.js",
-	"contributes": {},
+	"contributes": {
+		"languages": [
+			{
+				"id": "dmn",
+				"extensions": [
+					".dmn"
+				],
+				"aliases": [
+					"dmn",
+					"Decision Model Notation"
+				]
+			}
+		]
+	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"build": "npm run compile",

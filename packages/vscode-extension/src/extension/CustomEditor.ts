@@ -52,7 +52,7 @@ export class CustomEditor {
           return;
         }
 
-        if (textEditor.document.languageId !== "json") {
+        if (textEditor.document.languageId !== "dmn") {
           return;
         }
 
