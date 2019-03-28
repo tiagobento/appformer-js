@@ -69,10 +69,10 @@ AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
     appFormer
       //FIXME: Make request to appformer-js-router with file path as argument.
       //FIXME: Use data received from appformer-js-router to create AppFormerGwtEditor.
-      .registerEditor(() => new AppFormerGwtEditor("EditorPresenter"))
+      .registerEditor(() => new AppFormerGwtEditor("DMNDiagramEditor"))
       .then(() => appFormer.handleMessages(messageHandler))
       .then(() => appFormer.postMessage({ type: "REQUEST_SET_CONTENT", data: undefined }));
   };
 
-  return loadGwtEditor("org.uberfire.editor.StandaloneEditor");
+  return loadGwtEditor("org.kie.workbench.common.dmn.showcase.DMNShowcase");
 });
