@@ -17,6 +17,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as __path from "path";
+import { LanguageData } from "../shared/LanguageData";
 
 export class CustomEditor {
   public static activeCustomEditor: CustomEditor | undefined;
@@ -51,8 +52,9 @@ export class CustomEditor {
         if (!textEditor) {
           return;
         }
-        
-        const languages = vscode.extensions.getExtension("undefined_publisher.appformer-js-vscode-extension")!.packageJSON.contributes.languages;
+
+        const languages = vscode.extensions.getExtension("undefined_publisher.appformer-js-vscode-extension")!
+          .packageJSON.contributes.languages;
         for (const language of languages) {
           if (language.extensions.indexOf("." + textEditor.document.languageId) > -1) {
             vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
@@ -85,11 +87,41 @@ export class CustomEditor {
     context.subscriptions.push(customSaveCommand);
   }
 
+  private router = new Map<string, LanguageData>([
+    [
+      "dmn",
+      {
+        editorId: "DMNDiagramEditor",
+        gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
+        erraiDomain: "http://localhost:8080",
+        resources: [
+          {
+            type: "css",
+            paths: ["http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css"]
+          },
+          {
+            type: "js",
+            paths: [
+              "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js",
+              "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js",
+              "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js"
+            ]
+          }
+        ]
+      }
+    ]
+  ]);
+
   private setupPanelEvents(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       this._panel.webview.onDidReceiveMessage(
         (message: any) => {
           switch (message.type) {
+            case "REQUEST_LANGUAGE":
+              const split = this._path.split(".");
+              const languageData = this.router.get(split[split.length - 1]);
+              this._panel.webview.postMessage({ type: "RETURN_LANGUAGE", data: languageData });
+              break;
             case "RETURN_GET_CONTENT":
               fs.writeFileSync(this._path, message.data);
               vscode.window.setStatusBarMessage('Saved successfully!', 3000);
@@ -121,7 +153,6 @@ export class CustomEditor {
   }
 
   private async setupWebviewContent(context: vscode.ExtensionContext) {
-
     const webviewIndexPath = vscode.Uri.file(__path.join(context.extensionPath, "dist", "webview", "index.js")).with({
       scheme: "vscode-resource"
     });
@@ -143,17 +174,9 @@ export class CustomEditor {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        
-                <link rel="stylesheet" type="text/css" href="http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css">
             </head>
             <body>
-    
             <div id="app"></div>
-            
-            
-            <script src="http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-            <script src="http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js" type="text/javascript" charset="utf-8"></script>
-            
             <script src="${webviewIndexPath.toString()}"></script>
             </body>
         </html>

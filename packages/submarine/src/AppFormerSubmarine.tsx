@@ -20,7 +20,9 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
     throw new Error("Screens are not supported by this AppFormer.js distribution.");
   }
 
-  public handleMessages(handler: (appFormer: AppFormerSubmarine, event: any) => Promise<void>) {
+  public handleMessages(
+    handler: (appFormer: AppFormerSubmarine, event: { data: AppFormerBusMessage<any> }) => Promise<void>
+  ) {
     window.addEventListener("message", event => handler(this, event));
     return Promise.resolve();
   }
@@ -88,7 +90,6 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
   }
 }
 
-
 //Exposed API of Visual Studio Code
 declare global {
   export const acquireVsCodeApi: () => VsCodeExtensionApi;
@@ -99,6 +100,6 @@ interface VsCodeExtensionApi {
 }
 
 export interface AppFormerBusMessage<T> {
-   type: string;
-   data: T;
+  type: string;
+  data: T;
 }

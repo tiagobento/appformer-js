@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { AppFormerSubmarine } from "appformer-js-submarine";
+import { AppFormerBusMessage, AppFormerSubmarine } from "appformer-js-submarine";
 import { AppFormerGwtEditor, BusinessCentralClientEditorFactory } from "./AppFormerGwtEditor";
+import { LanguageData, Resource } from "../shared/LanguageData";
 
 //Exposed API of AppFormerGwt
 declare global {
@@ -33,25 +34,6 @@ function loadGwtEditor(gwtModuleName: string): Promise<void> {
   return Promise.resolve();
 }
 
-function messageHandler(appFormer: AppFormerSubmarine, event: any) {
-  const message = event.data;
-  const editor = appFormer.getEditor();
-
-  if (!editor) {
-    console.info(`Message was received when no editor was registered: "${message.type}"`);
-    return Promise.resolve();
-  }
-
-  switch (message.type) {
-    case "RETURN_SET_CONTENT":
-      return editor.setContent(message.data);
-    case "REQUEST_GET_CONTENT":
-      return editor.getContent().then(content => appFormer.postMessage({ type: "RETURN_GET_CONTENT", data: content }));
-    default:
-      return Promise.resolve();
-  }
-}
-
 function removeWorkbenchHeaderPanel() {
   const elementById = document.getElementById("workbenchHeaderPanel");
   if (elementById) {
@@ -62,17 +44,66 @@ function removeWorkbenchHeaderPanel() {
   }
 }
 
-AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
-  window.erraiBusApplicationRoot = "http://localhost:8080";
-  window.appFormerGwtFinishedLoading = () => {
-    removeWorkbenchHeaderPanel();
-    appFormer
-      //FIXME: Make request to appformer-js-router with file path as argument.
-      //FIXME: Use data received from appformer-js-router to create AppFormerGwtEditor.
-      .registerEditor(() => new AppFormerGwtEditor("DMNDiagramEditor"))
-      .then(() => appFormer.handleMessages(messageHandler))
-      .then(() => appFormer.postMessage({ type: "REQUEST_SET_CONTENT", data: undefined }));
-  };
+function messageHandler(appFormer: AppFormerSubmarine, event: { data: AppFormerBusMessage<any> }) {
+  const message = event.data;
+  const editor = appFormer.getEditor();
 
-  return loadGwtEditor("org.kie.workbench.common.dmn.showcase.DMNShowcase");
+  function loadResource(resource: Resource) {
+    resource.paths.forEach(path => {
+      switch (resource.type) {
+        case "css":
+          const link = document.createElement("link");
+          link.href = path;
+          link.rel = "text/css";
+          document.body.appendChild(link);
+          break;
+        case "js":
+          const script = document.createElement("script");
+          script.src = path;
+          script.type = "text/javascript";
+          document.body.appendChild(script);
+          break;
+        default:
+      }
+    });
+  }
+
+  switch (message.type) {
+    case "RETURN_LANGUAGE":
+      const languageData = message.data as LanguageData;
+      window.erraiBusApplicationRoot = languageData.erraiDomain;
+      window.appFormerGwtFinishedLoading = () => {
+        Promise.resolve()
+          .then(() => removeWorkbenchHeaderPanel())
+          .then(() => appFormer.registerEditor(() => new AppFormerGwtEditor(languageData.editorId)))
+          .then(() => appFormer.postMessage({ type: "REQUEST_SET_CONTENT", data: undefined }));
+      };
+
+      languageData.resources.forEach(resource => {
+        loadResource(resource);
+      });
+
+      return Promise.resolve();
+    case "RETURN_SET_CONTENT":
+      if (!editor) {
+        console.info(`Message was received when no editor was registered: "${message.type}"`);
+        return Promise.resolve();
+      }
+      return editor.setContent(message.data);
+    case "REQUEST_GET_CONTENT":
+      if (!editor) {
+        console.info(`Message was received when no editor was registered: "${message.type}"`);
+        return Promise.resolve();
+      }
+      return editor.getContent().then(content => appFormer.postMessage({ type: "RETURN_GET_CONTENT", data: content }));
+    default:
+      console.info(`Unknown message type received: ${message.type}"`);
+      return Promise.resolve();
+  }
+}
+
+AppFormerSubmarine.init(document.getElementById("app")!).then(appFormer => {
+  appFormer.handleMessages(messageHandler).then(() => {
+    return appFormer.postMessage({ type: "REQUEST_LANGUAGE", data: undefined });
+  });
 });
