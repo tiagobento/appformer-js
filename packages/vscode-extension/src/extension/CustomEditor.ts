@@ -92,7 +92,7 @@ export class CustomEditor {
           switch (message.type) {
             case "RETURN_GET_CONTENT":
               fs.writeFileSync(this._path, message.data);
-              vscode.window.showInformationMessage('Saved successfully!');
+              vscode.window.setStatusBarMessage('Saved successfully!', 3000);
               break;
             case "REQUEST_SET_CONTENT":
               const content = fs.readFileSync(this._path);
