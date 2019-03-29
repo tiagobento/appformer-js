@@ -47,13 +47,13 @@ export class CustomEditor {
   }
 
   public static registerCommand(context: vscode.ExtensionContext) {
-    let openCustomEditorWhenOpeningTextDocumentCommand = vscode.window.onDidChangeActiveTextEditor(
+    const openCustomEditorWhenOpeningTextDocumentCommand = vscode.window.onDidChangeActiveTextEditor(
       (textEditor?: vscode.TextEditor) => {
         if (!textEditor) {
           return;
         }
 
-        const languages = vscode.extensions.getExtension("undefined_publisher.appformer-js-vscode-extension")!
+        const languages = vscode.extensions.getExtension("kiegroup.appformer-js-vscode-extension")!
           .packageJSON.contributes.languages;
         for (const language of languages) {
           if (language.extensions.indexOf("." + textEditor.document.languageId) > -1) {
@@ -124,7 +124,7 @@ export class CustomEditor {
               break;
             case "RETURN_GET_CONTENT":
               fs.writeFileSync(this._path, message.data);
-              vscode.window.setStatusBarMessage('Saved successfully!', 3000);
+              vscode.window.setStatusBarMessage("Saved successfully!", 3000);
               break;
             case "REQUEST_SET_CONTENT":
               const content = fs.readFileSync(this._path);

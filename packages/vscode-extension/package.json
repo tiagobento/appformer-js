@@ -12,6 +12,7 @@
 	"activationEvents": [
 		"*"
 	],
+	"publisher": "kiegroup",
 	"main": "./dist/extension/extension.js",
 	"contributes": {
 		"languages": [
