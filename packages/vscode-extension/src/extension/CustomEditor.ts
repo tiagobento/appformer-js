@@ -47,26 +47,39 @@ export class CustomEditor {
   }
 
   public static registerCommand(context: vscode.ExtensionContext) {
-    const openCustomEditorWhenOpeningTextDocumentCommand = vscode.window.onDidChangeActiveTextEditor(
-      (textEditor?: vscode.TextEditor) => {
+    context.subscriptions.push(
+      vscode.window.onDidChangeActiveTextEditor((textEditor?: vscode.TextEditor) => {
         if (!textEditor) {
           return;
         }
 
-        const languages = vscode.extensions.getExtension("kiegroup.appformer-js-vscode-extension")!
-          .packageJSON.contributes.languages;
-        for (const language of languages) {
-          if (language.extensions.indexOf("." + textEditor.document.languageId) > -1) {
-            vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
-              return CustomEditor.create(textEditor.document.uri.path, context);
-            });
-            break;
-          }
+        if (this.hasLanguage(textEditor)) {
+          this.closeDefaultTextEditorAndOpenCustomWebviewEditor(textEditor, context);
         }
-      }
+      })
+    );
+  }
+
+  private static hasLanguage(textEditor: vscode.TextEditor) {
+    const extension = vscode.extensions.getExtension("kiegroup.appformer-js-vscode-extension");
+    if (!extension) {
+      console.info("Extension configuration not found.");
+    }
+
+    const matchingLanguages = (extension!.packageJSON.contributes.languages as any[]).filter(
+      language => language.extensions.indexOf("." + textEditor.document.languageId) > -1
     );
 
-    context.subscriptions.push(openCustomEditorWhenOpeningTextDocumentCommand);
+    return matchingLanguages.length > 0;
+  }
+
+  private static closeDefaultTextEditorAndOpenCustomWebviewEditor(
+    textEditor: vscode.TextEditor,
+    context: vscode.ExtensionContext
+  ) {
+    vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
+      return CustomEditor.create(textEditor.document.uri.path, context);
+    });
   }
 
   public static registerCustomSaveCommand(context: vscode.ExtensionContext) {
