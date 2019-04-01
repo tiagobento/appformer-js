@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>KIE Submarine :: Desktop App</title>
+        <script>
+            const electron = require("electron");
+            const ipc = electron.ipcRenderer;
+            document.addEventListener("DOMContentLoaded", () => {
+                ipc.send("mainWindowLoaded");
+                ipc.on("spacesList", (event, spaces) => {
+                    let spacesContainer = document.getElementById("spaces-container");
+                    for (let i = 0; i < spaces.length; i++) {
+                        spacesContainer.innerHTML += "Space " + i + ": " + spaces[i].name + " " + spaces[i].content + "<br />";
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id="spaces-container">
+        </div>
+    </body>
+</html>
