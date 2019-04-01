@@ -4,9 +4,18 @@ import * as AppFormer from "appformer-js-core";
 
 import { App } from "./app/App";
 
+//Exposed API of Visual Studio Code
+declare global {
+  export const acquireVsCodeApi: () => AppFormerBusApi;
+}
+
 export class AppFormerSubmarine implements AppFormer.AppFormer {
   private app?: App;
-  private vscode?: VsCodeExtensionApi;
+  private appFormerBusApi: AppFormerBusApi;
+
+  constructor() {
+    this.appFormerBusApi = this.initVsCodeApi();
+  }
 
   public goTo(af_componentId: string, args?: Map<string, any>): void {
     throw new Error("Go-tos are not supported by this AppFormer.js distribution.");
@@ -57,7 +66,7 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
   }
 
   private initVsCodeApi() {
-    const noOpVsCodeApi = {
+    const noAppFormerBusApi = {
       postMessage: <T extends {}>(message: AppFormerBusMessage<T>) => {
         console.info(`MOCK: Sent message:`);
         console.info(message);
@@ -65,18 +74,18 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
     };
 
     try {
-      return acquireVsCodeApi ? acquireVsCodeApi() : noOpVsCodeApi;
+      if (acquireVsCodeApi) {
+        return acquireVsCodeApi();
+      } else {
+        return (window.parent as AppFormerBusApi) || noAppFormerBusApi;
+      }
     } catch (e) {
-      return noOpVsCodeApi;
+      return (window.parent as AppFormerBusApi) || noAppFormerBusApi;
     }
   }
 
   public postMessage<T>(message: AppFormerBusMessage<T>) {
-    if (!this.vscode) {
-      this.vscode = this.initVsCodeApi();
-    }
-
-    this.vscode.postMessage(message);
+    this.appFormerBusApi.postMessage(message, "https://github.com");
     return Promise.resolve();
   }
 
@@ -90,13 +99,8 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
   }
 }
 
-//Exposed API of Visual Studio Code
-declare global {
-  export const acquireVsCodeApi: () => VsCodeExtensionApi;
-}
-
-interface VsCodeExtensionApi {
-  postMessage<T>(message: AppFormerBusMessage<T>): any;
+interface AppFormerBusApi {
+  postMessage<T>(message: AppFormerBusMessage<T>, targetOrigin?: any, fdfd?: any): any;
 }
 
 export interface AppFormerBusMessage<T> {

@@ -17,7 +17,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as __path from "path";
-import { LanguageData } from "../shared/LanguageData";
+import { router } from "appformer-js-router";
+import { AppFormerBusMessage } from "appformer-js-submarine";
 
 export class CustomEditor {
   public static activeCustomEditor: CustomEditor | undefined;
@@ -100,39 +101,14 @@ export class CustomEditor {
     context.subscriptions.push(customSaveCommand);
   }
 
-  private router = new Map<string, LanguageData>([
-    [
-      "dmn",
-      {
-        editorId: "DMNDiagramEditor",
-        gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-        erraiDomain: "http://localhost:8080",
-        resources: [
-          {
-            type: "css",
-            paths: ["http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css"]
-          },
-          {
-            type: "js",
-            paths: [
-              "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js",
-              "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js",
-              "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js"
-            ]
-          }
-        ]
-      }
-    ]
-  ]);
-
   private setupPanelEvents(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       this._panel.webview.onDidReceiveMessage(
-        (message: any) => {
+        (message: AppFormerBusMessage<any>) => {
           switch (message.type) {
             case "REQUEST_LANGUAGE":
               const split = this._path.split(".");
-              const languageData = this.router.get(split[split.length - 1]);
+              const languageData = router.get(split[split.length - 1]);
               this._panel.webview.postMessage({ type: "RETURN_LANGUAGE", data: languageData });
               break;
             case "RETURN_GET_CONTENT":

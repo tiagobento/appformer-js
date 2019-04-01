@@ -1,0 +1,33 @@
+{
+  "name": "QS Chrome Extension",
+  "version": "1.2.0",
+  "manifest_version": 2,
+  "description": "QS Chrome Extension",
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "js": [
+        "contentscript.js"
+      ],
+      "matches": [
+        "https://github.com/*/edit/*"
+      ],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+  ],
+  "permissions": [
+    "webRequestBlocking",
+    "webRequest",
+    "https://*/*",
+    "http://*/*",
+    "tabs",
+    "declarativeContent",
+    "background"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
+}

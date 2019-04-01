@@ -2,7 +2,7 @@
 	"name": "appformer-js-vscode-extension",
 	"displayName": "KIE Submarine :: VsCode Extension",
 	"description": "",
-	"version": "0.0.1",
+	"version": "0.0.0",
 	"engines": {
 		"vscode": "1.32.3"
 	},
@@ -45,6 +45,7 @@
 	"dependencies": {
 		"appformer-js-core": "0.0.0",
 		"appformer-js-submarine": "0.0.0",
+		"appformer-js-router": "0.0.0",
 		"@types/vscode": "^1.32.0",
 		"vscode": "1.1.28"
 	}

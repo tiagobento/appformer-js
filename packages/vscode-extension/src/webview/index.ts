@@ -16,7 +16,7 @@
 
 import { AppFormerBusMessage, AppFormerSubmarine } from "appformer-js-submarine";
 import { AppFormerGwtEditor, BusinessCentralClientEditorFactory } from "./AppFormerGwtEditor";
-import { LanguageData, Resource } from "../shared/LanguageData";
+import { LanguageData, Resource } from "appformer-js-router";
 
 //Exposed API of AppFormerGwt
 declare global {
@@ -25,13 +25,6 @@ declare global {
     appFormerGwtFinishedLoading: () => any;
     erraiBusApplicationRoot: string;
   }
-}
-
-function loadGwtEditor(gwtModuleName: string): Promise<void> {
-  const script = document.createElement("script");
-  script.src = `${window.erraiBusApplicationRoot}/${gwtModuleName}/${gwtModuleName}.nocache.js`;
-  document.body.appendChild(script);
-  return Promise.resolve();
 }
 
 function removeWorkbenchHeaderPanel() {

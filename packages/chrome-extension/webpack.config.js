@@ -16,26 +16,45 @@
 
 const path = require("path");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
-const commonConfig = {
+module.exports = {
   mode: "development",
+  devtool: "inline-source-map",
+  entry: {
+    contentscript: "./src/contentscript.ts",
+    background: "./src/background.ts"
+  },
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "[name].js",
-    library: "AppFormer.VsCode",
+    library: "AppFormer.ChromeExtension",
     libraryTarget: "umd",
     umdNamedDefine: true
   },
   externals: {
-    vscode: "commonjs vscode"
+    react: {
+      root: "React", //indicates global variable
+      commonjs: "react",
+      commonjs2: "react",
+      amd: "react"
+    },
+    "react-dom": {
+      root: "ReactDOM", //indicates global variable
+      commonjs: "react-dom",
+      commonjs2: "react-dom",
+      amd: "react-dom"
+    }
   },
   plugins: [
+    new CleanWebpackPlugin(["dist"]),
     new CircularDependencyPlugin({
       exclude: /node_modules/, // exclude detection of files based on a RegExp
       failOnError: false, // add errors to webpack instead of warnings
       cwd: process.cwd() // set the current working directory for displaying module paths
-    })
+    }),
+    new CopyPlugin([{ from: "./src/manifest.json" }])
   ],
   module: {
     rules: [
@@ -43,7 +62,7 @@ const commonConfig = {
         test: /\.tsx?$/,
         loader: "ts-loader",
         options: {
-          configFile: path.resolve("./tsconfig.json")
+          configFile: path.resolve("./tsconfig.webpack.json")
         }
       },
       {
@@ -58,26 +77,3 @@ const commonConfig = {
     modules: [path.resolve("../../node_modules"), path.resolve("./node_modules"), path.resolve("./src")]
   }
 };
-
-module.exports = [
-  {
-    ...commonConfig,
-    target: "node",
-    entry: {
-      "extension/extension": "./src/extension/extension.ts"
-    },
-    plugins: [
-      new CleanWebpackPlugin(["dist/extension"]),
-    ]
-  },
-  {
-    ...commonConfig,
-    target: "web",
-    entry: {
-      "webview/index": "./src/webview/index.ts"
-    },
-    plugins: [
-      new CleanWebpackPlugin(["dist/webview"]),
-    ]
-  }
-];
