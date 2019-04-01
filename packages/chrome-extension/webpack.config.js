@@ -54,7 +54,7 @@ module.exports = {
       failOnError: false, // add errors to webpack instead of warnings
       cwd: process.cwd() // set the current working directory for displaying module paths
     }),
-    new CopyPlugin([{ from: "./src/manifest.json" }])
+    new CopyPlugin([{ from: "./src/manifest.json" }, { from: "./static/codemirror.js" }])
   ],
   module: {
     rules: [
