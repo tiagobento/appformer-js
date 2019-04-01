@@ -28,9 +28,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "[name].js",
-    library: "AppFormer.Router",
-    libraryTarget: "umd",
-    umdNamedDefine: true
+    libraryTarget: "commonjs2",
   },
   externals: {
     react: {
