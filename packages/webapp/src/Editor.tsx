@@ -26,16 +26,19 @@ import { Button } from "@patternfly/react-core";
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
   const file = storage.get(props.match.params.filePath);
   if (!file) {
+    //FIXME: Redirect to 404 page?
     return <div>{"Oops, file not found: " + props.match.params.filePath}</div>;
   }
 
   const fileExtension = props.match.params.filePath.split(".").pop()!;
   const languageData = router.get(fileExtension);
   if (!languageData) {
+    //FIXME: Fallback to default text editor like Ace.js.
     return <div>{"Oops, no enhanced editor was found for extension " + fileExtension}</div>;
   }
 
   let iframe: HTMLIFrameElement;
+  //FIXME: This URLs will probably be kogito.redhat.com/appformer-js/router or something like that.
   const iframeDomain = "http://localhost:9000";
   const iframeSrc = "http://localhost:9000";
 
@@ -95,13 +98,14 @@ export function Editor(props: { match: match<{ space: string; project: string; f
       <h1>
         {upper(props.match.params.space)} / {upper(props.match.params.project)} / {upper(props.match.params.filePath)}
       </h1>
-      <iframe style={{ width: "100%", height: "100%" }} ref={i => (iframe = i!)} src={iframeSrc} />
+      <iframe
+        style={{ borderTop: "1px solid lightgray", width: "100%", height: "100%" }}
+        ref={i => (iframe = i!)}
+        src={iframeSrc}
+      />
       {statusBarOpen && (
         <div
-          onClick={(e: any) => {
-            e.stopPropagation();
-            setStatusBarOpen(false);
-          }}
+          onClick={() => setStatusBarOpen(false)}
           style={{
             color: "white",
             padding: "10px",
@@ -118,12 +122,12 @@ export function Editor(props: { match: match<{ space: string; project: string; f
         >
           <div>{statusMessage}</div>
           <Button
+            variant={"primary"}
+            type={"button"}
             onClick={(e: any) => {
               e.stopPropagation();
               save();
             }}
-            variant={"primary"}
-            type={"button"}
           >
             Save
           </Button>

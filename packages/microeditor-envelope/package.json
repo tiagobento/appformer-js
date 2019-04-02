@@ -1,5 +1,5 @@
 {
-  "name": "appformer-js-submarine-showcase",
+  "name": "appformer-js-microeditor-envelope",
   "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
@@ -13,6 +13,7 @@
     "@patternfly/patternfly": "1.0.227",
     "appformer-js-core": "0.0.0",
     "appformer-js-submarine": "0.0.0",
+    "appformer-js-router": "0.0.0",
     "jsoneditor": "5.31.1",
     "@types/jsoneditor": "5.28.0",
     "@types/react": "16.8.8",
@@ -25,7 +26,7 @@
     "test": "jest",
     "init": "yarn",
     "build": "yarn run lint && yarn test && webpack",
-    "showcase": "webpack-dev-server -d --open"
+    "start": "webpack-dev-server -d --open"
   },
   "babel": {
     "presets": [

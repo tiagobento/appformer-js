@@ -22,12 +22,13 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    index: "./src/index.tsx"
+    index: "./src/index.tsx",
+    "index-for-html": "./src/index-for-html.ts"
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "[name].js",
-    library: "AppFormer.SubmarineShowcase",
+    library: "AppFormer.MicroEditorEnvelope",
     libraryTarget: "umd",
     umdNamedDefine: true
   },
@@ -66,9 +67,8 @@ module.exports = {
     contentBase: [
       path.join(__dirname, "static"),
       path.join(__dirname, "../../node_modules/@patternfly/patternfly/"),
-      path.join(__dirname, "../../node_modules/jsoneditor/dist")
     ],
-    index: "static/index.html",
+    index: "./static/index.html",
     compress: true,
     port: 9000
   },

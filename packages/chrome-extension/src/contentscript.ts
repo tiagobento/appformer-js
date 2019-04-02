@@ -59,15 +59,17 @@ function init() {
   const iframeSrc = "http://localhost:9000";
   const embeddedEditorIframe = document.createElement("iframe");
 
-  const initPolling = setInterval(() => {
-    console.info("init poll");
-    const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
-    const contentWindow = embeddedEditorIframe.contentWindow;
-    if (contentWindow) {
-      console.info("init poll 2");
-      contentWindow.postMessage(initMessage, iframeDomain);
-    }
-  }, 1000);
+  function startInitPolling() {
+    return setInterval(() => {
+      const initMessage = {type: "REQUEST_INIT", data: window.location.origin};
+      const contentWindow = embeddedEditorIframe.contentWindow;
+      if (contentWindow) {
+        contentWindow.postMessage(initMessage, iframeDomain);
+      }
+    }, 1000);
+  }
+
+  let initPolling = startInitPolling();
 
   window.addEventListener(
     "message",
@@ -75,7 +77,6 @@ function init() {
       const message = event.data as AppFormerBusMessage<any>;
       switch (message.type) {
         case "RETURN_INIT":
-          console.info("ret init");
           clearInterval(initPolling);
           break;
         case "REQUEST_LANGUAGE":
@@ -106,7 +107,7 @@ function init() {
   //Insert iframe to isolate CSS and JS contexts
   embeddedEditorIframe.id = "gwt-iframe";
   embeddedEditorIframe.src = iframeSrc;
-  embeddedEditorIframe.style.cssText = "width:100%; height:600px; border-radius:4px; border:1px solid lightgray;";
+  embeddedEditorIframe.style.cssText = "margin-top: 10px; width:100%; height:600px; border-radius:4px; border:1px solid lightgray;";
 
   //Insert button after default GitHub editor
   const fullScreenButton = document.createElement("button");
@@ -114,6 +115,7 @@ function init() {
   fullScreenButton.onclick = e => {
     e.preventDefault();
     document.body.appendChild(embeddedEditorIframe);
+    initPolling = startInitPolling();
     embeddedEditorIframe.style.cssText =
       "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
   };

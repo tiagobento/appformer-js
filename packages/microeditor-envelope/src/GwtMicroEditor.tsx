@@ -27,7 +27,7 @@ export interface BusinessCentralClientEditor {
   isDirty(): boolean;
 }
 
-export class AppFormerGwtEditor extends AppFormer.Editor {
+export class GwtMicroEditor extends AppFormer.Editor {
 
   public af_componentTitle: string;
 
@@ -35,7 +35,7 @@ export class AppFormerGwtEditor extends AppFormer.Editor {
 
   constructor(erraiCdiBeanName: string) {
     super("appformer-gwt-editor");
-    this.af_componentTitle = "AppFormerGwtEditor";
+    this.af_componentTitle = "GwtMicroEditor";
     this.af_isReact = true;
     this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.get();
   }
