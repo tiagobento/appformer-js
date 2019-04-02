@@ -18,15 +18,17 @@ import * as React from "react";
 import { match } from "react-router";
 import { storage } from "./Storage";
 import { router } from "appformer-js-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { upper } from "./Util";
 import { AppFormerBusMessage } from "appformer-js-submarine";
+import { Button } from "@patternfly/react-core";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
   const file = storage.get(props.match.params.filePath);
   if (!file) {
     return <div>{"Oops, file not found: " + props.match.params.filePath}</div>;
   }
+
   const fileExtension = props.match.params.filePath.split(".").pop()!;
   const languageData = router.get(fileExtension);
   if (!languageData) {
@@ -75,12 +77,78 @@ export function Editor(props: { match: match<{ space: string; project: string; f
     return () => window.removeEventListener("message", handler, false);
   }, []);
 
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusBarOpen, setStatusBarOpen] = useState(false);
+
+  const setEphemeralStatus = (message: string) => {
+    setStatusMessage(message);
+    setTimeout(() => setStatusMessage(""), 2000);
+  };
+
+  const save = () => {
+    iframe.contentWindow!.postMessage({ type: "REQUEST_GET_CONTENT", data: undefined }, iframeDomain);
+    setEphemeralStatus("Saved.");
+  };
+
   return (
     <>
       <h1>
         {upper(props.match.params.space)} / {upper(props.match.params.project)} / {upper(props.match.params.filePath)}
       </h1>
       <iframe style={{ width: "100%", height: "100%" }} ref={i => (iframe = i!)} src={iframeSrc} />
+      {statusBarOpen && (
+        <div
+          onClick={(e: any) => {
+            e.stopPropagation();
+            setStatusBarOpen(false);
+          }}
+          style={{
+            color: "white",
+            padding: "10px",
+            backgroundColor: "#363636",
+            width: "100vw",
+            zIndex: 999,
+            bottom: 0,
+            left: 0,
+            position: "fixed",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
+          <div>{statusMessage}</div>
+          <Button
+            onClick={(e: any) => {
+              e.stopPropagation();
+              save();
+            }}
+            variant={"primary"}
+            type={"button"}
+          >
+            Save
+          </Button>
+        </div>
+      )}
+      {!statusBarOpen && (
+        <div
+          onClick={() => setStatusBarOpen(true)}
+          style={{
+            color: "white",
+            backgroundColor: "#363636",
+            width: "100px",
+            borderRadius: "5px 5px 0 0 ",
+            zIndex: 999,
+            bottom: "0",
+            paddingTop: "4px",
+            left: "50%",
+            marginLeft: "-50px",
+            textAlign: "center",
+            position: "fixed"
+          }}
+        >
+          ^
+        </div>
+      )}
     </>
   );
 }

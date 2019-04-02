@@ -36,7 +36,7 @@ export function Main() {
         <>
           <NavBar user={appContext.user} />
           <main role="main" className={"pf-c-page__main"}>
-            <section className={"pf-c-page__main-section pf-m-light"}>
+            <section style={{ padding: "20px 0 0 0" }} className={"pf-c-page__main-section pf-m-light"}>
               <div className={"pf-c-content"} style={{ height: "100%" }}>
                 <Route path={routes.welcome()} exact={true} component={Welcome} />
                 <Route path={routes.spaces()} exact={true} component={Spaces} />

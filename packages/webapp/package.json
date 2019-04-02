@@ -30,7 +30,7 @@
     "test": "jest",
     "init": "yarn",
     "build": "yarn run lint && yarn test && webpack",
-    "showcase": "webpack-dev-server -d --open"
+    "start": "webpack-dev-server -d --open"
   },
   "babel": {
     "presets": [
