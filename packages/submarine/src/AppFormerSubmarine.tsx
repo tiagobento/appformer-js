@@ -12,6 +12,7 @@ declare global {
 export class AppFormerSubmarine implements AppFormer.AppFormer {
   private app?: App;
   private appFormerBusApi: AppFormerBusApi;
+  private targetOrigin: string;
 
   constructor() {
     this.appFormerBusApi = this.initVsCodeApi();
@@ -85,8 +86,15 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
   }
 
   public postMessage<T>(message: AppFormerBusMessage<T>) {
-    this.appFormerBusApi.postMessage(message, "https://github.com");
+    if (!this.targetOrigin) {
+      throw new Error("Tried to send message without targetOrigin set");
+    }
+    this.appFormerBusApi.postMessage(message, this.targetOrigin);
     return Promise.resolve();
+  }
+
+  public setTargetOrigin(targetOrigin: string) {
+    this.targetOrigin = targetOrigin;
   }
 
   public static init(container: HTMLElement): Promise<AppFormerSubmarine> {

@@ -102,10 +102,18 @@ export class CustomEditor {
   }
 
   private setupPanelEvents(context: vscode.ExtensionContext) {
+    const initPolling = setInterval(() => {
+      const initMessage = {type: "REQUEST_INIT", data: "vscode"};
+      this._panel.webview.postMessage(initMessage);
+    }, 1000);
+
     context.subscriptions.push(
       this._panel.webview.onDidReceiveMessage(
         (message: AppFormerBusMessage<any>) => {
           switch (message.type) {
+            case "RETURN_INIT":
+              clearInterval(initPolling);
+              break;
             case "REQUEST_LANGUAGE":
               const split = this._path.split(".");
               const languageData = router.get(split[split.length - 1]);

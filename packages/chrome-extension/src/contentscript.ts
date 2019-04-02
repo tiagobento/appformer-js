@@ -39,7 +39,7 @@ function init() {
   const splitLocationHref = window.location.href.split(".");
   const openFileLanguage = splitLocationHref[splitLocationHref.length - 1];
   if (!router.has(openFileLanguage)) {
-    console.info(`No enhanced editor available for "${openFileLanguage}" format.`)
+    console.info(`No enhanced editor available for "${openFileLanguage}" format.`);
     return;
   }
 
@@ -56,13 +56,28 @@ function init() {
   CodeMirror.fromTextArea(document.querySelector(".file-editor-textarea"));
 
   const iframeDomain = "http://localhost:9000";
+  const iframeSrc = "http://localhost:9000";
   const embeddedEditorIframe = document.createElement("iframe");
+
+  const initPolling = setInterval(() => {
+    console.info("init poll");
+    const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
+    const contentWindow = embeddedEditorIframe.contentWindow;
+    if (contentWindow) {
+      console.info("init poll 2");
+      contentWindow.postMessage(initMessage, iframeDomain);
+    }
+  }, 1000);
 
   window.addEventListener(
     "message",
     (event: MessageEvent) => {
       const message = event.data as AppFormerBusMessage<any>;
       switch (message.type) {
+        case "RETURN_INIT":
+          console.info("ret init");
+          clearInterval(initPolling);
+          break;
         case "REQUEST_LANGUAGE":
           const languageReturnMessage = { type: "RETURN_LANGUAGE", data: router.get(openFileLanguage) };
           embeddedEditorIframe.contentWindow!.postMessage(languageReturnMessage, iframeDomain);
@@ -85,13 +100,13 @@ function init() {
     false
   );
 
-  //hide current editor
+  //hide GitHub editor
   githubEditor.style.display = "none";
 
-  //Inserts iframe to isolate CSS and JS contexts
+  //Insert iframe to isolate CSS and JS contexts
   embeddedEditorIframe.id = "gwt-iframe";
-  embeddedEditorIframe.src = "http://localhost:9000";
-  embeddedEditorIframe.style.cssText = "width:100%; height:600px;";
+  embeddedEditorIframe.src = iframeSrc;
+  embeddedEditorIframe.style.cssText = "width:100%; height:600px; border-radius:4px; border:1px solid lightgray;";
 
   //Insert button after default GitHub editor
   const fullScreenButton = document.createElement("button");
@@ -99,15 +114,20 @@ function init() {
   fullScreenButton.onclick = e => {
     e.preventDefault();
     document.body.appendChild(embeddedEditorIframe);
-    embeddedEditorIframe.style.cssText = "width:100vw;height:100vh;position:absolute;top:0px;z-index:999";
+    embeddedEditorIframe.style.cssText =
+      "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
   };
 
   //FIXME: Find a way to request editor content just when necessary
-  setInterval(() => {
-    enableCommitButton();
-    const requestGetContent = { type: "REQUEST_GET_CONTENT" };
-    embeddedEditorIframe.contentWindow!.postMessage(requestGetContent, iframeDomain);
-  }, 1000);
+  setInterval(
+    () => {
+      enableCommitButton();
+      const requestGetContent = { type: "REQUEST_GET_CONTENT" };
+      embeddedEditorIframe.contentWindow!.postMessage(requestGetContent, iframeDomain);
+    },
+    1000,
+    3000
+  );
 
   insertInGitHubPage(embeddedEditorIframe, fullScreenButton);
 }
