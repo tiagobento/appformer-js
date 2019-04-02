@@ -21,10 +21,16 @@ function enableCommitButton() {
   commitButton.removeAttribute("disabled");
 }
 
-function insertInGitHubPage(...elements: HTMLElement[]) {
+function insertRightToBreadcrumb(...elements: HTMLElement[]) {
+  const targetContainer = document.querySelector(".breadcrumb.d-flex.flex-items-center");
+  elements.forEach(e => {
+    targetContainer!.appendChild(e);
+  });
+}
+
+function insertAfterGitHubEditor(...elements: HTMLElement[]) {
   const targetContainer = document.querySelector(".file");
   elements.forEach(e => {
-    targetContainer!.parentElement!.insertBefore(e, targetContainer);
     targetContainer!.parentElement!.insertBefore(e, targetContainer);
   });
 }
@@ -61,7 +67,7 @@ function init() {
 
   function startInitPolling() {
     return setInterval(() => {
-      const initMessage = {type: "REQUEST_INIT", data: window.location.origin};
+      const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
       const contentWindow = embeddedEditorIframe.contentWindow;
       if (contentWindow) {
         contentWindow.postMessage(initMessage, iframeDomain);
@@ -107,31 +113,59 @@ function init() {
   //Insert iframe to isolate CSS and JS contexts
   embeddedEditorIframe.id = "gwt-iframe";
   embeddedEditorIframe.src = iframeSrc;
-  embeddedEditorIframe.style.cssText = "margin-top: 10px; width:100%; height:600px; border-radius:4px; border:1px solid lightgray;";
+  embeddedEditorIframe.style.cssText =
+    "margin-top: 10px; width:100%; height:600px; border-radius:4px; border:1px solid lightgray;";
 
   //Insert button after default GitHub editor
+
   const fullScreenButton = document.createElement("button");
+  fullScreenButton.className = "btn btn-sm";
+  fullScreenButton.style.cssText = "float: right";
   fullScreenButton.textContent = "Fullscreen";
   fullScreenButton.onclick = e => {
     e.preventDefault();
     document.body.appendChild(embeddedEditorIframe);
     initPolling = startInitPolling();
+    const originalCss = embeddedEditorIframe.style.cssText;
     embeddedEditorIframe.style.cssText =
       "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
+
+    const closeFullscreenDiv  = document.createElement("div");
+    closeFullscreenDiv.style.cssText = "padding-bottom: 5px; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
+    closeFullscreenDiv.innerHTML = "Close";
+    closeFullscreenDiv.onclick = evt => {
+      evt.preventDefault();
+      initPolling = startInitPolling();
+      insertAfterGitHubEditor(embeddedEditorIframe);
+      embeddedEditorIframe.style.cssText = originalCss;
+      requestGetContent(embeddedEditorIframe, iframeDomain);
+      closeFullscreenDiv.remove();
+    };
+
+    document.body.appendChild(closeFullscreenDiv);
   };
+
+  const fullScreenDiv = document.createElement("div");
+  fullScreenDiv.style.cssText = "width: 486px";
+  fullScreenDiv.appendChild(fullScreenButton);
 
   //FIXME: Find a way to request editor content just when necessary
   setInterval(
     () => {
       enableCommitButton();
-      const requestGetContent = { type: "REQUEST_GET_CONTENT" };
-      embeddedEditorIframe.contentWindow!.postMessage(requestGetContent, iframeDomain);
+      requestGetContent(embeddedEditorIframe, iframeDomain);
     },
     1000,
     3000
   );
 
-  insertInGitHubPage(embeddedEditorIframe, fullScreenButton);
+  insertAfterGitHubEditor(embeddedEditorIframe);
+  insertRightToBreadcrumb(fullScreenDiv);
+}
+
+function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain: string) {
+  const requestGetContentMessage = { type: "REQUEST_GET_CONTENT", data: undefined };
+  embeddedEditorIframe.contentWindow!.postMessage(requestGetContentMessage, iframeDomain);
 }
 
 init();
