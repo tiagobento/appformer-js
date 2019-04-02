@@ -18,7 +18,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 
 app.on("ready", () => {
   const mainWindow = new BrowserWindow({ height: 800, width: 800, show: false });
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadFile(`../../../../../packages/electron-app/dist/index.html`);
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
   });
