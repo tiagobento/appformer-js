@@ -16,21 +16,41 @@
 
 import { routes } from "./Routes";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { upper } from "./Util";
-import { useState } from "react";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { ActionGroup, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 
+interface Space {
+  name: string;
+}
 export function Spaces() {
   const [popup, setPopup] = useState(false);
   const [newSpaceName, setNewSpaceName] = useState("");
-  const [spaces, setSpaces] = useState([{ name: "tiago" }, { name: "paulo" }]);
+  const [spaces, setSpaces] = useState([] as Space[]);
 
-  const addSpace = () => {
-    setSpaces([...spaces, { name: newSpaceName }]);
-    setPopup(false);
+  const updateSpaces = () => {
+    fetch("http://localhost:9002/spaces")
+      .then(res => res.json())
+      .then(json => setSpaces(json as Space[]));
   };
+
+  const addSpace = (e: any) => {
+    e.preventDefault();
+    return fetch("http://localhost:9002/spaces", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name: newSpaceName })
+    }).then(() => {
+      setPopup(false);
+      updateSpaces();
+    });
+  };
+
+  useEffect(() => updateSpaces(), [setSpaces]);
 
   return (
     <>
@@ -44,13 +64,17 @@ export function Spaces() {
                   *
                 </span>
               </label>
-              <TextInput onInput={(e: any) => setNewSpaceName(e.target.value)} value={newSpaceName} />
+              <TextInput
+                aria-label={"name"}
+                onInput={(e: any) => setNewSpaceName(e.target.value)}
+                value={newSpaceName}
+              />
               <p className="pf-c-form__helper-text" id="help-text-simple-form-name-helper" aria-live="polite">
                 Only numbers, letters, and underscores.
               </p>
 
               <ActionGroup>
-                <Button onClick={() => addSpace()} variant={"primary"} type={"submit"}>
+                <Button onClick={e => addSpace(e)} variant={"primary"} type={"submit"}>
                   Add
                 </Button>
                 <Button onClick={() => setPopup(false)} variant={"secondary"}>

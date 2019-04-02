@@ -24,23 +24,29 @@ const port = config.development.server.port;
 
 app.use(bodyParser.json());
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    })
+  bodyParser.urlencoded({
+    extended: true
+  })
 );
 
-app.get('/spaces', db.getAll("spaces"));
-app.get('/spaces/:name', db.getByName("spaces"));
-app.post('/spaces', db.create("spaces"));
-app.put('/spaces/:name', db.update("spaces"));
-app.delete('/spaces/:name', db.deleteRow("spaces"));
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
-app.get('/projects', db.getAll("projects"));
-app.get('/projects/:name', db.getByName("projects"));
-app.post('/projects', db.create("projects"));
-app.put('/projects/:name', db.update("projects"));
-app.delete('/projects/:name', db.deleteRow("projects"));
+app.get("/spaces", db.getAll("spaces"));
+app.get("/spaces/:name", db.getByName("spaces"));
+app.post("/spaces", db.create("spaces"));
+app.put("/spaces/:name", db.update("spaces"));
+app.delete("/spaces/:name", db.deleteRow("spaces"));
+
+app.get("/projects", db.getAll("projects"));
+app.get("/projects/:name", db.getByName("projects"));
+app.post("/projects", db.create("projects"));
+app.put("/projects/:name", db.update("projects"));
+app.delete("/projects/:name", db.deleteRow("projects"));
 
 app.listen(port, () => {
-    console.log(`App running on port ${port}.`);
-})
+  console.log(`App running on port ${port}.`);
+});

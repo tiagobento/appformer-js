@@ -130,8 +130,9 @@ function init() {
     embeddedEditorIframe.style.cssText =
       "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
 
-    const closeFullscreenDiv  = document.createElement("div");
-    closeFullscreenDiv.style.cssText = "padding-bottom: 5px; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
+    const closeFullscreenDiv = document.createElement("div");
+    closeFullscreenDiv.style.cssText =
+      "padding-bottom: 5px; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
     closeFullscreenDiv.innerHTML = "Close";
     closeFullscreenDiv.onclick = evt => {
       evt.preventDefault();
@@ -161,6 +162,11 @@ function init() {
 
   insertAfterGitHubEditor(embeddedEditorIframe);
   insertRightToBreadcrumb(fullScreenDiv);
+
+  const codeMirrorDiv = document.querySelector(".CodeMirror.cm-s-default");
+  if (codeMirrorDiv) {
+    (codeMirrorDiv as HTMLElement).style.cssText = "display: none;";
+  }
 }
 
 function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain: string) {
