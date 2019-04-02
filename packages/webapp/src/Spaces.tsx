@@ -14,76 +14,76 @@
  * limitations under the License.
  */
 
-import {routes } from "./Routes";
+import { routes } from "./Routes";
 import * as React from "react";
-import {useState} from "react";
-import {PatternFlyPopup} from "./PatternFlyPopup";
-import {ActionGroup, Button, Form, FormGroup, TextInput} from "@patternfly/react-core";
-import {Link} from "react-router-dom";
+import { upper } from "./Util";
+import { useState } from "react";
+import { PatternFlyPopup } from "./PatternFlyPopup";
+import { ActionGroup, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
+import { Link } from "react-router-dom";
 
 export function Spaces() {
-    const [popup, setPopup] = useState(false);
-    const [newSpaceName, setNewSpaceName] = useState("");
-    const [spaces, setSpaces] = useState([{name: "tiago"}, {name: "paulo"}]);
+  const [popup, setPopup] = useState(false);
+  const [newSpaceName, setNewSpaceName] = useState("");
+  const [spaces, setSpaces] = useState([{ name: "tiago" }, { name: "paulo" }]);
 
-    const addSpace = () => {
-        setSpaces([...spaces, {name: newSpaceName}]);
-        setPopup(false);
-    };
+  const addSpace = () => {
+    setSpaces([...spaces, { name: newSpaceName }]);
+    setPopup(false);
+  };
 
-    return (
-        <>
-            {popup && (
-                <PatternFlyPopup title={"New Space"} onClose={() => setPopup(false)}>
-                    <Form>
-                        <FormGroup fieldId={"name"} className="pf-c-form__group">
-                            <label className="pf-c-form__label" htmlFor="help-text-simple-form-name">
-                                Name
-                                <span className="pf-c-form__label-required" aria-hidden="true">
+  return (
+    <>
+      {popup && (
+        <PatternFlyPopup title={"New Space"} onClose={() => setPopup(false)}>
+          <Form>
+            <FormGroup fieldId={"name"} className="pf-c-form__group">
+              <label className="pf-c-form__label" htmlFor="help-text-simple-form-name">
+                Name
+                <span className="pf-c-form__label-required" aria-hidden="true">
                   *
                 </span>
-                            </label>
-                            <TextInput onInput={(e: any) => setNewSpaceName(e.target.value)} value={newSpaceName}/>
-                            <p className="pf-c-form__helper-text" id="help-text-simple-form-name-helper"
-                               aria-live="polite">
-                                Only numbers, letters, and underscores.
-                            </p>
+              </label>
+              <TextInput onInput={(e: any) => setNewSpaceName(e.target.value)} value={newSpaceName} />
+              <p className="pf-c-form__helper-text" id="help-text-simple-form-name-helper" aria-live="polite">
+                Only numbers, letters, and underscores.
+              </p>
 
-                            <ActionGroup>
-                                <Button onClick={() => addSpace()} variant={"primary"} type={"submit"}>
-                                    Add
-                                </Button>
-                                <Button onClick={() => setPopup(false)} variant={"secondary"}>
-                                    Cancel
-                                </Button>
-                            </ActionGroup>
-                        </FormGroup>
-                    </Form>
-                </PatternFlyPopup>
-            )}
-            <div>
-                <h1>
-                    <span>Spaces</span>
-                    <span> - </span>
-                    <span>
+              <ActionGroup>
+                <Button onClick={() => addSpace()} variant={"primary"} type={"submit"}>
+                  Add
+                </Button>
+                <Button onClick={() => setPopup(false)} variant={"secondary"}>
+                  Cancel
+                </Button>
+              </ActionGroup>
+            </FormGroup>
+          </Form>
+        </PatternFlyPopup>
+      )}
+      <div>
+        <h1>
+          <span>Spaces</span>
+          <span> - </span>
+          <span>
             <a
-                href={"#"}
-                onClick={() => {
-                    setPopup(true);
-                    setNewSpaceName("");
-                }}
+              href={"#"}
+              onClick={() => {
+                setPopup(true);
+                setNewSpaceName("");
+              }}
             >
               new
             </a>
           </span>
-                </h1>
-                {spaces.map(space => (
-                    <div key={space.name}>
-                        <Link to={routes.projects({space: space.name})}>{upper(space.name)}</Link>
-                        <br/>
-                    </div>
-                ))}
-            </div>
-        </>
-    );
+        </h1>
+        {spaces.map(space => (
+          <div key={space.name}>
+            <Link to={routes.projects({ space: space.name })}>{upper(space.name)}</Link>
+            <br />
+          </div>
+        ))}
+      </div>
+    </>
+  );
 }

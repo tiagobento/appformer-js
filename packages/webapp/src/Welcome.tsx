@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {Link} from "react-router-dom";
-import {routes} from "./Routes";
+import { Link } from "react-router-dom";
+import { routes } from "./Routes";
 import * as React from "react";
 
 export function Welcome() {
-    return (
-        <div>
-            {"Welcome! Go to "}
-            <Link to={routes.spaces()}>Spaces</Link>
-        </div>
-    );
+  return (
+    <div>
+      {"Welcome! Go to "}
+      <Link to={routes.spaces()}>Spaces</Link>
+    </div>
+  );
 }

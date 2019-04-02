@@ -15,10 +15,10 @@
  */
 
 export const routes = {
-    welcome: () => "/",
-    spaces: () => "/spaces",
-    projects: (args: { space: string }) => `/spaces/${args.space}/projects`,
-    files: (args: { space: string; project: string }) => `/spaces/${args.space}/projects/${args.project}/files`,
-    file: (args: { space: string; project: string; filePath: string }) =>
-        `/spaces/${args.space}/projects/${args.project}/files/${args.filePath}`
+  welcome: () => "/",
+  spaces: () => "/spaces",
+  projects: (args: { space: string }) => `/spaces/${args.space}/projects`,
+  files: (args: { space: string; project: string }) => `/spaces/${args.space}/projects/${args.project}/files`,
+  file: (args: { space: string; project: string; filePath: string }) =>
+    `/spaces/${args.space}/projects/${args.project}/files/${args.filePath}`
 };

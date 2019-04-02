@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export const upper = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+import * as React from "react";
+import { User } from "./User";
+
+export const AppContext = React.createContext({ user: undefined } as {
+  setUser: (u: User) => void;
+  user: undefined | User;
+});

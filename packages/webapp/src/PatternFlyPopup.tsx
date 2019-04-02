@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {Popup} from "./Popup";
-import {ModalBox, ModalBoxCloseButton, ModalBoxHeader} from "@patternfly/react-core";
+import { Popup } from "./Popup";
+import { ModalBox, ModalBoxCloseButton, ModalBoxHeader } from "@patternfly/react-core";
 import * as React from "react";
 
 export function PatternFlyPopup(props: { title: string; children: any; onClose: () => void }) {
-    return (
-        <Popup focusOnFirstInput={true} onClose={() => props.onClose()}>
-            <ModalBox id="modal" title={props.title} isLarge={true}>
-                <ModalBoxHeader hideTitle={false}>{props.title}</ModalBoxHeader>
-                <ModalBoxCloseButton onClick={() => props.onClose()}/>
-                {props.children}
-            </ModalBox>
-        </Popup>
-    );
+  return (
+    <Popup focusOnFirstInput={true} onClose={() => props.onClose()}>
+      <ModalBox id="modal" title={props.title} isLarge={true}>
+        <ModalBoxHeader hideTitle={false}>{props.title}</ModalBoxHeader>
+        <ModalBoxCloseButton onClick={() => props.onClose()} />
+        {props.children}
+      </ModalBox>
+    </Popup>
+  );
 }

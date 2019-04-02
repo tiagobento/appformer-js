@@ -24,7 +24,7 @@ import { Spaces } from "./Spaces";
 import { Projects } from "./Projects";
 import { Files } from "./Files";
 import { Editor } from "./Editor";
-import { AppContext } from "./App";
+import { AppContext } from "./AppContext";
 import { Welcome } from "./Welcome";
 
 export function Main() {

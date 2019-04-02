@@ -15,23 +15,24 @@
  */
 
 import * as React from "react";
-import { useContext, useState} from "react";
-import {LoginForm, LoginPage} from "@patternfly/react-core";
-import {AppContext} from "./App";
+import { useContext, useState } from "react";
+import { upper } from "./Util";
+import { LoginForm, LoginPage } from "@patternfly/react-core";
+import { AppContext } from "./AppContext";
 
 export function Login() {
-    const appContext = useContext(AppContext);
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    return (
-        <LoginPage loginTitle={"Login"}>
-            <LoginForm
-                usernameValue={username}
-                passwordValue={password}
-                onChangePassword={(e: string) => setPassword(e)}
-                onChangeUsername={(e: string) => setUsername(e)}
-                onLoginButtonClick={() => appContext.setUser({name: upper(username)})}
-            />
-        </LoginPage>
-    );
+  const appContext = useContext(AppContext);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  return (
+    <LoginPage loginTitle={"Login"}>
+      <LoginForm
+        usernameValue={username}
+        passwordValue={password}
+        onChangePassword={(e: string) => setPassword(e)}
+        onChangeUsername={(e: string) => setUsername(e)}
+        onLoginButtonClick={() => appContext.setUser({ name: upper(username) })}
+      />
+    </LoginPage>
+  );
 }

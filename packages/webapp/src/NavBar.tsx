@@ -15,9 +15,9 @@
  */
 
 import * as React from "react";
-import {useState} from "react";
-import {Link} from "react-router-dom";
-import {User} from "./User";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { User } from "./User";
 
 export function NavBar(props: { user: User }) {
   const [loginPopover, setLoginPopover] = useState(false);

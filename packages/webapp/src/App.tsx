@@ -15,11 +15,10 @@
  */
 
 import * as React from "react";
-import {useState} from "react";
-import {User} from "./User";
-import {Main} from "./Main";
-
-export const AppContext = React.createContext({ user: undefined } as { setUser: (u: User) => void; user: undefined | User });
+import { useState } from "react";
+import { User } from "./User";
+import { Main } from "./Main";
+import { AppContext } from "./AppContext";
 
 export function App() {
   const [user, setUser]: [User, (u: User) => void] = useState({ name: "Tiago Bento" });
@@ -32,4 +31,3 @@ export function App() {
     </AppContext.Provider>
   );
 }
-
