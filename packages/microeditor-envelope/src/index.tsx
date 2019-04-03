@@ -71,7 +71,6 @@ function messageHandler(appFormer: AppFormerSubmarine, event: { data: AppFormerB
 
   switch (message.type) {
     case "REQUEST_INIT":
-      console.info("req init");
       const targetOrigin = message.data as string;
       appFormer.setTargetOrigin(targetOrigin);
       return appFormer.postMessage({ type: "RETURN_INIT", data: undefined }).then(() => {
