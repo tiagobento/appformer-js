@@ -35,6 +35,11 @@ function insertAfterGitHubEditor(...elements: HTMLElement[]) {
   });
 }
 
+function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain: string) {
+  const requestGetContentMessage = { type: "REQUEST_GET_CONTENT", data: undefined };
+  embeddedEditorIframe.contentWindow!.postMessage(requestGetContentMessage, iframeDomain);
+}
+
 function init() {
   const githubEditor = document.querySelector(".js-code-editor") as HTMLElement;
   if (!githubEditor) {
@@ -117,6 +122,13 @@ function init() {
     "margin-top: 10px; width:100%; height:600px; border-radius:4px; border:1px solid lightgray;";
 
   //Insert button after default GitHub editor
+  const openOnKieInterfaceButton = document.createElement("button");
+  openOnKieInterfaceButton.className = "btn btn-sm btn-blue";
+  openOnKieInterfaceButton.style.cssText = "float: right; margin: 0 5px 0 5px";
+  openOnKieInterfaceButton.textContent = "Open on KIE Interface";
+  openOnKieInterfaceButton.onclick = e => {
+    window.open("http://localhost:9001/spaces/tiago/projects/foo/files/dora.dmn")
+  };
 
   const fullScreenButton = document.createElement("button");
   fullScreenButton.className = "btn btn-sm";
@@ -130,25 +142,29 @@ function init() {
     embeddedEditorIframe.style.cssText =
       "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
 
-    const closeFullscreenDiv = document.createElement("div");
-    closeFullscreenDiv.style.cssText =
-      "padding-bottom: 5px; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
-    closeFullscreenDiv.innerHTML = "Close";
-    closeFullscreenDiv.onclick = evt => {
+    const buttonsDiv = document.createElement("div");
+    const closeFullscreenDivA = document.createElement("a");
+    closeFullscreenDivA.style.cssText = "color: white";
+    closeFullscreenDivA.textContent = "Close";
+    buttonsDiv.appendChild(closeFullscreenDivA);
+    buttonsDiv.style.cssText =
+      "padding-bottom: 5px; cursor: pointer; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
+    buttonsDiv.onclick = evt => {
       evt.preventDefault();
       initPolling = startInitPolling();
       insertAfterGitHubEditor(embeddedEditorIframe);
       embeddedEditorIframe.style.cssText = originalCss;
       requestGetContent(embeddedEditorIframe, iframeDomain);
-      closeFullscreenDiv.remove();
+      buttonsDiv.remove();
     };
 
-    document.body.appendChild(closeFullscreenDiv);
+    document.body.appendChild(buttonsDiv);
   };
 
   const fullScreenDiv = document.createElement("div");
   fullScreenDiv.style.cssText = "width: 486px";
   fullScreenDiv.appendChild(fullScreenButton);
+  fullScreenDiv.appendChild(openOnKieInterfaceButton);
 
   //FIXME: Find a way to request editor content just when necessary
   setInterval(
@@ -162,16 +178,6 @@ function init() {
 
   insertAfterGitHubEditor(embeddedEditorIframe);
   insertRightToBreadcrumb(fullScreenDiv);
-
-  const codeMirrorDiv = document.querySelector(".CodeMirror.cm-s-default");
-  if (codeMirrorDiv) {
-    (codeMirrorDiv as HTMLElement).style.cssText = "display: none;";
-  }
-}
-
-function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain: string) {
-  const requestGetContentMessage = { type: "REQUEST_GET_CONTENT", data: undefined };
-  embeddedEditorIframe.contentWindow!.postMessage(requestGetContentMessage, iframeDomain);
 }
 
 init();
