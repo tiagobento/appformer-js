@@ -124,11 +124,16 @@ function init() {
   //Insert button after default GitHub editor
   const openOnKieInterfaceButton = document.createElement("button");
   openOnKieInterfaceButton.className = "btn btn-sm btn-blue";
-  openOnKieInterfaceButton.style.cssText = "float: right; margin: 0 5px 0 5px";
+  openOnKieInterfaceButton.style.cssText = "float:right;";
   openOnKieInterfaceButton.textContent = "Open on KIE Interface";
   openOnKieInterfaceButton.onclick = e => {
-    window.open("http://localhost:9001/spaces/tiago/projects/foo/files/dora.dmn")
+    window.open(`http://localhost:9001/import?path=${window.location}`)
   };
+
+  const pageHeadActions = document.querySelector("ul.pagehead-actions")!;
+  const openOnKieInterfaceButtonLi = document.createElement("li");
+  openOnKieInterfaceButtonLi.appendChild(openOnKieInterfaceButton);
+  pageHeadActions.appendChild(openOnKieInterfaceButtonLi);
 
   const fullScreenButton = document.createElement("button");
   fullScreenButton.className = "btn btn-sm";
@@ -164,7 +169,6 @@ function init() {
   const fullScreenDiv = document.createElement("div");
   fullScreenDiv.style.cssText = "width: 486px";
   fullScreenDiv.appendChild(fullScreenButton);
-  fullScreenDiv.appendChild(openOnKieInterfaceButton);
 
   //FIXME: Find a way to request editor content just when necessary
   setInterval(

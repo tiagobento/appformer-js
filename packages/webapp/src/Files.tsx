@@ -23,6 +23,7 @@ import { PatternFlyPopup } from "./PatternFlyPopup";
 import { ActionGroup, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
+import {Pf4Label} from "./Pf4Label";
 
 export function Files(props: { match: match<{ space: string; project: string }> }) {
   const [popup, setPopup] = useState(false);
@@ -39,12 +40,7 @@ export function Files(props: { match: match<{ space: string; project: string }> 
         <PatternFlyPopup title={"New file"} onClose={() => setPopup(false)}>
           <Form>
             <FormGroup fieldId={"name"} className="pf-c-form__group">
-              <label className="pf-c-form__label" htmlFor="help-text-simple-form-name">
-                Name
-                <span className="pf-c-form__label-required" aria-hidden="true">
-                  *
-                </span>
-              </label>
+              <Pf4Label required={true} text={"Name"}/>
               <TextInput onInput={(e: any) => setNewFileName(e.target.value)} value={newFileName} />
               <p className="pf-c-form__helper-text" id="help-text-simple-form-name-helper" aria-live="polite">
                 Only numbers, letters, and underscores.

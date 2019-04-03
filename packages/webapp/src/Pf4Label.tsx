@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-import { Popup } from "./Popup";
-import { ModalBox, ModalBoxCloseButton, ModalBoxHeader } from "@patternfly/react-core";
 import * as React from "react";
 
-export function PatternFlyPopup(props: { title: string; children: any; onClose?: () => void }) {
-  const onClose = () =>
-    props.onClose
-      ? props.onClose()
-      : () => {
-          /**/
-        };
-
+export function Pf4Label(props: { required: boolean; text: string }) {
   return (
-    <Popup focusOnFirstInput={true} onClose={onClose}>
-      <ModalBox id="modal" title={props.title} isLarge={true}>
-        <ModalBoxHeader hideTitle={false}>{props.title}</ModalBoxHeader>
-        <ModalBoxCloseButton onClick={onClose} />
-        {props.children}
-      </ModalBox>
-    </Popup>
+    <label className="pf-c-form__label" htmlFor="">
+      {props.text}
+      {props.required && (
+        <span className="pf-c-form__label-required" aria-hidden="true">
+          *
+        </span>
+      )}
+    </label>
   );
 }

@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { useContext } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Login } from "./Login";
 import { NavBar } from "./NavBar";
 import { routes } from "./Routes";
@@ -26,6 +26,7 @@ import { Files } from "./Files";
 import { Editor } from "./Editor";
 import { AppContext } from "./AppContext";
 import { Welcome } from "./Welcome";
+import {Import} from "./Import";
 
 export function Main() {
   const appContext = useContext(AppContext);
@@ -36,16 +37,27 @@ export function Main() {
         <>
           <NavBar user={appContext.user} />
           <main role="main" className={"pf-c-page__main"}>
-            <section style={{ padding: "20px 0 0 0" }} className={"pf-c-page__main-section pf-m-light"}>
+            <section
+              style={{ padding: "20px 0 0 0", overflow: "hidden" }}
+              className={"pf-c-page__main-section pf-m-light"}
+            >
               <div className={"pf-c-content"} style={{ height: "100%" }}>
-                <Route path={routes.welcome()} exact={true} component={Welcome} />
-                <Route path={routes.spaces()} exact={true} component={Spaces} />
-                <Route path={routes.projects({ space: ":space" })} exact={true} component={Projects} />
-                <Route path={routes.files({ space: ":space", project: ":project" })} exact={true} component={Files} />
-                <Route
-                  path={routes.file({ space: ":space", project: ":project", filePath: ":filePath" })}
-                  component={Editor}
-                />
+                  <Switch>
+                    <Route exact={true} path={routes.welcome()} component={Welcome} />
+                    <Route exact={true} path={routes.spaces()} component={Spaces} />
+                    <Route exact={true} path={routes.import()} component={Import} />
+                    <Route exact={true} path={routes.space({ space: ":space" })} component={Projects} />
+                    <Route
+                      exact={true}
+                      path={routes.project({ space: ":space", project: ":project" })}
+                      component={Files}
+                    />
+                    <Route
+                      exact={true}
+                      path={routes.file({ space: ":space", project: ":project", filePath: ":filePath" })}
+                      component={Editor}
+                    />
+                  </Switch>
               </div>
             </section>
           </main>

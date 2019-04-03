@@ -15,41 +15,65 @@
  */
 
 import * as React from "react";
-import { match } from "react-router";
-import { upper } from "./Util";
-import { useState } from "react";
-import { PatternFlyPopup } from "./PatternFlyPopup";
-import { ActionGroup, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
-import { Link } from "react-router-dom";
-import { routes } from "./Routes";
+import {useEffect, useState} from "react";
+import {match} from "react-router";
+import {upper} from "./Util";
+import {PatternFlyPopup} from "./PatternFlyPopup";
+import {ActionGroup, Button, Form, FormGroup, TextInput} from "@patternfly/react-core";
+import {Link} from "react-router-dom";
+import {routes} from "./Routes";
+import {getProjects, postProject} from "./service/Service";
+import {Pf4Label} from "./Pf4Label";
+
+interface Project {
+  name: string;
+  url: string;
+}
 
 export function Projects(props: { match: match<{ space: string }> }) {
   const [popup, setPopup] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectUrl, setNewProjectUrl] = useState("");
-  const [projects, setProjects] = useState([
-    { name: "foo", url: "https://github.com/tiagobento/foo" },
-    { name: "bar", url: "https://github.com/tiagobento/bar" }
-  ]);
+  const [projects, setProjects] = useState([] as Project[]);
 
-  const addProject = () => {
-    setProjects([...projects, { name: newProjectName, url: newProjectUrl }]);
-    setPopup(false);
+  const updateProjects = () => {
+    getProjects(props.match.params.space)
+      .then(res => res.json())
+      .then(json => setProjects(json));
   };
+
+  const addProject = async (e: any) => {
+    e.preventDefault();
+    const createProject = await postProject(props.match.params.space, { name: newProjectName, url: newProjectUrl });
+    if (createProject.status === 201) {
+      updateProjects();
+      setPopup(false);
+    } else {
+      console.info("Error creating project.");
+    }
+  };
+
+  const openNewProjectPopup = (e: any) => {
+    e.preventDefault();
+    setPopup(true);
+    setNewProjectName("");
+    setNewProjectUrl("");
+  };
+
+  useEffect(() => {
+    updateProjects();
+    return () => {/**/};
+  }, []);
 
   return (
     <>
       {popup && (
         <PatternFlyPopup title={"New Project"} onClose={() => setPopup(false)}>
           <Form>
-            <FormGroup fieldId={"name"} className="pf-c-form__group">
-              <label className="pf-c-form__label" htmlFor="help-text-simple-form-name">
-                Name
-                <span className="pf-c-form__label-required" aria-hidden="true">
-                  *
-                </span>
-              </label>
+            <FormGroup fieldId={"name"}>
+              <Pf4Label required={true} text={"Name"} />
               <TextInput
+                aria-label={"name"}
                 placeholder={"Name"}
                 onInput={(e: any) => setNewProjectName(e.target.value)}
                 value={newProjectName}
@@ -58,14 +82,10 @@ export function Projects(props: { match: match<{ space: string }> }) {
                 Only numbers, letters, and underscores.
               </p>
             </FormGroup>
-            <FormGroup fieldId={"url"} className="pf-c-form__group">
-              <label className="pf-c-form__label" htmlFor="help-text-simple-form-name">
-                URL
-                <span className="pf-c-form__label-required" aria-hidden="true">
-                  *
-                </span>
-              </label>
+            <FormGroup fieldId={"url"}>
+              <Pf4Label text={"URL"} required={true} />
               <TextInput
+                aria-label={"url"}
                 placeholder={"URL"}
                 onInput={(e: any) => setNewProjectUrl(e.target.value)}
                 value={newProjectUrl}
@@ -73,7 +93,7 @@ export function Projects(props: { match: match<{ space: string }> }) {
             </FormGroup>
 
             <ActionGroup>
-              <Button onClick={() => addProject()} variant={"primary"} type={"submit"}>
+              <Button onClick={addProject} variant={"primary"} type={"submit"}>
                 Add
               </Button>
               <Button onClick={() => setPopup(false)} variant={"secondary"}>
@@ -88,21 +108,14 @@ export function Projects(props: { match: match<{ space: string }> }) {
           <span>{upper(props.match.params.space)} / Projects</span>
           <span> - </span>
           <span>
-            <a
-              href={"#"}
-              onClick={() => {
-                setPopup(true);
-                setNewProjectName("");
-                setNewProjectUrl("");
-              }}
-            >
-              new
+            <a href={"#"} onClick={openNewProjectPopup}>
+              New
             </a>
           </span>
         </h1>
         {projects.map(project => (
           <div key={project.name}>
-            <Link to={routes.files({ space: props.match.params.space, project: project.name })}>
+            <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
               {upper(project.name)}
             </Link>
             <br />
@@ -112,3 +125,4 @@ export function Projects(props: { match: match<{ space: string }> }) {
     </>
   );
 }
+

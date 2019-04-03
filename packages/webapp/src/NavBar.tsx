@@ -25,7 +25,7 @@ export function NavBar(props: { user: User }) {
     <header role="banner" className="pf-c-page__header">
       <div className="pf-c-page__header-brand">
         <Link className="pf-c-page__header-brand-link" to={"/"}>
-          Practicioner UI
+          <img alt={"logo"} style={{marginTop: "-10px", height: "40px", filter: "invert(100%)"}} src={"/submarine.svg"} />
         </Link>
       </div>
       <div className="pf-c-page__header-tools">

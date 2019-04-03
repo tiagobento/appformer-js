@@ -50,6 +50,8 @@ export function Editor(props: { match: match<{ space: string; project: string; f
     }
   }, 1000);
 
+
+  //FIXME: Bug when opening status bar.
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       const message = event.data as AppFormerBusMessage<any>;
@@ -100,7 +102,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
       </h1>
       <iframe
         style={{ borderTop: "1px solid lightgray", width: "100%", height: "100%" }}
-        ref={i => (iframe = i!)}
+        ref={i => (iframe = iframe ? iframe : i!)}
         src={iframeSrc}
       />
       {statusBarOpen && (
@@ -135,7 +137,10 @@ export function Editor(props: { match: match<{ space: string; project: string; f
       )}
       {!statusBarOpen && (
         <div
-          onClick={() => setStatusBarOpen(true)}
+          onClick={() => {
+            setStatusBarOpen(true);
+            setEphemeralStatus("Click the status bar do hide it.");
+          }}
           style={{
             color: "white",
             backgroundColor: "#363636",
