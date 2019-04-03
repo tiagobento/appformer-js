@@ -29,8 +29,9 @@ export const getAllSpaces = (request: any, response: any) => {
     pool.query(sql.toString(), (error, results) => {
         if (error) {
             response.status(422).send(error);
+        } else {
+            response.status(200).json(results.rows);
         }
-        response.status(200).json(results.rows);
     });
 };
 
@@ -44,11 +45,11 @@ export const getSpaceByName = (request: any, response: any) => {
     pool.query(sql.toString(), (error, results) => {
         if (error) {
             response.status(422).send(error);
-        }
-        if (results.rows.length === 0) {
+        } else if (results.rows.length === 0) {
             response.status(404).send();
+        } else {
+            response.status(200).json(results.rows[0]);
         }
-        response.status(200).json(results.rows[0]);
     });
 };
 
@@ -63,8 +64,9 @@ export const createSpace = (request: any, response: any) => {
     pool.query(sql.toString(), (error) => {
         if (error) {
             response.status(422).send(error);
+        } else {
+            response.status(201).send();
         }
-        response.status(201).send();
     });
 };
 
@@ -80,8 +82,9 @@ export const updateSpace = (request: any, response: any) => {
     pool.query(sql.toString(), (error) => {
         if (error) {
             response.status(422).send(error);
+        } else {
+            response.status(200).send();
         }
-        response.status(200).send();
     });
 };
 
@@ -99,17 +102,18 @@ export const deleteSpace = (request: any, response: any) => {
     pool.query(deleteProjectsSql.toString(), (error) => {
         if (error) {
             response.status(422).send(error);
-        }
-    });
+        } else {
+            const deleteSpaceSql = qb.delete()
+                .from(spacesTable)
+                .where(`name = '${name}'`);
 
-    const deleteSpaceSql = qb.delete()
-        .from(spacesTable)
-        .where(`name = '${name}'`);
-
-    pool.query(deleteSpaceSql.toString(), (error) => {
-        if (error) {
-            response.status(422).send(error);
+            pool.query(deleteSpaceSql.toString(), (error2) => {
+                if (error2) {
+                    response.status(422).send(error2);
+                } else {
+                    response.status(200).send();
+                }
+            });
         }
-        response.status(200).send();
     });
 };

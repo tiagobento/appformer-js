@@ -32,12 +32,12 @@ export const getProjectByUrl = (request: any, response: any) => {
 
     pool.query(sql.toString(), (error, results) => {
         if (error) {
-            throw error;
-        }
-        if (results.rows.length === 0) {
+            response.status(422).send(error);
+        } else if (results.rows.length === 0) {
             response.status(404).send();
+        } else {
+            response.status(200).json(results.rows[0]);
         }
-        response.status(200).json(results.rows[0]);
     });
 };
 
@@ -56,8 +56,9 @@ export const getAllProjectsFromSpace = (request: any, response: any) => {
     pool.query(sql.toString(), (error, results) => {
         if (error) {
             response.status(422).send(error);
+        } else {
+            response.status(200).json(results.rows);
         }
-        response.status(200).json(results.rows);
     });
 };
 
@@ -78,11 +79,11 @@ export const getProjectByName = (request: any, response: any) => {
     pool.query(sql.toString(), (error, results) => {
         if (error) {
             response.status(422).send(error);
-        }
-        if (results.rows.length === 0) {
+        } else if (results.rows.length === 0) {
             response.status(404).send();
+        } else {
+            response.status(200).json(results.rows[0]);
         }
-        response.status(200).json(results.rows[0]);
     });
 };
 
@@ -101,8 +102,9 @@ export const createProject = (request: any, response: any) => {
     pool.query(sql.toString(), (error) => {
         if (error) {
             response.status(422).send(error);
+        } else {
+            response.status(201).send();
         }
-        response.status(201).send();
     });
 };
 
@@ -122,8 +124,9 @@ export const updateProject = (request: any, response: any) => {
     pool.query(sql.toString(), (error) => {
         if (error) {
             response.status(422).send(error);
+        } else {
+            response.status(200).send();
         }
-        response.status(200).send();
     });
 };
 
@@ -142,7 +145,8 @@ export const deleteProject = (request: any, response: any) => {
     pool.query(sql.toString(), (error) => {
         if (error) {
             response.status(422).send(error);
+        } else {
+            response.status(200).send();
         }
-        response.status(200).send();
     });
 };
