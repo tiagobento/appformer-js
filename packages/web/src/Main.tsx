@@ -21,8 +21,8 @@ import { Login } from "./Login";
 import { NavBar } from "./NavBar";
 import { routes } from "./Routes";
 import { Spaces } from "./Spaces";
-import { Projects } from "./Projects";
-import { Files } from "./Files";
+import { Space } from "./Space";
+import { Project } from "./Project";
 import { Editor } from "./Editor";
 import { AppContext } from "./AppContext";
 import { Welcome } from "./Welcome";
@@ -46,11 +46,11 @@ export function Main() {
                     <Route exact={true} path={routes.welcome()} component={Welcome} />
                     <Route exact={true} path={routes.spaces()} component={Spaces} />
                     <Route exact={true} path={routes.import()} component={Import} />
-                    <Route exact={true} path={routes.space({ space: ":space" })} component={Projects} />
+                    <Route exact={true} path={routes.space({ space: ":space" })} component={Space} />
                     <Route
                       exact={true}
                       path={routes.project({ space: ":space", project: ":project" })}
-                      component={Files}
+                      component={Project}
                     />
                     <Route
                       exact={true}

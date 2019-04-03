@@ -23,7 +23,8 @@
     "react": "16.8.0",
     "react-dom": "16.8.4",
     "react-router": "^5.0.0",
-    "react-router-dom": "^5.0.0"
+    "react-router-dom": "^5.0.0",
+    "appformer-js-storage": "0.0.0"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",

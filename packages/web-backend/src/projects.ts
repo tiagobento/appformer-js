@@ -18,10 +18,13 @@ import { Pool } from "pg";
 import * as squel from "squel";
 import { config } from "./config";
 import {join} from "path";
+import {getSpaceByName} from "./spaces";
 
 const qb = squel.useFlavour('postgres');
 const pool = new Pool(config.development.database);
 const projectsTable = "projects";
+
+interface Project {id: number, name: string, url: string, info: any};
 
 export const getProjectByUrl = (request: any, response: any) => {
     const url = request.query.url;
@@ -62,10 +65,22 @@ export const getAllProjectsFromSpace = (request: any, response: any) => {
     });
 };
 
-export const getProjectByName = (request: any, response: any) => {
+export const getProjectByNameService = (request: any, response: any) => {
     const spaceName = request.params.spaceName;
     const name = request.params.name;
 
+    getProjectByName(spaceName, name).then(project => {
+        if (project) {
+            response.status(200).json(project);
+        } else {
+            response.status(404).send();
+        }
+    }).catch(error => {
+        response.status(422).send(error);
+    });
+};
+
+export const getProjectByName = (spaceName: string, name: string) => {
     const sql = qb.select()
         .field("p.*")
         .from(projectsTable, "p")
@@ -75,15 +90,17 @@ export const getProjectByName = (request: any, response: any) => {
                 .and(`s.name = '${spaceName}'`)
         )
         .where(`p.name = '${name}'`);
-    
-    pool.query(sql.toString(), (error, results) => {
-        if (error) {
-            response.status(422).send(error);
-        } else if (results.rows.length === 0) {
-            response.status(404).send();
-        } else {
-            response.status(200).json(results.rows[0]);
-        }
+
+    return new Promise<Project>(res => {
+        pool.query(sql.toString(), (error, results) => {
+            if (error) {
+                throw error;
+            } else if (results.rows.length === 0) {
+                res(undefined);
+            } else {
+                res(results.rows[0]);
+            }
+        });
     });
 };
 
@@ -111,12 +128,12 @@ export const createProject = (request: any, response: any) => {
 export const updateProject = (request: any, response: any) => {
     const spaceName = request.params.spaceName;
     const name = request.params.name;
-    const content = JSON.stringify(request.body);
+    const info = JSON.stringify(request.body);
 
     const sql = qb.update()
         .table(projectsTable)
         .from("spaces")
-        .set("info", content)
+        .set("info", info)
         .where(`projects.name = '${name}'`)
         .where(`spaces.name = '${spaceName}'`)
         .where("projects.space_id = spaces.id");

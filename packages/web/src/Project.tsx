@@ -25,7 +25,7 @@ import { Link } from "react-router-dom";
 import { routes } from "./Routes";
 import {Pf4Label} from "./Pf4Label";
 
-export function Files(props: { match: match<{ space: string; project: string }> }) {
+export function Project(props: { match: match<{ space: string; project: string }> }) {
   const [popup, setPopup] = useState(false);
   const [newFileName, setNewFileName] = useState("");
   const [files, setFiles] = useState(Array.from(storage.values()).map(s => ({ name: s.name })));

@@ -18,6 +18,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as spaces from "./spaces";
 import * as projects from "./projects";
+import * as storage from "./storage";
 import { config } from "./config";
 
 const app = express();
@@ -25,9 +26,10 @@ const port = config.development.server.port;
 
 app.use(bodyParser.json());
 app.use(
-  bodyParser.urlencoded({
-    extended: true
-  })
+    bodyParser.urlencoded({
+        extended: true
+    }),
+    bodyParser.text({type: 'text/plain'})
 );
 
 app.use((req, res, next) => {
@@ -37,17 +39,21 @@ app.use((req, res, next) => {
 });
 
 app.get('/spaces', spaces.getAllSpaces);
-app.get('/spaces/:name', spaces.getSpaceByName);
+app.get('/spaces/:name', spaces.getSpaceByNameService);
 app.post('/spaces', spaces.createSpace);
 app.put('/spaces/:name', spaces.updateSpace);
 app.delete('/spaces/:name', spaces.deleteSpace);
 
 app.get('/projects', projects.getProjectByUrl);
 app.get('/spaces/:spaceName/projects', projects.getAllProjectsFromSpace);
-app.get('/spaces/:spaceName/projects/:name', projects.getProjectByName);
+app.get('/spaces/:spaceName/projects/:name', projects.getProjectByNameService);
 app.post('/spaces/:spaceName/projects', projects.createProject);
 app.put('/spaces/:spaceName/projects/:name', projects.updateProject);
 app.delete('/spaces/:spaceName/projects/:name', projects.deleteProject);
+
+app.get('/spaces/:spaceName/projects/:name/files', storage.getProjectFilesService);
+app.get('/spaces/:spaceName/projects/:name/file', storage.getProjectFileContent);
+app.put('/spaces/:spaceName/projects/:name/file', storage.setProjectFileContent);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);

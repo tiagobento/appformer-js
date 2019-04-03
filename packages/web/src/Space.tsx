@@ -30,8 +30,8 @@ interface Project {
   url: string;
 }
 
-export function Projects(props: { match: match<{ space: string }> }) {
-  const [popup, setPopup] = useState(false);
+export function Space(props: { match: match<{ space: string }> }) {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectUrl, setNewProjectUrl] = useState("");
   const [projects, setProjects] = useState([] as Project[]);
@@ -47,7 +47,7 @@ export function Projects(props: { match: match<{ space: string }> }) {
     const createProject = await postProject(props.match.params.space, { name: newProjectName, url: newProjectUrl });
     if (createProject.status === 201) {
       updateProjects();
-      setPopup(false);
+      setIsPopupOpen(false);
     } else {
       console.info("Error creating project.");
     }
@@ -55,7 +55,7 @@ export function Projects(props: { match: match<{ space: string }> }) {
 
   const openNewProjectPopup = (e: any) => {
     e.preventDefault();
-    setPopup(true);
+    setIsPopupOpen(true);
     setNewProjectName("");
     setNewProjectUrl("");
   };
@@ -67,8 +67,8 @@ export function Projects(props: { match: match<{ space: string }> }) {
 
   return (
     <>
-      {popup && (
-        <PatternFlyPopup title={"New Project"} onClose={() => setPopup(false)}>
+      {isPopupOpen && (
+        <PatternFlyPopup title={"New Project"} onClose={() => setIsPopupOpen(false)}>
           <Form>
             <FormGroup fieldId={"name"}>
               <Pf4Label required={true} text={"Name"} />
@@ -96,7 +96,7 @@ export function Projects(props: { match: match<{ space: string }> }) {
               <Button onClick={addProject} variant={"primary"} type={"submit"}>
                 Add
               </Button>
-              <Button onClick={() => setPopup(false)} variant={"secondary"}>
+              <Button onClick={() => setIsPopupOpen(false)} variant={"secondary"}>
                 Cancel
               </Button>
             </ActionGroup>

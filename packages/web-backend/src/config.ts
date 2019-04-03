@@ -26,6 +26,12 @@ export const config = {
         server: {
             host: '127.0.0.1',
             port: '9002'
+        },
+        git: {
+            user: "porcelli-test",
+            passw: "ut7KoMNbZaY+c",
+            name: "Alexandre Porcelli",
+            email: "alexandre.porcelli@gmail.com"
         }
     }
 };

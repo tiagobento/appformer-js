@@ -17,6 +17,9 @@
 import { Pool } from "pg";
 import * as squel from "squel";
 import { config } from "./config";
+import {getProjectByName} from "./projects";
+
+interface Space {id: number, name: string, info: any};
 
 const qb = squel.useFlavour('postgres');
 const pool = new Pool(config.development.database);
@@ -35,21 +38,35 @@ export const getAllSpaces = (request: any, response: any) => {
     });
 };
 
-export const getSpaceByName = (request: any, response: any) => {
+export const getSpaceByNameService = (request: any, response: any) => {
     const name = request.params.name;
 
+    getSpaceByName(name).then(space => {
+        if (space) {
+            response.status(200).json(space);
+        } else {
+            response.status(404).send();
+        }
+    }).catch(error => {
+        response.status(422).send(error);
+    });
+};
+
+export const getSpaceByName = (name: string) => {
     const sql = qb.select()
         .from(spacesTable)
         .where(`name = '${name}'`);
 
-    pool.query(sql.toString(), (error, results) => {
-        if (error) {
-            response.status(422).send(error);
-        } else if (results.rows.length === 0) {
-            response.status(404).send();
-        } else {
-            response.status(200).json(results.rows[0]);
-        }
+    return new Promise<Space>(res => {
+        pool.query(sql.toString(), (error, results) => {
+            if (error) {
+                throw error;
+            } else if (results.rows.length === 0) {
+                res(undefined);
+            } else {
+                res(results.rows[0]);
+            }
+        });
     });
 };
 
