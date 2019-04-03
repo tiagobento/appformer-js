@@ -134,15 +134,16 @@ export const deleteProject = (request: any, response: any) => {
     const spaceName = request.params.spaceName;
     const name = request.params.name;
 
-    const sql = qb.delete()
-        .from(`projectsTable p`)
-        .join("spaces", "s",
-            qb.expr()
-                .and("s.id = p.space_id")
-                .and(`s.name = '${spaceName}'`)
-        )
-        .where(`projects.name = '${name}'`)
-    pool.query(sql.toString(), (error) => {
+    const spaceSelect = qb.select()
+        .field('id')
+        .from('spaces', 's')
+        .where(`s.name = '${spaceName}'`);
+    const deleteProjectsSql = qb.delete()
+        .from("projects")
+        .where(`space_id = (${spaceSelect.toString()})`)
+        .where(`name = '${name}'`);
+
+    pool.query(deleteProjectsSql.toString(), (error) => {
         if (error) {
             response.status(422).send(error);
         } else {

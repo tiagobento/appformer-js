@@ -91,13 +91,13 @@ export const updateSpace = (request: any, response: any) => {
 export const deleteSpace = (request: any, response: any) => {
     const name = request.params.name;
 
+    const spaceSelect = qb.select()
+        .field('id')
+        .from('spaces', 's')
+        .where(`s.name = '${name}'`);
     const deleteProjectsSql = qb.delete()
-        .from(`projectsTable p`)
-        .join("spaces", "s",
-            qb.expr()
-                .and("s.id = p.space_id")
-                .and(`s.name = '${name}'`)
-        )
+        .from("projects")
+        .where(`space_id = (${spaceSelect.toString()})`);
 
     pool.query(deleteProjectsSql.toString(), (error) => {
         if (error) {
