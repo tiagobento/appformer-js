@@ -16,7 +16,8 @@
 
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import * as db from "./query";
+import * as spaces from "./spaces";
+import * as projects from "./projects";
 import { config } from "./config";
 
 const app = express();
@@ -35,17 +36,18 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/spaces", db.getAll("spaces"));
-app.get("/spaces/:name", db.getByName("spaces"));
-app.post("/spaces", db.create("spaces"));
-app.put("/spaces/:name", db.update("spaces"));
-app.delete("/spaces/:name", db.deleteRow("spaces"));
+app.get('/spaces', spaces.getAllSpaces);
+app.get('/spaces/:name', spaces.getSpaceByName);
+app.post('/spaces', spaces.createSpace);
+app.put('/spaces/:name', spaces.updateSpace);
+app.delete('/spaces/:name', spaces.deleteSpace);
 
-app.get("/projects", db.getAll("projects"));
-app.get("/projects/:name", db.getByName("projects"));
-app.post("/projects", db.create("projects"));
-app.put("/projects/:name", db.update("projects"));
-app.delete("/projects/:name", db.deleteRow("projects"));
+app.get('/projects', projects.getProjectByUrl);
+app.get('/spaces/:spaceName/projects', projects.getAllProjectsFromSpace);
+app.get('/spaces/:spaceName/projects/:name', projects.getProjectByName);
+app.post('/spaces/:spaceName/projects', projects.createProject);
+app.put('/spaces/:spaceName/projects/:name', projects.updateProject);
+app.delete('/spaces/:spaceName/projects/:name', projects.deleteProject);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);

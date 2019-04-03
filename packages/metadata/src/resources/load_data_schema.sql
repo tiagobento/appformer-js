@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS spaces;
+CREATE TABLE spaces(
+    id serial NOT NULL PRIMARY KEY,
+    name VARCHAR(500) NOT NULL UNIQUE,
+    info JSON NOT NULL
+);
+
+DROP TABLE IF EXISTS projects;
+CREATE TABLE projects(
+    id serial NOT NULL PRIMARY KEY,
+    name VARCHAR(500) NOT NULL UNIQUE,
+    url VARCHAR(500) NOT NULL UNIQUE,
+    info JSON NOT NULL,
+    space_id INTEGER NOT NULL,
+    FOREIGN KEY (space_id) REFERENCES spaces (id)
+);
