@@ -40,10 +40,41 @@ function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain
   embeddedEditorIframe.contentWindow!.postMessage(requestGetContentMessage, iframeDomain);
 }
 
-function init() {
+function insertActionButtons(pageHeadActions: Element) {
+  const openOnKieInterfaceButton = document.createElement("button");
+  openOnKieInterfaceButton.className = "btn btn-sm";
+  openOnKieInterfaceButton.style.cssText = "float:right;";
+  openOnKieInterfaceButton.textContent = "Open on KIE Interface";
+  openOnKieInterfaceButton.onclick = e => {
+    window.open(`http://localhost:9001/import?path=${window.location}`);
+  };
+
+  const setupAsKieProjectButton = document.createElement("button");
+  setupAsKieProjectButton.className = "btn btn-sm";
+  setupAsKieProjectButton.style.cssText = "float:right;";
+  setupAsKieProjectButton.textContent = "Setup as KIE Project";
+  setupAsKieProjectButton.onclick = e => {
+    window.open(`http://localhost:9004/setup?path=${window.location}`);
+  };
+
+  const setupAsKieProjectButtonLi = document.createElement("li");
+  setupAsKieProjectButtonLi.appendChild(setupAsKieProjectButton);
+  const openOnKieInterfaceButtonLi = document.createElement("li");
+  openOnKieInterfaceButtonLi.appendChild(openOnKieInterfaceButton);
+
+  pageHeadActions.appendChild(setupAsKieProjectButtonLi);
+  pageHeadActions.appendChild(openOnKieInterfaceButtonLi);
+}
+
+function initContentScript() {
+  const pageHeadActions = document.querySelector("ul.pagehead-actions")!;
+  if (pageHeadActions) {
+    insertActionButtons(pageHeadActions);
+  }
+
   const githubEditor = document.querySelector(".js-code-editor") as HTMLElement;
   if (!githubEditor) {
-    console.info("Not GitHub.");
+    console.info("Not GitHub edit page.");
     return;
   }
 
@@ -57,9 +88,6 @@ function init() {
   //**!!!!**
   //REMEMBER: open /Applications/Google\ Chrome.app --args --allow-running-insecure-content
   //**!!!!**
-
-  //Sanity check
-  console.log("Extension is running! 4");
 
   //Bootstrap GitHub native editor
   //FIXME: Do we really have to do this?
@@ -121,20 +149,7 @@ function init() {
   embeddedEditorIframe.style.cssText =
     "margin-top: 10px; width:100%; height:600px; border-radius:4px; border:1px solid lightgray;";
 
-  //Insert button after default GitHub editor
-  const openOnKieInterfaceButton = document.createElement("button");
-  openOnKieInterfaceButton.className = "btn btn-sm btn-blue";
-  openOnKieInterfaceButton.style.cssText = "float:right;";
-  openOnKieInterfaceButton.textContent = "Open on KIE Interface";
-  openOnKieInterfaceButton.onclick = e => {
-    window.open(`http://localhost:9001/import?path=${window.location}`)
-  };
-
-  const pageHeadActions = document.querySelector("ul.pagehead-actions")!;
-  const openOnKieInterfaceButtonLi = document.createElement("li");
-  openOnKieInterfaceButtonLi.appendChild(openOnKieInterfaceButton);
-  pageHeadActions.appendChild(openOnKieInterfaceButtonLi);
-
+  //Setup Fullscreen button
   const fullScreenButton = document.createElement("button");
   fullScreenButton.className = "btn btn-sm";
   fullScreenButton.style.cssText = "float: right";
@@ -166,9 +181,14 @@ function init() {
     document.body.appendChild(buttonsDiv);
   };
 
+  //Insert Fullscreen button
   const fullScreenDiv = document.createElement("div");
   fullScreenDiv.style.cssText = "width: 486px";
   fullScreenDiv.appendChild(fullScreenButton);
+
+  //Insert iframe and Fullscreen button
+  insertAfterGitHubEditor(embeddedEditorIframe);
+  insertRightToBreadcrumb(fullScreenDiv);
 
   //FIXME: Find a way to request editor content just when necessary
   setInterval(
@@ -179,9 +199,6 @@ function init() {
     1000,
     3000
   );
-
-  insertAfterGitHubEditor(embeddedEditorIframe);
-  insertRightToBreadcrumb(fullScreenDiv);
 }
 
-init();
+initContentScript();

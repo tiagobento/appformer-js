@@ -27,7 +27,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "[name].js",
-    library: "AppFormer.Webapp",
+    library: "AppFormer.Web",
     libraryTarget: "umd",
     umdNamedDefine: true
   },

@@ -11,7 +11,7 @@
         "contentscript.js"
       ],
       "matches": [
-        "https://github.com/*/edit/*"
+        "https://github.com/*"
       ],
       "all_frames": true
     }
