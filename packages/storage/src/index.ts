@@ -13,9 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Files } from "./core";
-
 export * from "./core";
 export * from "./api";
-
-export const register = Files.register;

@@ -10,9 +10,8 @@
     "url": "https://github.com/kiegroup/appformer.git"
   },
   "dependencies": {
-    "express": "~4.16.0",
-    "googleapis": "^39.1.0",
-    "opn": "^5.3.0"
+    "guid-typescript": "1.0.9",
+    "isomorphic-git": "0.22.3"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",

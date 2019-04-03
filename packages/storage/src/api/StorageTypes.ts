@@ -17,5 +17,6 @@
 export enum StorageTypes {
     GDRIVE = "gdrive",
     FS = "fs",
+    GIT = "git",
     GITHUB = "github"
 }

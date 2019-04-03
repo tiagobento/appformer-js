@@ -13,13 +13,13 @@ export class FS implements Provider {
 
   public listFiles(file: File): Promise<File[]> {
     if (file.storage.valueOf() === StorageTypes.FS.valueOf()) {
-      return this._listFiles(file)
+      return this._listFiles(file, file)
         .catch(reason => Promise.reject(reason));
     }
     return Promise.resolve([]);
   }
 
-  private _listFiles(file: File): Promise<File[]> {
+  private _listFiles(root: File, file: File): Promise<File[]> {
     return this.readdir(file.full_name, { withFileTypes: true })
       .then(dirents => {
         const files: File[] = [];
@@ -27,21 +27,11 @@ export class FS implements Provider {
         return Promise.all(dirents.map(f => {
           const fullPath = file.full_name + "/" + f.name;
           if (f.isFile()) {
-            files.push(new File(f.name,
-              fullPath,
-              FileType.FILE,
-              `file://${fullPath}`,
-              StorageTypes.FS,
-              fullPath));
+            files.push(FS._newFile(root.full_name, fullPath, FileType.FILE));
             return Promise.resolve();
           } else if (f.isDirectory()) {
-            const d = new File(f.name,
-              fullPath,
-              FileType.FOLDER,
-              `file://${fullPath}`,
-              StorageTypes.FS,
-              fullPath);
-            return this._listFiles(d).then(nested => {
+            const d = FS._newFile(root.full_name, fullPath, FileType.FOLDER);
+            return this._listFiles(root, d).then(nested => {
               files.push(...nested);
               return Promise.resolve();
             });
@@ -69,13 +59,22 @@ export class FS implements Provider {
     return Promise.resolve();
   }
 
-  public static newFile(fullPath: string) {
-    return new File(path.basename(fullPath),
-      fullPath,
-      fs.statSync(fullPath) ? FileType.FOLDER : FileType.FILE,
-      `file://${fullPath}`,
-      StorageTypes.FS,
-      fullPath);
+  public static convert(file: File) {
+    return FS._newFile(file.name, file.full_name, file.type);
   }
 
+  public static newFile(rootPath: string, fullPath: string) {
+    return FS._newFile(rootPath, fullPath, fs.statSync(fullPath) ? FileType.FOLDER : FileType.FILE);
+  }
+
+  public static _newFile(rootPath: string, fullPath: string, fileType: FileType) {
+    return new File(path.basename(fullPath),
+      fullPath,
+      path.relative(rootPath, fullPath),
+      fileType,
+      `file://${fullPath}`,
+      StorageTypes.FS,
+      rootPath,
+      fullPath);
+  }
 }
