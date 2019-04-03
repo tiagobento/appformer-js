@@ -1,5 +1,5 @@
 import { AppFormerBusMessage } from "appformer-js-submarine";
-import { router } from "appformer-js-router";
+import { router } from "appformer-js-microeditor-router";
 
 declare global {
   export const CodeMirror: any;

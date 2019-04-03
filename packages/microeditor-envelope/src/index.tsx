@@ -16,7 +16,7 @@
 
 import { AppFormerBusMessage, AppFormerSubmarine } from "appformer-js-submarine";
 import { GwtMicroEditor, BusinessCentralClientEditorFactory } from "./GwtMicroEditor";
-import { LanguageData, Resource } from "appformer-js-router";
+import { LanguageData, Resource } from "appformer-js-microeditor-router";
 
 //Exposed API of AppFormerGwt
 declare global {

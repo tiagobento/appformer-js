@@ -17,7 +17,7 @@
 import * as React from "react";
 import { match } from "react-router";
 import { storage } from "./Storage";
-import { router } from "appformer-js-router";
+import { router } from "appformer-js-microeditor-router";
 import { useEffect, useState } from "react";
 import { upper } from "./Util";
 import { AppFormerBusMessage } from "appformer-js-submarine";

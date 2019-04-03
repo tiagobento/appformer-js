@@ -46,7 +46,7 @@
   "dependencies": {
     "appformer-js-core": "0.0.0",
     "appformer-js-submarine": "0.0.0",
-    "appformer-js-router": "0.0.0",
+    "appformer-js-microeditor-router": "0.0.0",
     "appformer-js-microeditor-envelope": "0.0.0",
     "@types/vscode": "^1.32.0",
     "vscode": "1.1.28"

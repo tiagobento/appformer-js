@@ -17,7 +17,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as __path from "path";
-import { router } from "appformer-js-router";
+import { router } from "appformer-js-microeditor-router";
 import { AppFormerBusMessage } from "appformer-js-submarine";
 
 export class CustomEditor {
