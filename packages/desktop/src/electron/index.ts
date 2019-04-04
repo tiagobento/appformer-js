@@ -17,8 +17,13 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 
 import * as path from "path";
+import { Files, FS } from "appformer-js-storage";
+import * as os from "os";
+import * as fs from "fs";
 
 app.on("ready", () => {
+  Files.register(new FS());
+
   const mainWindow = new BrowserWindow({
     height: 800,
     width: 800,
@@ -33,14 +38,35 @@ app.on("ready", () => {
   });
 
   ipcMain.on("mainWindowLoaded", () => {
-    console.info("LOADED!");
+    console.info("Desktop app is loaded.");
   });
 
+  const rootPath = path.join(app.getPath("documents"), "KieSubmarine");
   ipcMain.on("requestFiles", () => {
-    //FIXME: Read using appformer-js-storage from Home folder.
-    const files = [{ path: "tiago.dmn" }, { path: "pom.xml" }] as File[];
-    mainWindow.webContents.send("returnFiles", files);
+
+    if (!fs.existsSync(rootPath)) {
+      fs.mkdirSync(rootPath);
+    }
+
+    Files.listFiles(FS.newFile(rootPath, rootPath)).then(files => {
+      const filteredFiles = files.filter(f => !f.name.startsWith(".")).map(f => ({ path: f.relative_name }));
+      mainWindow.webContents.send("returnFiles", filteredFiles);
+    });
   });
+
+  ipcMain.on("writeContent", () => {});
+
+  ipcMain.on("requestContent", (file: File) => {
+    Files.read(FS.newFile(rootPath, file.path)).then(contents => {
+        mainWindow.webContents.send("returnContents", contents);
+    })
+  });
+
+  ipcMain.on("createFile", () => {});
+
+  ipcMain.on("deleteFile", () => {});
+
+  ipcMain.on("renameFile", () => {});
 });
 
 app.on("window-all-closed", () => {

@@ -44,17 +44,17 @@ function App() {
   const Router = () => {
     switch (page) {
       case Pages.WELCOME:
-        return <Welcome setPage={setPage} />;
+        return <Welcome setPage={setPage} setOpenFile={setOpenFile} />;
       case Pages.FILES:
         return <Files setPage={setPage} setOpenFile={setOpenFile} />;
       case Pages.EDITOR:
-        return <Editor openFile={openFile} setPage={setPage} />;
+        return <Editor openFile={openFile!} setPage={setPage} />;
       default:
-        return <>Unknown page</>;
+        return <>Oops! Unknown page.</>;
     }
   };
 
-  function Header() {
+  const Header = () => {
     return (
       <div
         style={{
@@ -64,30 +64,39 @@ function App() {
           width: "100vw",
           display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           padding: "5px"
         }}
       >
         <a style={{ color: "white" }} href={"#"} onClick={() => setPage(Pages.FILES)}>
           Files
         </a>
+
+        <span style={{ color: "white" }}>{openFile && openFile.path}</span>
+
+        <span />
       </div>
     );
-  }
+  };
 
   return (
     <>
-      <Header/>
+      <Header />
       <Page>
-          <Router />
+        <Router />
       </Page>
     </>
   );
 }
 
-function Welcome(props: { setPage: (s: Pages) => void }) {
+function Welcome(props: { setPage: (s: Pages) => void; setOpenFile: (file: File | undefined) => void }) {
   const start = () => {
     props.setPage(Pages.FILES);
   };
+
+  useEffect(() => {
+    props.setOpenFile(undefined);
+  }, []);
 
   return (
     <div>
@@ -97,14 +106,16 @@ function Welcome(props: { setPage: (s: Pages) => void }) {
   );
 }
 
-function Files(props: { setPage: (page: Pages) => void; setOpenFile: (file: File) => void }) {
+function Files(props: { setPage: (page: Pages) => void; setOpenFile: (file: File | undefined) => void }) {
   const [files, setFiles] = useState([] as File[]);
+  const [addFilePopup, setAddFilePopup] = useState(false);
 
   ipc.on("returnFiles", (event: any, fs: File[]) => {
     setFiles(fs);
   });
 
   useEffect(() => {
+    props.setOpenFile(undefined);
     ipc.send("requestFiles");
   }, []);
 
@@ -114,21 +125,30 @@ function Files(props: { setPage: (page: Pages) => void; setOpenFile: (file: File
   };
 
   return (
-    <div style={{ padding: "10px" }}>
-      {files.map(file => (
-        <div key={file.path}>
-          <a href="#" onClick={() => openFile(file)}>
-            {file.path}
-          </a>
-        </div>
-      ))}
-    </div>
+    <>
+      {addFilePopup && <div>Adding file</div>}
+      <div style={{ padding: "10px" }}>
+        {files.map(file => (
+          <div key={file.path}>
+            <a href="#" onClick={() => openFile(file)}>
+              {file.path}
+            </a>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 
-function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
+function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   let iframe: HTMLIFrameElement;
   const iframeDomain = "http://localhost:9000";
+
+  const openFileExtension = props.openFile.path.split(".").pop() || "";
+  const languageData = router.get(openFileExtension);
+  if (!languageData) {
+    return <>{"There's no enhanced editor available for the extension " + openFileExtension}</>;
+  }
 
   useEffect(() => {
     const initPolling = setInterval(() => {
@@ -146,17 +166,15 @@ function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
           clearInterval(initPolling);
           break;
         case "REQUEST_LANGUAGE":
-          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: router.get("dmn") };
+          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: languageData };
           iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
           break;
         case "REQUEST_SET_CONTENT":
-          console.info("req set");
           const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: "" };
           iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
           break;
         case "RETURN_GET_CONTENT":
           const iframeEditorContent = message.data;
-          console.info("ret get");
           break;
         default:
           console.debug("Unknown message type " + message.type);
