@@ -16,11 +16,12 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { Page } from "@patternfly/react-core";
 import * as ReactDOM from "react-dom";
 import * as electron from "electron";
 import { File } from "../shared/Protocol";
 import { AppFormerBusMessage } from "appformer-js-submarine";
-import {router} from "appformer-js-microeditor-router";
+import { router } from "appformer-js-microeditor-router";
 
 const ipc = electron.ipcRenderer;
 
@@ -59,10 +60,7 @@ function App() {
         style={{
           color: "white",
           backgroundColor: "black",
-          position: "fixed",
-          left: 0,
-          top: 0,
-          height: "50px",
+          height: "76px",
           width: "100vw",
           display: "flex",
           alignItems: "center",
@@ -77,10 +75,12 @@ function App() {
   }
 
   return (
-    <div style={{ marginTop: "50px" }}>
-      <Header />
-      <Router />
-    </div>
+    <>
+      <Header/>
+      <Page>
+          <Router />
+      </Page>
+    </>
   );
 }
 
@@ -127,9 +127,8 @@ function Files(props: { setPage: (page: Pages) => void; setOpenFile: (file: File
 }
 
 function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
-
   let iframe: HTMLIFrameElement;
-  const iframeDomain = window.location.origin;
+  const iframeDomain = "http://localhost:9000";
 
   useEffect(() => {
     const initPolling = setInterval(() => {
@@ -173,8 +172,8 @@ function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
     <>
       <iframe
         ref={i => (iframe = i!)}
-        style={{ width: "100%", height: "600px", border: "none" }}
-        src={"microeditor-envelope-index.html"}
+        style={{ width: "100%", height: "90%", border: "none" }}
+        src={"http://localhost:9000"}
       />
     </>
   );
