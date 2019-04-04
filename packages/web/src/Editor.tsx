@@ -36,17 +36,15 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   const iframeDomain = "http://localhost:9000";
   const iframeSrc = "http://localhost:9000";
 
-  const initPolling = setInterval(() => {
-    const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
-    if (iframe && iframe.contentWindow) {
-      const contentWindow = iframe.contentWindow;
-      contentWindow.postMessage(initMessage, iframeDomain);
-    }
-  }, 1000);
-
-
-  //FIXME: Bug when opening status bar.
   useEffect(() => {
+    const initPolling = setInterval(() => {
+      const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
+      if (iframe && iframe.contentWindow) {
+        const contentWindow = iframe.contentWindow;
+        contentWindow.postMessage(initMessage, iframeDomain);
+      }
+    }, 1000);
+
     const handler = (event: MessageEvent) => {
       const message = event.data as AppFormerBusMessage<any>;
       switch (message.type) {
@@ -78,7 +76,9 @@ export function Editor(props: { match: match<{ space: string; project: string; f
     };
 
     window.addEventListener("message", handler, false);
-    return () => window.removeEventListener("message", handler, false);
+    return () => {
+      window.removeEventListener("message", handler, false);
+    }
   }, []);
 
   const [statusMessage, setStatusMessage] = useState("");
