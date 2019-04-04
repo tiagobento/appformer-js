@@ -37,9 +37,14 @@ import {
   Title,
   PageSection,
   PageSectionVariants,
-  Badge
+  Badge,
+  EmptyStateSecondaryActions,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyState
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
+import { CubesIcon } from "@patternfly/react-icons";
 import { Pf4Label } from "./Pf4Label";
 
 interface Space {
@@ -77,6 +82,14 @@ export function Spaces() {
   useEffect(() => {
     updateSpaces();
   }, []);
+
+  const AddSpaceButton = () => {
+    return (
+      <Button onClick={openNewSpacePopup} variant={"primary"} type={"submit"}>
+        Add Space
+      </Button>
+    );
+  };
 
   return (
     <>
@@ -119,33 +132,48 @@ export function Spaces() {
               Spaces
             </Title>
           </SplitItem>
-          <SplitItem isMain={false}>
-            <Button onClick={openNewSpacePopup} variant={"primary"} type={"submit"}>
-              Add Space
-            </Button>
-          </SplitItem>
+          <SplitItem isMain={false}>{<AddSpaceButton />}</SplitItem>
         </Split>
       </PageSection>
-      <PageSection>
-        <Gallery gutter="md">
-          {spaces.map(space => (
-            <GalleryItem>
-              <Link to={routes.space({ space: space.name })}>
-                <Card>
-                  <CardBody>
-                    <Split>
-                      <SplitItem isMain={true}>{upper(space.name)}</SplitItem>
-                      <SplitItem isMain={false}>
-                        <Badge isRead={true}>1</Badge>
-                      </SplitItem>
-                    </Split>
-                  </CardBody>
-                </Card>
-              </Link>
-            </GalleryItem>
-          ))}
-        </Gallery>
-      </PageSection>
+
+      {spaces.length > 0 && (
+        <PageSection>
+          <Gallery gutter="md">
+            {spaces.map(space => (
+              <GalleryItem>
+                <Link to={routes.space({ space: space.name })}>
+                  <Card>
+                    <CardBody>
+                      <Split>
+                        <SplitItem isMain={true}>{upper(space.name)}</SplitItem>
+                        <SplitItem isMain={false}>
+                          <Badge isRead={true}>1</Badge>
+                        </SplitItem>
+                      </Split>
+                    </CardBody>
+                  </Card>
+                </Link>
+              </GalleryItem>
+            ))}
+          </Gallery>
+        </PageSection>
+      )}
+
+      {spaces.length === 0 && (
+        <PageSection style={{ display: "flex", justifyContent: "space-around" }}>
+          <EmptyState>
+            <EmptyStateIcon icon={CubesIcon} />
+            <Title headingLevel="h5" size="lg">
+              Oops! Looks like you don't have any Spaces yet.
+            </Title>
+            <EmptyStateBody>
+              Spaces are logical groups of Projects. Once you add your first space you can create projects or event
+              import projects from GitHub.
+            </EmptyStateBody>
+            {<AddSpaceButton />}
+          </EmptyState>
+        </PageSection>
+      )}
     </>
   );
 }

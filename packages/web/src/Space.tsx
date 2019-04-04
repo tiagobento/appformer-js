@@ -18,25 +18,29 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { match } from "react-router";
 import { upper } from "./Util";
+import { CubesIcon } from "@patternfly/react-icons";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import {
   ActionGroup,
+  Badge,
   Breadcrumb,
   BreadcrumbItem,
   Button,
-  Form,
-  FormGroup,
-  TextInput,
-  Gallery,
-  GalleryItem,
   Card,
   CardBody,
-  Split,
-  SplitItem,
-  Title,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  Form,
+  FormGroup,
+  Gallery,
+  GalleryItem,
   PageSection,
   PageSectionVariants,
-  Badge
+  Split,
+  SplitItem,
+  TextInput,
+  Title
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
@@ -82,6 +86,14 @@ export function Space(props: { match: match<{ space: string }> }) {
     updateProjects();
   }, []);
 
+  const AddProjectButton = () => {
+    return (
+      <Button onClick={openNewProjectPopup} variant={"primary"} type={"submit"}>
+        Add Project
+      </Button>
+    );
+  };
+
   return (
     <>
       {isPopupOpen && (
@@ -120,13 +132,14 @@ export function Space(props: { match: match<{ space: string }> }) {
           </Form>
         </PatternFlyPopup>
       )}
+
       <PageSection variant={PageSectionVariants.light}>
         <Breadcrumb>
           <BreadcrumbItem>
             <Link to={routes.spaces()}>Spaces</Link>
           </BreadcrumbItem>
           <BreadcrumbItem isActive={true}>
-            <Link to={routes.space({space: props.match.params.space})}>{props.match.params.space}</Link>
+            <Link to={routes.space({ space: props.match.params.space })}>{props.match.params.space}</Link>
           </BreadcrumbItem>
         </Breadcrumb>
         <Split>
@@ -135,34 +148,48 @@ export function Space(props: { match: match<{ space: string }> }) {
               Projects
             </Title>
           </SplitItem>
-          <SplitItem isMain={false}>
-            <Button onClick={openNewProjectPopup} variant={"primary"} type={"submit"}>
-              Add Project
-            </Button>
-          </SplitItem>
+          <SplitItem isMain={false}>{<AddProjectButton />}</SplitItem>
         </Split>
       </PageSection>
 
-      <PageSection>
-        <Gallery gutter="md">
-          {projects.map(project => (
-            <GalleryItem key={project.url}>
-              <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
-                <Card>
-                  <CardBody>
-                    <Split>
-                      <SplitItem isMain={true}>{upper(project.name)}</SplitItem>
-                      <SplitItem isMain={false}>
-                        <Badge isRead={true}>1</Badge>
-                      </SplitItem>
-                    </Split>
-                  </CardBody>
-                </Card>
-              </Link>
-            </GalleryItem>
-          ))}
-        </Gallery>
-      </PageSection>
+      {projects.length > 0 && (
+          <PageSection>
+            <Gallery gutter="md">
+              {projects.map(project => (
+                <GalleryItem key={project.url}>
+                  <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
+                    <Card>
+                      <CardBody>
+                        <Split>
+                          <SplitItem isMain={true}>{upper(project.name)}</SplitItem>
+                          <SplitItem isMain={false}>
+                            <Badge isRead={true}>1</Badge>
+                          </SplitItem>
+                        </Split>
+                      </CardBody>
+                    </Card>
+                  </Link>
+                </GalleryItem>
+              ))}
+            </Gallery>
+          </PageSection>
+      )}
+
+      {projects.length === 0 && (
+        <PageSection style={{ display: "flex", justifyContent: "space-around" }}>
+          <EmptyState>
+            <EmptyStateIcon icon={CubesIcon} />
+            <Title headingLevel="h5" size="lg">
+              Oops! Looks like you don't have any Projects yet.
+            </Title>
+            <EmptyStateBody>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec orci enim, cursus nec dolor a, efficitur
+              ullamcorper lorem. Aenean blandit est consequat mollis euismod.
+            </EmptyStateBody>
+            {<AddProjectButton />}
+          </EmptyState>
+        </PageSection>
+      )}
     </>
   );
 }
