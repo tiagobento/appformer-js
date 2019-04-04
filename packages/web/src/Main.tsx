@@ -28,6 +28,8 @@ import { AppContext } from "./AppContext";
 import { Welcome } from "./Welcome";
 import { Import } from "./Import";
 import { Avatar, BackgroundImage, BackgroundImageSrc, Brand, Page, PageHeader } from "@patternfly/react-core";
+import { Homepage } from "./homepage";
+
 // import avatarImg from 'https://pf4.patternfly.org//assets/images/img_avatar.svg';
 const bgImages = {
   [BackgroundImageSrc.lg]: "/assets/images/pfbg_1200.jpg",
@@ -58,6 +60,7 @@ export function Main() {
           <BackgroundImage src={bgImages} />
           <Page header={<Header />} style={{ height: "100%" }}>
             <Switch>
+              <Route exact={true} path={"/homepage"} component={Homepage} />
               <Route exact={true} path={routes.welcome()} component={Welcome} />
               <Route exact={true} path={routes.spaces()} component={Spaces} />
               <Route exact={true} path={routes.import()} component={Import} />
