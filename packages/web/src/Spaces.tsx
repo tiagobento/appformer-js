@@ -112,7 +112,7 @@ export function Spaces() {
                 <Card>
                   <CardBody>
                     <Split>
-                      <SplitItem isMain>{upper(space.name)}</SplitItem>
+                      <SplitItem isMain={true}>{upper(space.name)}</SplitItem>
                       <SplitItem isMain={false}>
                         <Badge isRead={true}>1</Badge>
                       </SplitItem>
