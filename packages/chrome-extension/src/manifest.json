@@ -3,6 +3,9 @@
   "version": "1.2.0",
   "manifest_version": 2,
   "description": "QS Chrome Extension",
+  "chrome_url_overrides" : {
+    "newtab": "home.html"
+  },
   "content_scripts": [
     {
       "run_at": "document_end",
