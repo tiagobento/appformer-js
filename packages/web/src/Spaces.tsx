@@ -22,7 +22,10 @@ import { postSpace, getSpaces } from "./service/Service";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import {
   ActionGroup,
+  BackgroundImage,
+  BackgroundImageSrc,
   Breadcrumb,
+  BreadcrumbItem,
   Button,
   Form,
   FormGroup,
@@ -33,7 +36,9 @@ import {
   CardBody,
   Split,
   SplitItem,
+  Title,
   PageSection,
+  PageSectionVariants,
   Badge
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
@@ -75,6 +80,15 @@ export function Spaces() {
     updateSpaces();
   }, []);
 
+  const bgImages = {
+    [BackgroundImageSrc.lg]: "/assets/images/pfbg_1200.jpg",
+    [BackgroundImageSrc.sm]: "/assets/images/pfbg_768.jpg",
+    [BackgroundImageSrc.sm2x]: "/assets/images/pfbg_768@2x.jpg",
+    [BackgroundImageSrc.xs]: "/assets/images/pfbg_576.jpg",
+    [BackgroundImageSrc.xs2x]: "/assets/images/pfbg_576@2x.jpg",
+    [BackgroundImageSrc.filter]: "/assets/images/background-filter.svg#image_overlay"
+  };
+
   return (
     <>
       {popup && (
@@ -104,6 +118,29 @@ export function Spaces() {
         </PatternFlyPopup>
       )}
 
+      <BackgroundImage src={bgImages} />
+      <PageSection variant={PageSectionVariants.light}>
+        <Breadcrumb>
+          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#" isActive={true}>
+            Section Landing
+          </BreadcrumbItem>
+        </Breadcrumb>
+        <Split>
+          <SplitItem isMain={true}>
+            <Title headingLevel="h1" size="3xl">
+              Spaces
+            </Title>
+          </SplitItem>
+          <SplitItem isMain={false}>
+            <Button onClick={openNewSpacePopup} variant={"primary"} type={"submit"}>
+              Add Space
+            </Button>
+          </SplitItem>
+        </Split>
+      </PageSection>
       <PageSection>
         <Gallery gutter="md">
           {spaces.map(space => (

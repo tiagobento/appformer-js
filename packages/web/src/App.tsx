@@ -24,10 +24,7 @@ export function App() {
   const [user, setUser]: [User, (u: User) => void] = useState({ name: "Tiago Bento" });
   return (
     <AppContext.Provider value={{ user: user, setUser: u => setUser(u) }}>
-      <div className={"pf-c-background-image"} />
-      <div className={"pf-c-page"}>
         <Main />
-      </div>
     </AppContext.Provider>
   );
 }

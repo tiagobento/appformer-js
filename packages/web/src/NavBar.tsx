@@ -18,38 +18,24 @@ import * as React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "./User";
+import { Dropdown, DropdownItem, DropdownToggle, Toolbar, ToolbarGroup, ToolbarItem } from "@patternfly/react-core";
 
 export function NavBar(props: { user: User }) {
   const [loginPopover, setLoginPopover] = useState(false);
+
   return (
-    <header role="banner" className="pf-c-page__header">
-      <div className="pf-c-page__header-brand">
-        <Link className="pf-c-page__header-brand-link" to={"/"}>
-          <img alt={"logo"} style={{marginTop: "-10px", height: "40px", filter: "invert(100%)"}} src={"/submarine.svg"} />
-        </Link>
-      </div>
-      <div className="pf-c-page__header-tools">
-        <div className="pf-c-page__header-tools-group">
-          <div className="pf-m-user pf-screen-reader">
-            <div className="pf-c-dropdown">
-              <button
-                onClick={() => setLoginPopover(true)}
-                className="pf-c-dropdown__toggle pf-m-plain"
-                id="page-layout-expandable-nav-dropdown-button"
-                aria-expanded="false"
-              >
-                <span className="pf-c-dropdown__toggle-text">{props.user.name}</span>
-                <i className="fas fa-caret-down pf-c-dropdown__toggle-icon" aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-        </div>
-        <img
-          className="pf-c-avatar"
-          src="https://pf4.patternfly.org//assets/images/img_avatar.svg"
-          alt="Avatar Image"
-        />
-      </div>
-    </header>
+    <Toolbar>
+      <ToolbarGroup>
+        <ToolbarItem>
+          <Dropdown
+            isPlain={true}
+            position="right"
+            onSelect={this.onDropdownSelect}
+            isOpen={false}
+            toggle={<DropdownToggle>Joe Practitioner</DropdownToggle>}
+          />
+        </ToolbarItem>
+      </ToolbarGroup>
+    </Toolbar>
   );
 }
