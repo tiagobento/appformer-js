@@ -54,15 +54,26 @@ function insertActionButtons(pageHeadActions: Element) {
   setupAsKieProjectButton.style.cssText = "float:right;";
   setupAsKieProjectButton.textContent = "Setup as KIE Project";
   setupAsKieProjectButton.onclick = e => {
-    window.open(`http://localhost:9004/setup?path=${window.location}`);
+    window.open(`http://localhost:9004/setup?path=${window.location}&type=project`);
+  };
+
+  const setupAsDmnFuntionButton = document.createElement("button");
+  setupAsDmnFuntionButton.className = "btn btn-sm";
+  setupAsDmnFuntionButton.style.cssText = "float:right;";
+  setupAsDmnFuntionButton.textContent = "Setup as DMN Function";
+  setupAsDmnFuntionButton.onclick = e => {
+    window.open(`http://localhost:9004/setup?path=${window.location}&type=function`);
   };
 
   const setupAsKieProjectButtonLi = document.createElement("li");
   setupAsKieProjectButtonLi.appendChild(setupAsKieProjectButton);
+  const setupAsDMNButtonLi = document.createElement("li");
+  setupAsDMNButtonLi.appendChild(setupAsDmnFuntionButton);
   const openOnKieInterfaceButtonLi = document.createElement("li");
   openOnKieInterfaceButtonLi.appendChild(openOnKieInterfaceButton);
 
   pageHeadActions.appendChild(setupAsKieProjectButtonLi);
+  pageHeadActions.appendChild(setupAsDMNButtonLi);
   pageHeadActions.appendChild(openOnKieInterfaceButtonLi);
 }
 
