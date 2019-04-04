@@ -11,9 +11,10 @@ public class InitRepoKie {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String init(@QueryParam("path") final String path) {
+    public String init(@QueryParam("path") final String path,
+                       @QueryParam("type") final String type) {
         final GitHubCredentials credentials = new GitHubCredentials();
         final GitHubIntegration integration = new GitHubIntegration(credentials);
-        return integration.createPR(path);
+        return integration.createPR(path, type);
     }
 }

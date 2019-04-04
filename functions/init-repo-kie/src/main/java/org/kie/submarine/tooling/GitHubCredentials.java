@@ -1,29 +1,20 @@
 package org.kie.submarine.tooling;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Properties;
-
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 public class GitHubCredentials {
 
+    public static final String GH_USERNAME = "xxxx";
+    public static final String GH_PASSWORD = "sss";
+
     private UsernamePasswordCredentialsProvider credentialsProvider = null;
-    private String space = null;
 
     public GitHubCredentials() {
-        final String username = "user";
-        final String password = "token";
-
-        credentialsProvider = new UsernamePasswordCredentialsProvider(username, password);
+        credentialsProvider = new UsernamePasswordCredentialsProvider(GH_USERNAME, GH_PASSWORD);
     }
 
     public CredentialsProvider getCredentials() {
         return credentialsProvider;
-    }
-
-    public String getSpace() {
-        return space;
     }
 }
