@@ -54,7 +54,7 @@ app.on("ready", () => {
     });
   });
 
-  ipcMain.on("writeContent", () => {});
+  ipcMain.on("writeContent", () => {/**/});
 
   ipcMain.on("requestContent", (file: File) => {
     Files.read(FS.newFile(rootPath, file.path)).then(contents => {
@@ -62,11 +62,11 @@ app.on("ready", () => {
     })
   });
 
-  ipcMain.on("createFile", () => {});
+  ipcMain.on("createFile", () => {/**/});
 
-  ipcMain.on("deleteFile", () => {});
+  ipcMain.on("deleteFile", () => {/**/});
 
-  ipcMain.on("renameFile", () => {});
+  ipcMain.on("renameFile", () => {/**/});
 });
 
 app.on("window-all-closed", () => {
