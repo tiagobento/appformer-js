@@ -19,12 +19,31 @@ import { match } from "react-router";
 import { useState } from "react";
 import { upper } from "./Util";
 import { PatternFlyPopup } from "./PatternFlyPopup";
-import { ActionGroup, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
+import {
+  ActionGroup,
+  Breadcrumb,
+  BreadcrumbItem,
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  DataList,
+  DataListCell,
+  DataListItem,
+  Card,
+  CardBody,
+  Split,
+  SplitItem,
+  Title,
+  PageSection,
+  PageSectionVariants
+} from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
 import { Pf4Label } from "./Pf4Label";
 import { useEffect } from "react";
 import { getFiles, createFileService } from "./service/Service";
+import { FileImageIcon } from "@patternfly/react-icons";
 
 export function Project(props: { match: match<{ space: string; project: string }> }) {
   const [popup, setPopup] = useState(false);
@@ -33,8 +52,8 @@ export function Project(props: { match: match<{ space: string; project: string }
 
   const updateFiles = () => {
     getFiles(props.match.params.space, props.match.params.project)
-        .then(res => res.json())
-        .then(json => setFiles(json));
+      .then(res => res.json())
+      .then(json => setFiles(json));
   };
 
   const addFile = () => {
@@ -47,7 +66,9 @@ export function Project(props: { match: match<{ space: string; project: string }
 
   useEffect(() => {
     updateFiles();
-    return () => {/**/};
+    return () => {
+      /**/
+    };
   }, []);
 
   return (
@@ -56,7 +77,7 @@ export function Project(props: { match: match<{ space: string; project: string }
         <PatternFlyPopup title={"New file"} onClose={() => setPopup(false)}>
           <Form>
             <FormGroup fieldId={"name"} className="pf-c-form__group">
-              <Pf4Label required={true} text={"Name"}/>
+              <Pf4Label required={true} text={"Name"} />
               <TextInput onInput={(e: any) => setNewFileName(e.target.value)} value={newFileName} />
               <p className="pf-c-form__helper-text" id="help-text-simple-form-name-helper" aria-live="polite">
                 Only numbers, letters, and underscores.
@@ -74,39 +95,55 @@ export function Project(props: { match: match<{ space: string; project: string }
           </Form>
         </PatternFlyPopup>
       )}
-      <div>
-        <h1>
-          <span>
-            {upper(props.match.params.space)} / {upper(props.match.params.project)} / Files
-          </span>
-          <span> - </span>
-          <span>
-            <a
-              href={"#"}
-              onClick={() => {
-                setPopup(true);
-                setNewFileName("");
-              }}
-            >
-              new
-            </a>
-          </span>
-        </h1>
-        {files.map(file => (
-          <div key={file}>
-            <Link
-              to={routes.file({
-                space: props.match.params.space,
-                project: props.match.params.project,
-                filePath: file
-              })}
-            >
-              {upper(file)}
-            </Link>
-            <br />
-          </div>
-        ))}
-      </div>
+
+      <PageSection variant={PageSectionVariants.light}>
+        <Breadcrumb>
+          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#" isActive={true}>
+            Section Title
+          </BreadcrumbItem>
+        </Breadcrumb>
+        <Split>
+          <SplitItem isMain={true}>
+            <Title headingLevel="h1" size="3xl">
+              Files
+            </Title>
+          </SplitItem>
+          {/* <SplitItem isMain={false}>
+            <Button onClick={openNewProjectPopup} variant={"primary"} type={"submit"}>
+              Add File
+            </Button>
+          </SplitItem> */}
+        </Split>
+      </PageSection>
+
+      <PageSection>
+        <DataList aria-label="List of project files">
+          {files.map(file => (
+            <DataListItem key={file} aria-labelledby="simple-item1" isExpanded={false}>
+              <DataListCell width={1}>
+                <FileImageIcon size="md" />
+              </DataListCell>
+              <DataListCell width={4}>
+                <Link
+                  to={routes.file({
+                    space: props.match.params.space,
+                    project: props.match.params.project,
+                    filePath: file
+                  })}
+                >
+                  {upper(file)}
+                </Link>
+              </DataListCell>
+              <DataListCell width={2}>DMN</DataListCell>
+              <DataListCell width={4}>Last modified 1 week ago</DataListCell>
+              <DataListCell width={4}>Created 3 weeks ago</DataListCell>
+            </DataListItem>
+          ))}
+        </DataList>
+      </PageSection>
     </>
   );
 }
