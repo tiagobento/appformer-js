@@ -55,7 +55,6 @@ export function Main() {
         <>
           <BackgroundImage src={bgImages} />
           <Page header={Header} style={{ height: "100%" }}>
-            {/* <NavBar user={appContext.user} /> */}
             <Switch>
               <Route exact={true} path={routes.welcome()} component={Welcome} />
               <Route exact={true} path={routes.spaces()} component={Spaces} />

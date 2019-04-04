@@ -111,11 +111,6 @@ export function Project(props: { match: match<{ space: string; project: string }
               Files
             </Title>
           </SplitItem>
-          {/* <SplitItem isMain={false}>
-            <Button onClick={openNewProjectPopup} variant={"primary"} type={"submit"}>
-              Add File
-            </Button>
-          </SplitItem> */}
         </Split>
       </PageSection>
 

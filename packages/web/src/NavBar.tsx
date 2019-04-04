@@ -15,26 +15,37 @@
  */
 
 import * as React from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { User } from "./User";
-import { Dropdown, DropdownItem, DropdownToggle, Toolbar, ToolbarGroup, ToolbarItem } from "@patternfly/react-core";
+import { AppContext } from "./AppContext";
+import { Dropdown, DropdownToggle, Toolbar, ToolbarGroup, ToolbarItem } from "@patternfly/react-core";
 
 export function NavBar() {
-  const [loginPopover, setLoginPopover] = useState(false);
-
   return (
-    <Toolbar>
-      <ToolbarGroup>
-        <ToolbarItem>
-          <Dropdown
-            isPlain={true}
-            position="right"
-            isOpen={false}
-            toggle={<DropdownToggle>Joe Practitioner</DropdownToggle>}
-          />
-        </ToolbarItem>
-      </ToolbarGroup>
-    </Toolbar>
+    <AppContext.Consumer>
+      {context => (
+        <Toolbar>
+          <ToolbarGroup>
+            <ToolbarItem>
+              <Dropdown
+                isPlain={true}
+                onSelect={() => {
+                  /**/
+                }}
+                toggle={
+                  <DropdownToggle
+                    onToggle={() => {
+                      /**/
+                    }}
+                  >
+                    {context.user!.name}
+                  </DropdownToggle>
+                }
+                isOpen={false}
+                dropdownItems={[]}
+              />
+            </ToolbarItem>
+          </ToolbarGroup>
+        </Toolbar>
+      )}
+    </AppContext.Consumer>
   );
 }

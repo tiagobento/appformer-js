@@ -21,7 +21,16 @@ import { router } from "appformer-js-microeditor-router";
 import { useEffect, useState } from "react";
 import { upper } from "./Util";
 import { AppFormerBusMessage } from "appformer-js-submarine";
-import { Button } from "@patternfly/react-core";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  Button,
+  PageSection,
+  PageSectionVariants,
+  Split,
+  SplitItem,
+  Title
+} from "@patternfly/react-core";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
   const fileExtension = props.match.params.filePath.split(".").pop()!;
@@ -57,17 +66,21 @@ export function Editor(props: { match: match<{ space: string; project: string; f
           break;
         case "REQUEST_SET_CONTENT":
           getFileContentService(props.match.params.space, props.match.params.project, props.match.params.filePath)
-              .then(res => res.text())
-              .then(content => {
-                  const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content.trim() };
-                  iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
-              });
+            .then(res => res.text())
+            .then(content => {
+              const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content.trim() };
+              iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
+            });
           break;
         case "RETURN_GET_CONTENT":
-          setFileContentService(props.match.params.space, props.match.params.project, props.match.params.filePath, message.data)
-              .then(v => {
-                  setEphemeralStatus("Saved.");
-              });
+          setFileContentService(
+            props.match.params.space,
+            props.match.params.project,
+            props.match.params.filePath,
+            message.data
+          ).then(v => {
+            setEphemeralStatus("Saved.");
+          });
           break;
         default:
           console.debug("Unknown message type " + message.type);
@@ -78,7 +91,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
     window.addEventListener("message", handler, false);
     return () => {
       window.removeEventListener("message", handler, false);
-    }
+    };
   }, []);
 
   const [statusMessage, setStatusMessage] = useState("");
@@ -95,67 +108,78 @@ export function Editor(props: { match: match<{ space: string; project: string; f
 
   return (
     <>
-      <h1>
-        {upper(props.match.params.space)} / {upper(props.match.params.project)} / {upper(props.match.params.filePath)}
-      </h1>
-      <iframe
-        style={{ borderTop: "1px solid lightgray", width: "100%", height: "100%" }}
-        ref={i => (iframe = iframe ? iframe : i!)}
-        src={iframeSrc}
-      />
-      {statusBarOpen && (
-        <div
-          onClick={() => setStatusBarOpen(false)}
-          style={{
-            color: "white",
-            padding: "10px",
-            backgroundColor: "#363636",
-            width: "100vw",
-            zIndex: 999,
-            bottom: 0,
-            left: 0,
-            position: "fixed",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}
-        >
-          <div>{statusMessage}</div>
-          <Button
-            variant={"primary"}
-            type={"button"}
-            onClick={(e: any) => {
-              e.stopPropagation();
-              save();
+      <PageSection variant={PageSectionVariants.light}>
+        <Breadcrumb>
+          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#" isActive={true}>
+            Section Title
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </PageSection>
+
+      {/*FIXME: Stop using this padding: 0 */}
+      <PageSection style={{ padding: "0" }}>
+        <iframe
+          style={{ borderTop: "1px solid lightgray", width: "100%", height: "100%" }}
+          ref={i => (iframe = iframe ? iframe : i!)}
+          src={iframeSrc}
+        />
+        {statusBarOpen && (
+          <div
+            onClick={() => setStatusBarOpen(false)}
+            style={{
+              color: "white",
+              padding: "10px",
+              backgroundColor: "#363636",
+              width: "100vw",
+              zIndex: 999,
+              bottom: 0,
+              left: 0,
+              position: "fixed",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
             }}
           >
-            Save
-          </Button>
-        </div>
-      )}
-      {!statusBarOpen && (
-        <div
-          onClick={() => {
-            setStatusBarOpen(true);
-            setEphemeralStatus("Click the status bar do hide it.");
-          }}
-          style={{
-            color: "white",
-            backgroundColor: "#363636",
-            width: "100px",
-            borderRadius: "5px 5px 0 0 ",
-            zIndex: 999,
-            bottom: "0",
-            paddingTop: "4px",
-            left: "50%",
-            marginLeft: "-50px",
-            textAlign: "center",
-            position: "fixed"
-          }}
-        >
-          ^
-        </div>
-      )}
+            <div>{statusMessage}</div>
+            <Button
+              variant={"primary"}
+              type={"button"}
+              onClick={(e: any) => {
+                e.stopPropagation();
+                save();
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        )}
+        {!statusBarOpen && (
+          <div
+            onClick={() => {
+              setStatusBarOpen(true);
+              setEphemeralStatus("Click the status bar do hide it.");
+            }}
+            style={{
+              color: "white",
+              backgroundColor: "#363636",
+              width: "100px",
+              borderRadius: "5px 5px 0 0 ",
+              zIndex: 999,
+              bottom: "0",
+              paddingTop: "4px",
+              left: "50%",
+              marginLeft: "-50px",
+              textAlign: "center",
+              position: "fixed"
+            }}
+          >
+            ^
+          </div>
+        )}
+      </PageSection>
     </>
   );
 }

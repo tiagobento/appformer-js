@@ -163,26 +163,6 @@ export function Space(props: { match: match<{ space: string }> }) {
           ))}
         </Gallery>
       </PageSection>
-
-      {/* <div>
-        <h1>
-          <span>{upper(props.match.params.space)} / Projects</span>
-          <span> - </span>
-          <span>
-            <a href={"#"} onClick={openNewProjectPopup}>
-              New
-            </a>
-          </span>
-        </h1>
-        {projects.map(project => (
-          <div key={project.name}>
-            <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
-              {upper(project.name)}
-            </Link>
-            <br />
-          </div>
-        ))}
-      </div> */}
     </>
   );
 }
