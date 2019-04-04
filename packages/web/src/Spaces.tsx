@@ -20,7 +20,22 @@ import { useEffect, useState } from "react";
 import { upper } from "./Util";
 import { postSpace, getSpaces } from "./service/Service";
 import { PatternFlyPopup } from "./PatternFlyPopup";
-import { ActionGroup, Breadcrumb, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
+import {
+  ActionGroup,
+  Breadcrumb,
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  Gallery,
+  GalleryItem,
+  Card,
+  CardBody,
+  Split,
+  SplitItem,
+  PageSection,
+  Badge
+} from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { Pf4Label } from "./Pf4Label";
 
@@ -86,23 +101,27 @@ export function Spaces() {
           </Form>
         </PatternFlyPopup>
       )}
-      <div>
-        <h1>
-          <span>Spaces</span>
-          <span> - </span>
-          <span>
-            <a href={"#"} onClick={openNewSpacePopup}>
-              New
-            </a>
-          </span>
-        </h1>
-        {spaces.map(space => (
-          <div key={space.name}>
-            <Link to={routes.space({ space: space.name })}>{upper(space.name)}</Link>
-            <br />
-          </div>
-        ))}
-      </div>
+
+        <PageSection>
+          <Gallery gutter="md">
+              {spaces.map(space => (
+            <GalleryItem>
+            <Link to={routes.space({ space: space.name })}>
+                  <Card>
+                    <CardBody>
+                      <Split>
+                        <SplitItem isMain>{upper(space.name)}</SplitItem>
+                        <SplitItem isMain={false}>
+                          <Badge isRead>1</Badge>
+                        </SplitItem>
+                      </Split>
+                    </CardBody>
+                  </Card>
+                </Link>
+                </GalleryItem>
+              ))}
+          </Gallery>
+        </PageSection>
     </>
   );
 }
