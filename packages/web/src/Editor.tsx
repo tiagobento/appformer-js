@@ -35,7 +35,8 @@ import { Link } from "react-router-dom";
 import { routes } from "./Routes";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
-  const fileExtension = props.match.params.filePath.split(".").pop()!;
+  const decodedFilePath = decodeURIComponent(props.match.params.filePath.replace(/\+/g, '%20'));
+  const fileExtension = decodedFilePath.split(".").pop()!;
   const languageData = router.get(fileExtension);
   if (!languageData) {
     //FIXME: Fallback to default text editor like Ace.js.
@@ -67,7 +68,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
           iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
           break;
         case "REQUEST_SET_CONTENT":
-          getFileContentService(props.match.params.space, props.match.params.project, props.match.params.filePath)
+          getFileContentService(props.match.params.space, props.match.params.project, decodedFilePath)
             .then(res => res.text())
             .then(content => {
               const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content.trim() };
@@ -78,7 +79,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
           setFileContentService(
             props.match.params.space,
             props.match.params.project,
-            props.match.params.filePath,
+            decodedFilePath,
             message.data
           ).then(v => {
             setEphemeralStatus("Saved.");
@@ -131,7 +132,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
                 filePath: props.match.params.filePath
               })}
             >
-              {props.match.params.filePath}
+              {decodedFilePath}
             </Link>
           </BreadcrumbItem>
         </Breadcrumb>

@@ -139,10 +139,10 @@ export function Project(props: { match: match<{ space: string; project: string }
                   to={routes.file({
                     space: props.match.params.space,
                     project: props.match.params.project,
-                    filePath: file
+                    filePath: encodeURIComponent(file)
                   })}
                 >
-                  {upper(file)}
+                  {file}
                 </Link>
               </DataListCell>
               <DataListCell width={2}>DMN</DataListCell>
