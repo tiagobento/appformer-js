@@ -44,7 +44,7 @@ function insertActionButtons(pageHeadActions: Element) {
   const openOnKieInterfaceButton = document.createElement("button");
   openOnKieInterfaceButton.className = "btn btn-sm";
   openOnKieInterfaceButton.style.cssText = "float:right;";
-  openOnKieInterfaceButton.textContent = "Open on KIE Interface";
+  openOnKieInterfaceButton.textContent = "Open on KIE";
   openOnKieInterfaceButton.onclick = e => {
     window.open(`http://localhost:9001/import?path=${window.location}`);
   };
@@ -52,17 +52,19 @@ function insertActionButtons(pageHeadActions: Element) {
   const setupAsKieProjectButton = document.createElement("button");
   setupAsKieProjectButton.className = "btn btn-sm";
   setupAsKieProjectButton.style.cssText = "float:right;";
-  setupAsKieProjectButton.textContent = "Setup as KIE Project";
+  setupAsKieProjectButton.textContent = "Project";
   setupAsKieProjectButton.onclick = e => {
-    window.open(`http://localhost:9004/setup?path=${window.location}&type=project`);
+    const url = `http://localhost:9004/init?path=${window.location}&type=project`;
+    fetch(url);
   };
 
   const setupAsDmnFuntionButton = document.createElement("button");
   setupAsDmnFuntionButton.className = "btn btn-sm";
   setupAsDmnFuntionButton.style.cssText = "float:right;";
-  setupAsDmnFuntionButton.textContent = "Setup as DMN Function";
+  setupAsDmnFuntionButton.textContent = "Function";
   setupAsDmnFuntionButton.onclick = e => {
-    window.open(`http://localhost:9004/setup?path=${window.location}&type=function`);
+    const url = `http://localhost:9004/init?path=${window.location}&type=function`;
+    fetch(url);
   };
 
   const setupAsKieProjectButtonLi = document.createElement("li");
