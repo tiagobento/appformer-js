@@ -15,34 +15,30 @@
  */
 
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { match } from "react-router";
-import { useState } from "react";
-import { upper } from "./Util";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import {
   ActionGroup,
   Breadcrumb,
   BreadcrumbItem,
   Button,
-  Form,
-  FormGroup,
-  TextInput,
   DataList,
   DataListCell,
   DataListItem,
-  Card,
-  CardBody,
+  Form,
+  FormGroup,
+  PageSection,
+  PageSectionVariants,
   Split,
   SplitItem,
-  Title,
-  PageSection,
-  PageSectionVariants
+  TextInput,
+  Title
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
 import { Pf4Label } from "./Pf4Label";
-import { useEffect } from "react";
-import { getFiles, createFileService } from "./service/Service";
+import { createFileService, getFiles } from "./service/Service";
 import { FileImageIcon } from "@patternfly/react-icons";
 
 export function Project(props: { match: match<{ space: string; project: string }> }) {
@@ -56,13 +52,12 @@ export function Project(props: { match: match<{ space: string; project: string }
       .then(json => setFiles(json));
   };
 
-  const addFile = (e:any) => {
+  const addFile = (e: any) => {
     e.preventDefault();
-    createFileService(props.match.params.space, props.match.params.project, newFileName)
-        .then(() => {
-            setFiles([...files, newFileName]);
-            setPopup(false);
-        });
+    createFileService(props.match.params.space, props.match.params.project, newFileName).then(() => {
+      setFiles([...files, newFileName]);
+      setPopup(false);
+    });
   };
 
   const openNewFilePopup = () => {
@@ -71,9 +66,6 @@ export function Project(props: { match: match<{ space: string; project: string }
 
   useEffect(() => {
     updateFiles();
-    return () => {
-      /**/
-    };
   }, []);
 
   return (
@@ -107,10 +99,12 @@ export function Project(props: { match: match<{ space: string; project: string }
             <Link to={routes.spaces()}>Spaces</Link>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <Link to={routes.space({space: props.match.params.space})}>{props.match.params.space}</Link>
+            <Link to={routes.space({ space: props.match.params.space })}>{props.match.params.space}</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem  isActive={true}>
-            <Link to={routes.project({space: props.match.params.space, project: props.match.params.project})}>{props.match.params.project}</Link>
+          <BreadcrumbItem isActive={true}>
+            <Link to={routes.project({ space: props.match.params.space, project: props.match.params.project })}>
+              {props.match.params.project}
+            </Link>
           </BreadcrumbItem>
         </Breadcrumb>
         <Split>
