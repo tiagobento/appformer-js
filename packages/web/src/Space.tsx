@@ -15,15 +15,33 @@
  */
 
 import * as React from "react";
-import {useEffect, useState} from "react";
-import {match} from "react-router";
-import {upper} from "./Util";
-import {PatternFlyPopup} from "./PatternFlyPopup";
-import {ActionGroup, Button, Form, FormGroup, TextInput} from "@patternfly/react-core";
-import {Link} from "react-router-dom";
-import {routes} from "./Routes";
-import {getProjects, postProject} from "./service/Service";
-import {Pf4Label} from "./Pf4Label";
+import { useEffect, useState } from "react";
+import { match } from "react-router";
+import { upper } from "./Util";
+import { PatternFlyPopup } from "./PatternFlyPopup";
+import {
+  ActionGroup,
+  Breadcrumb,
+  BreadcrumbItem,
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  Gallery,
+  GalleryItem,
+  Card,
+  CardBody,
+  Split,
+  SplitItem,
+  Title,
+  PageSection,
+  PageSectionVariants,
+  Badge
+} from "@patternfly/react-core";
+import { Link } from "react-router-dom";
+import { routes } from "./Routes";
+import { getProjects, postProject } from "./service/Service";
+import { Pf4Label } from "./Pf4Label";
 
 interface Project {
   name: string;
@@ -102,7 +120,51 @@ export function Space(props: { match: match<{ space: string }> }) {
           </Form>
         </PatternFlyPopup>
       )}
-      <div>
+      <PageSection variant={PageSectionVariants.light}>
+        <Breadcrumb>
+          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
+          <BreadcrumbItem to="#" isActive={true}>
+            Section Landing
+          </BreadcrumbItem>
+        </Breadcrumb>
+        <Split>
+          <SplitItem isMain={true}>
+            <Title headingLevel="h1" size="3xl">
+              Projects
+            </Title>
+          </SplitItem>
+          <SplitItem isMain={false}>
+            <Button onClick={openNewProjectPopup} variant={"primary"} type={"submit"}>
+              Add Project
+            </Button>
+          </SplitItem>
+        </Split>
+      </PageSection>
+
+      <PageSection>
+        <Gallery gutter="md">
+          {projects.map(project => (
+            <GalleryItem>
+              <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
+                <Card>
+                  <CardBody>
+                    <Split>
+                      <SplitItem isMain={true}>{upper(project.name)}</SplitItem>
+                      <SplitItem isMain={false}>
+                        <Badge isRead={true}>1</Badge>
+                      </SplitItem>
+                    </Split>
+                  </CardBody>
+                </Card>
+              </Link>
+            </GalleryItem>
+          ))}
+        </Gallery>
+      </PageSection>
+
+      {/* <div>
         <h1>
           <span>{upper(props.match.params.space)} / Projects</span>
           <span> - </span>
@@ -120,8 +182,7 @@ export function Space(props: { match: match<{ space: string }> }) {
             <br />
           </div>
         ))}
-      </div>
+      </div> */}
     </>
   );
 }
-

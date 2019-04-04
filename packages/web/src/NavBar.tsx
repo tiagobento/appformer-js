@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import { User } from "./User";
 import { Dropdown, DropdownItem, DropdownToggle, Toolbar, ToolbarGroup, ToolbarItem } from "@patternfly/react-core";
 
-export function NavBar(props: { user: User }) {
+export function NavBar() {
   const [loginPopover, setLoginPopover] = useState(false);
 
   return (
@@ -30,7 +30,6 @@ export function NavBar(props: { user: User }) {
           <Dropdown
             isPlain={true}
             position="right"
-            onSelect={this.onDropdownSelect}
             isOpen={false}
             toggle={<DropdownToggle>Joe Practitioner</DropdownToggle>}
           />

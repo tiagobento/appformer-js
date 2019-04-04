@@ -27,15 +27,22 @@ import { Editor } from "./Editor";
 import { AppContext } from "./AppContext";
 import { Welcome } from "./Welcome";
 import { Import } from "./Import";
-import { Avatar, Brand, Page, PageHeader } from "@patternfly/react-core";
+import { Avatar, BackgroundImage, BackgroundImageSrc, Brand, Page, PageHeader } from "@patternfly/react-core";
 // import avatarImg from 'https://pf4.patternfly.org//assets/images/img_avatar.svg';
+const bgImages = {
+  [BackgroundImageSrc.lg]: "/assets/images/pfbg_1200.jpg",
+  [BackgroundImageSrc.sm]: "/assets/images/pfbg_768.jpg",
+  [BackgroundImageSrc.sm2x]: "/assets/images/pfbg_768@2x.jpg",
+  [BackgroundImageSrc.xs]: "/assets/images/pfbg_576.jpg",
+  [BackgroundImageSrc.xs2x]: "/assets/images/pfbg_576@2x.jpg",
+  [BackgroundImageSrc.filter]: "/assets/images/background-filter.svg#image_overlay"
+};
 
 export function Main() {
-
   const Header = (
     <PageHeader
-      logo={<Brand src={"/submarine-white.svg"} alt="Kogito"/>}
-      toolbar={NavBar}
+      logo={<Brand src={"/submarine-white.svg"} alt="Kogito" />}
+      toolbar={<NavBar/>}
       avatar={<Avatar src={"https://pf4.patternfly.org//assets/images/img_avatar.svg"} alt="Avatar image" />}
     />
   );
@@ -46,6 +53,7 @@ export function Main() {
       {!appContext.user && <Login />}
       {appContext.user && (
         <>
+          <BackgroundImage src={bgImages} />
           <Page header={Header} style={{ height: "100%" }}>
             {/* <NavBar user={appContext.user} /> */}
             <Switch>
