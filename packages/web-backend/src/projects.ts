@@ -37,7 +37,7 @@ export const getProjectByUrl = (request: any, response: any) => {
         if (error) {
             response.status(422).send(error);
         } else if (results.rows.length === 0) {
-            response.status(404).send();
+            response.status(404).end();
         } else {
             response.status(200).json(results.rows[0]);
         }
@@ -73,7 +73,7 @@ export const getProjectByNameService = (request: any, response: any) => {
         if (project) {
             response.status(200).json(project);
         } else {
-            response.status(404).send();
+            response.status(404).end();
         }
     }).catch(error => {
         response.status(422).send(error);

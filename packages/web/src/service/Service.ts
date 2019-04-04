@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
+export function getSpaces() {
+    return fetch("http://localhost:9002/spaces");
+}
+
+export function postSpace(space: { name: string }) {
+  return fetch("http://localhost:9002/spaces/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(space)
+  });
+}
+
+export function getProjects(space: string) {
+  return fetch(`http://localhost:9002/spaces/${space}/projects`);
+}
+
 export function postProject(spaceName: string, project: { name: string; url: string }) {
   return fetch(`http://localhost:9002/spaces/${spaceName}/projects`, {
     method: "POST",
@@ -24,20 +42,20 @@ export function postProject(spaceName: string, project: { name: string; url: str
   });
 }
 
-export function getSpaces() {
-    return fetch("http://localhost:9002/spaces");
+export function getFiles(space: string, project: string) {
+  return fetch(`http://localhost:9002/spaces/${space}/projects/${project}/files`);
 }
 
-export function getProjects(space: string) {
-    return fetch(`http://localhost:9002/spaces/${space}/projects`);
+export function getFileContentService(space: string, project: string, path: string) {
+  return fetch(`http://localhost:9002/spaces/${space}/projects/${project}/file?path=${path}`);
 }
 
-export function postSpace(space: { name: string }) {
-  return fetch("http://localhost:9002/spaces/", {
-    method: "POST",
+export function setFileContentService(spaceName: string, project: string, path: string, content: string) {
+  return fetch(`http://localhost:9002/spaces/${spaceName}/projects/${project}/file?path=${path}`, {
+    method: "PUT",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "text/plain"
     },
-    body: JSON.stringify(space)
+    body: content
   });
 }

@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { match } from "react-router";
-import { storage } from "./Storage";
+import {getFileContentService, getFiles, setFileContentService} from "./service/Service";
 import { router } from "appformer-js-microeditor-router";
 import { useEffect, useState } from "react";
 import { upper } from "./Util";
@@ -24,12 +24,6 @@ import { AppFormerBusMessage } from "appformer-js-submarine";
 import { Button } from "@patternfly/react-core";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
-  const file = storage.get(props.match.params.filePath);
-  if (!file) {
-    //FIXME: Redirect to 404 page?
-    return <div>{"Oops, file not found: " + props.match.params.filePath}</div>;
-  }
-
   const fileExtension = props.match.params.filePath.split(".").pop()!;
   const languageData = router.get(fileExtension);
   if (!languageData) {
@@ -64,13 +58,18 @@ export function Editor(props: { match: match<{ space: string; project: string; f
           iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
           break;
         case "REQUEST_SET_CONTENT":
-          const fileContent = file.contents;
-          const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: fileContent };
-          iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
+          getFileContentService(props.match.params.space, props.match.params.project, props.match.params.filePath)
+              .then(res => res.text())
+              .then(content => {
+                  const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content.trim() };
+                  iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
+              });
           break;
         case "RETURN_GET_CONTENT":
-          const iframeEditorContent = message.data;
-          file.contents = iframeEditorContent;
+          setFileContentService(props.match.params.space, props.match.params.project, props.match.params.filePath, message.data)
+              .then(v => {
+                  console.info("File saved!");
+              });
           break;
         default:
           console.debug("Unknown message type " + message.type);

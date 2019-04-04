@@ -18,22 +18,35 @@ import * as React from "react";
 import { match } from "react-router";
 import { useState } from "react";
 import { upper } from "./Util";
-import { storage } from "./Storage";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { ActionGroup, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
-import {Pf4Label} from "./Pf4Label";
+import { Pf4Label } from "./Pf4Label";
+import { useEffect } from "react";
+import { getFiles } from "./service/Service";
 
 export function Project(props: { match: match<{ space: string; project: string }> }) {
   const [popup, setPopup] = useState(false);
   const [newFileName, setNewFileName] = useState("");
-  const [files, setFiles] = useState(Array.from(storage.values()).map(s => ({ name: s.name })));
+  const [files, setFiles] = useState([] as string[]);
+
+  const updateFiles = () => {
+    getFiles(props.match.params.space, props.match.params.project)
+        .then(res => res.json())
+        .then(json => setFiles(json));
+  };
 
   const addFile = () => {
-    setFiles([...files, { name: newFileName }]);
+    setFiles([...files, newFileName]);
     setPopup(false);
   };
+
+  useEffect(() => {
+    updateFiles();
+    return () => {/**/};
+  }, []);
+
   return (
     <>
       {popup && (
@@ -77,15 +90,15 @@ export function Project(props: { match: match<{ space: string; project: string }
           </span>
         </h1>
         {files.map(file => (
-          <div key={file.name}>
+          <div key={file}>
             <Link
               to={routes.file({
                 space: props.match.params.space,
                 project: props.match.params.project,
-                filePath: file.name
+                filePath: file
               })}
             >
-              {upper(file.name)}
+              {upper(file)}
             </Link>
             <br />
           </div>

@@ -17,7 +17,6 @@
 import { Pool } from "pg";
 import * as squel from "squel";
 import { config } from "./config";
-import {getProjectByName} from "./projects";
 
 interface Space {id: number, name: string, info: any};
 
@@ -45,7 +44,7 @@ export const getSpaceByNameService = (request: any, response: any) => {
         if (space) {
             response.status(200).json(space);
         } else {
-            response.status(404).send();
+            response.status(404).end();
         }
     }).catch(error => {
         response.status(422).send(error);
@@ -82,7 +81,7 @@ export const createSpace = (request: any, response: any) => {
         if (error) {
             response.status(422).send(error);
         } else {
-            response.status(201).send();
+            response.status(201).end();
         }
     });
 };
@@ -100,7 +99,7 @@ export const updateSpace = (request: any, response: any) => {
         if (error) {
             response.status(422).send(error);
         } else {
-            response.status(200).send();
+            response.status(200).end();
         }
     });
 };
@@ -128,7 +127,7 @@ export const deleteSpace = (request: any, response: any) => {
                 if (error2) {
                     response.status(422).send(error2);
                 } else {
-                    response.status(200).send();
+                    response.status(200).end();
                 }
             });
         }

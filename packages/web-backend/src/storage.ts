@@ -48,7 +48,7 @@ export const getProjectFileContent = (request: any, response: any) => {
     getProjectFiles(spaceName, name).then(files => {
         const file = files.filter(f => f.relative_name === fileRelativePath).pop();
         Files.read(file!).then(fileContent => {
-            response.status(200).json(fileContent);
+            response.status(200).send(fileContent);
         });
     });
 };
@@ -62,7 +62,7 @@ export const setProjectFileContent = (request: any, response: any) => {
     getProjectFiles(spaceName, name).then(files => {
         const file = files.filter(f => f.relative_name === fileRelativePath).pop();
         Files.write(file!, content).then(v => {
-            response.status(200).send();
+            response.status(200).end();
         }).catch(error => {
             response.status(500).send(error);
         });
