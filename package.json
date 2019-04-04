@@ -7,9 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "init": "lerna bootstrap",
-    "build": "lerna run build --stream",
-    "build:colorful": "lerna exec -- yarn run build"
+    "init": "npx lerna bootstrap",
+    "build": "npx lerna run build --stream",
+    "build:colorful": "npx lerna exec -- yarn run build"
   },
   "devDependencies": {
     "lerna": "3.4.0"
