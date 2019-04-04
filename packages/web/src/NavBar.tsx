@@ -27,18 +27,7 @@ export function NavBar() {
             <ToolbarItem>
               <Dropdown
                 isPlain={true}
-                onSelect={() => {
-                  /**/
-                }}
-                toggle={
-                  <DropdownToggle
-                    onToggle={() => {
-                      /**/
-                    }}
-                  >
-                    {context.user!.name}
-                  </DropdownToggle>
-                }
+                toggle={<DropdownToggle>{context.user!.name}</DropdownToggle>}
                 isOpen={false}
                 dropdownItems={[]}
               />

@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { useContext } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import { Login } from "./Login";
 import { NavBar } from "./NavBar";
 import { routes } from "./Routes";
@@ -38,15 +38,17 @@ const bgImages = {
   [BackgroundImageSrc.filter]: "/assets/images/background-filter.svg#image_overlay"
 };
 
-export function Main() {
-  const Header = (
+function Header() {
+  return (
     <PageHeader
       logo={<Brand src={"/submarine-white.svg"} alt="Kogito" />}
-      toolbar={<NavBar/>}
+      toolbar={<NavBar />}
       avatar={<Avatar src={"https://pf4.patternfly.org//assets/images/img_avatar.svg"} alt="Avatar image" />}
     />
   );
+}
 
+export function Main() {
   const appContext = useContext(AppContext);
   return (
     <Router>
@@ -54,7 +56,7 @@ export function Main() {
       {appContext.user && (
         <>
           <BackgroundImage src={bgImages} />
-          <Page header={Header} style={{ height: "100%" }}>
+          <Page header={<Header />} style={{ height: "100%" }}>
             <Switch>
               <Route exact={true} path={routes.welcome()} component={Welcome} />
               <Route exact={true} path={routes.spaces()} component={Spaces} />

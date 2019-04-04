@@ -56,12 +56,17 @@ export function Project(props: { match: match<{ space: string; project: string }
       .then(json => setFiles(json));
   };
 
-  const addFile = () => {
+  const addFile = (e:any) => {
+    e.preventDefault();
     createFileService(props.match.params.space, props.match.params.project, newFileName)
-        .then(res => {
+        .then(() => {
             setFiles([...files, newFileName]);
             setPopup(false);
         });
+  };
+
+  const openNewFilePopup = () => {
+    setPopup(true);
   };
 
   useEffect(() => {
@@ -84,7 +89,7 @@ export function Project(props: { match: match<{ space: string; project: string }
               </p>
 
               <ActionGroup>
-                <Button onClick={() => addFile()} variant={"primary"} type={"submit"}>
+                <Button onClick={addFile} variant={"primary"} type={"submit"}>
                   Add
                 </Button>
                 <Button onClick={() => setPopup(false)} variant={"secondary"}>
@@ -98,11 +103,14 @@ export function Project(props: { match: match<{ space: string; project: string }
 
       <PageSection variant={PageSectionVariants.light}>
         <Breadcrumb>
-          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#" isActive={true}>
-            Section Title
+          <BreadcrumbItem>
+            <Link to={routes.spaces()}>Spaces</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <Link to={routes.space({space: props.match.params.space})}>{props.match.params.space}</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem  isActive={true}>
+            <Link to={routes.project({space: props.match.params.space, project: props.match.params.project})}>{props.match.params.project}</Link>
           </BreadcrumbItem>
         </Breadcrumb>
         <Split>
@@ -110,6 +118,11 @@ export function Project(props: { match: match<{ space: string; project: string }
             <Title headingLevel="h1" size="3xl">
               Files
             </Title>
+          </SplitItem>
+          <SplitItem isMain={false}>
+            <Button onClick={openNewFilePopup} variant={"primary"} type={"submit"}>
+              Add File
+            </Button>
           </SplitItem>
         </Split>
       </PageSection>

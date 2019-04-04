@@ -31,6 +31,8 @@ import {
   SplitItem,
   Title
 } from "@patternfly/react-core";
+import { Link } from "react-router-dom";
+import { routes } from "./Routes";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
   const fileExtension = props.match.params.filePath.split(".").pop()!;
@@ -110,11 +112,27 @@ export function Editor(props: { match: match<{ space: string; project: string; f
     <>
       <PageSection variant={PageSectionVariants.light}>
         <Breadcrumb>
-          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#" isActive={true}>
-            Section Title
+          <BreadcrumbItem>
+            <Link to={routes.spaces()}>Spaces</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <Link to={routes.space({ space: props.match.params.space })}>{props.match.params.space}</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <Link to={routes.project({ space: props.match.params.space, project: props.match.params.project })}>
+              {props.match.params.project}
+            </Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem isActive={true}>
+            <Link
+              to={routes.file({
+                space: props.match.params.space,
+                project: props.match.params.project,
+                filePath: props.match.params.filePath
+              })}
+            >
+              {props.match.params.filePath}
+            </Link>
           </BreadcrumbItem>
         </Breadcrumb>
       </PageSection>

@@ -109,11 +109,8 @@ export function Spaces() {
 
       <PageSection variant={PageSectionVariants.light}>
         <Breadcrumb>
-          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#" isActive={true}>
-            Section Landing
+          <BreadcrumbItem>
+            <Link to={routes.spaces()}>Spaces</Link>
           </BreadcrumbItem>
         </Breadcrumb>
         <Split>

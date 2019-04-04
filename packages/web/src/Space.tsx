@@ -122,11 +122,11 @@ export function Space(props: { match: match<{ space: string }> }) {
       )}
       <PageSection variant={PageSectionVariants.light}>
         <Breadcrumb>
-          <BreadcrumbItem to="#">Section Home</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#">Section Title</BreadcrumbItem>
-          <BreadcrumbItem to="#" isActive={true}>
-            Section Landing
+          <BreadcrumbItem>
+            <Link to={routes.spaces()}>Spaces</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem isActive={true}>
+            <Link to={routes.space({space: props.match.params.space})}>{props.match.params.space}</Link>
           </BreadcrumbItem>
         </Breadcrumb>
         <Split>
@@ -146,7 +146,7 @@ export function Space(props: { match: match<{ space: string }> }) {
       <PageSection>
         <Gallery gutter="md">
           {projects.map(project => (
-            <GalleryItem>
+            <GalleryItem key={project.url}>
               <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
                 <Card>
                   <CardBody>
