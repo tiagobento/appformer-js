@@ -62,7 +62,6 @@ export function Space(props: { match: match<{ space: string }> }) {
 
   useEffect(() => {
     updateProjects();
-    return () => {/**/};
   }, []);
 
   return (

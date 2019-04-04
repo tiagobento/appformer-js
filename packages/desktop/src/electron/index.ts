@@ -16,15 +16,30 @@
 
 import { app, BrowserWindow, ipcMain } from "electron";
 
+import * as path from "path";
+
 app.on("ready", () => {
-  const mainWindow = new BrowserWindow({ height: 800, width: 800, show: false });
-  mainWindow.loadFile(`../../../../../packages/electron-app/dist/index.html`);
+  const mainWindow = new BrowserWindow({
+    height: 800,
+    width: 800,
+    show: false,
+    webPreferences: {
+      nodeIntegrationInWorker: true
+    }
+  });
+  mainWindow.loadFile(path.join(__dirname, "../index.html"));
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
   });
 
   ipcMain.on("mainWindowLoaded", () => {
-      mainWindow.webContents.send("spacesList", "Tiago");
+    console.info("LOADED!");
+  });
+
+  ipcMain.on("requestFiles", () => {
+    //FIXME: Read using appformer-js-storage from Home folder.
+    const files = [{ path: "tiago.dmn" }, { path: "pom.xml" }] as File[];
+    mainWindow.webContents.send("returnFiles", files);
   });
 });
 

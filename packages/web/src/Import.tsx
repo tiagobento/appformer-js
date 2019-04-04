@@ -71,10 +71,6 @@ export function Import(props: { history: History; location: Location; match: mat
         setIsLoadingImportPath(false);
       }
     });
-
-    return () => {
-      /**/
-    };
   }, []);
 
   return (

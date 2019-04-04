@@ -1,22 +1,22 @@
-<html>
-    <head>
-        <title>KIE Submarine :: Desktop App</title>
-        <script>
-            const electron = require("electron");
-            const ipc = electron.ipcRenderer;
-            document.addEventListener("DOMContentLoaded", () => {
-                ipc.send("mainWindowLoaded");
-                ipc.on("spacesList", (event, spaces) => {
-                    let spacesContainer = document.getElementById("spaces-container");
-                    for (let i = 0; i < spaces.length; i++) {
-                        spacesContainer.innerHTML += "Space " + i + ": " + spaces[i].name + " " + spaces[i].content + "<br />";
-                    }
-                });
-            });
-        </script>
-    </head>
-    <body>
-        <div id="spaces-container">
-        </div>
-    </body>
+<html lang="en">
+<head>
+    <title>Desktop</title>
+    <style>
+        html, body, session, main, div#app {
+            margin: 0;
+            border: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="patternfly.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="webview/index.js"></script>
+</body>
 </html>

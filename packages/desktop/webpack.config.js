@@ -14,34 +14,29 @@
  * limitations under the License.
  */
 
-const webpack = require("webpack");
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
-module.exports = {
+const commonConfig = {
   mode: "development",
-  target: "electron-main",
-  devtool: "inline-source-map",
-  entry: {
-    index: "./src/index.ts"
-  },
   output: {
     path: path.resolve(__dirname, "./dist"),
-    filename: "index.js",
-    library: "AppFormer.Electron",
+    filename: "[name].js",
+    library: "AppFormer.VsCode",
     libraryTarget: "umd",
     umdNamedDefine: true
   },
+  externals: {
+    electron: "commonjs electron"
+  },
   plugins: [
-    new CleanWebpackPlugin(["dist"]),
     new CircularDependencyPlugin({
       exclude: /node_modules/, // exclude detection of files based on a RegExp
       failOnError: false, // add errors to webpack instead of warnings
       cwd: process.cwd() // set the current working directory for displaying module paths
-    }),
-    new CopyPlugin([{from: "static/index.html"}])
+    })
   ],
   module: {
     rules: [
@@ -49,7 +44,7 @@ module.exports = {
         test: /\.tsx?$/,
         loader: "ts-loader",
         options: {
-          configFile: path.resolve("./tsconfig.webpack.json")
+          configFile: path.resolve("./tsconfig.json")
         }
       },
       {
@@ -64,3 +59,35 @@ module.exports = {
     modules: [path.resolve("../../node_modules"), path.resolve("./node_modules"), path.resolve("./src")]
   }
 };
+
+module.exports = [
+  {
+    ...commonConfig,
+    target: "electron-main",
+    entry: {
+      "electron/index": "./src/electron/index.ts"
+    },
+    node: {
+      __dirname: false,
+      __filename: false
+    },
+    plugins: [new CleanWebpackPlugin(["dist/electron"])]
+  },
+  {
+    ...commonConfig,
+    target: "web",
+    entry: {
+      "webview/index": "./src/webview/index.tsx",
+      "webview/microeditor-envelope-index": "./src/webview/microeditor-envelope-index.ts"
+    },
+
+    plugins: [
+      new CleanWebpackPlugin(["dist/webview"]),
+      new CopyPlugin([
+        { from: "static/index.html" },
+        { from: "static/microeditor-envelope-index.html" },
+        { from: "static/patternfly.css" }
+      ])
+    ]
+  }
+];

@@ -71,7 +71,9 @@ export function Spaces() {
     setNewSpaceName("");
   };
 
-  useEffect(() => updateSpaces(), [setSpaces]);
+  useEffect(() => {
+    updateSpaces();
+  }, []);
 
   return (
     <>
@@ -102,26 +104,26 @@ export function Spaces() {
         </PatternFlyPopup>
       )}
 
-        <PageSection>
-          <Gallery gutter="md">
-              {spaces.map(space => (
+      <PageSection>
+        <Gallery gutter="md">
+          {spaces.map(space => (
             <GalleryItem>
-            <Link to={routes.space({ space: space.name })}>
-                  <Card>
-                    <CardBody>
-                      <Split>
-                        <SplitItem isMain>{upper(space.name)}</SplitItem>
-                        <SplitItem isMain={false}>
-                          <Badge isRead>1</Badge>
-                        </SplitItem>
-                      </Split>
-                    </CardBody>
-                  </Card>
-                </Link>
-                </GalleryItem>
-              ))}
-          </Gallery>
-        </PageSection>
+              <Link to={routes.space({ space: space.name })}>
+                <Card>
+                  <CardBody>
+                    <Split>
+                      <SplitItem isMain>{upper(space.name)}</SplitItem>
+                      <SplitItem isMain={false}>
+                        <Badge isRead={true}>1</Badge>
+                      </SplitItem>
+                    </Split>
+                  </CardBody>
+                </Card>
+              </Link>
+            </GalleryItem>
+          ))}
+        </Gallery>
+      </PageSection>
     </>
   );
 }

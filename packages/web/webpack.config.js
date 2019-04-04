@@ -68,7 +68,8 @@ module.exports = {
     watchContentBase: true,
     contentBase: [
       path.join(__dirname, "./static"),
-      path.join(__dirname, "../../node_modules/@patternfly/patternfly/")
+      path.join(__dirname, "../../node_modules/@patternfly/patternfly/"),
+      path.join(__dirname, "../../node_modules/@patternfly/react-core/dist/styles")
     ],
     index: "static/index.html",
     compress: true,
