@@ -16,12 +16,42 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Page } from "@patternfly/react-core";
+import {
+  BackgroundImage,
+  BackgroundImageSrc,
+  Dropdown,
+  KebabToggle,
+  Page,
+  PageHeader,
+  PageSection,
+  Toolbar,
+  ToolbarGroup,
+  ToolbarItem,
+  Gallery,
+  GalleryItem,
+  Card,
+  CardBody,
+  Split,
+  SplitItem,
+  Badge,
+  Form,
+  FormGroup,
+  TextInput,
+  ActionGroup,
+  Button,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
+  EmptyStateBody
+} from "@patternfly/react-core";
 import * as ReactDOM from "react-dom";
 import * as electron from "electron";
+import { CubesIcon } from "@patternfly/react-icons";
 import { File } from "../shared/Protocol";
 import { AppFormerBusMessage } from "appformer-js-submarine";
 import { router } from "appformer-js-microeditor-router";
+import { PatternFlyPopup } from "./PatternFlyPopup";
+import { Pf4Label } from "./Pf4Label";
 
 const ipc = electron.ipcRenderer;
 
@@ -40,83 +70,99 @@ enum Pages {
 function App() {
   const [page, setPage] = useState(Pages.WELCOME);
   const [openFile, setOpenFile] = useState<File | undefined>(undefined);
+  const [popup, setPopup] = useState(false);
 
   const Router = () => {
     switch (page) {
       case Pages.WELCOME:
-        return <Welcome setPage={setPage} setOpenFile={setOpenFile} />;
+        return <Welcome setPage={setPage} />;
       case Pages.FILES:
-        return <Files setPage={setPage} setOpenFile={setOpenFile} />;
+        return <Files setPopup={setPopup} popup={popup} setPage={setPage} setOpenFile={setOpenFile} />;
       case Pages.EDITOR:
-        return <Editor openFile={openFile!} setPage={setPage} />;
+        return <Editor openFile={openFile} setPage={setPage} />;
       default:
-        return <>Oops! Unknown page.</>;
+        return <>Unknown page</>;
     }
   };
 
-  const Header = () => {
+  function Header(props: { setPage: (page: Pages) => void }) {
     return (
-      <div
-        style={{
-          color: "white",
-          backgroundColor: "black",
-          height: "76px",
-          width: "100vw",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "5px"
-        }}
-      >
-        <a style={{ color: "white" }} href={"#"} onClick={() => setPage(Pages.FILES)}>
-          Files
-        </a>
-
-        <span style={{ color: "white" }}>{openFile && openFile.path}</span>
-
-        <span />
-      </div>
+      <PageHeader
+        logo={
+          <>
+            <a style={{ color: "white" }} onClick={() => props.setPage(Pages.FILES)}>
+              Files
+            </a>
+          </>
+        }
+        toolbar={
+          <Toolbar>
+            <ToolbarGroup>
+              <ToolbarItem>
+                {page === Pages.FILES && (
+                  <a style={{ color: "white" }} onClick={() => setPopup(true)}>
+                    Add File
+                  </a>
+                )}
+              </ToolbarItem>
+            </ToolbarGroup>
+          </Toolbar>
+        }
+      />
     );
+  }
+
+  const bgImages = {
+    [BackgroundImageSrc.lg]: "/assets/images/pfbg_1200.jpg",
+    [BackgroundImageSrc.sm]: "/assets/images/pfbg_768.jpg",
+    [BackgroundImageSrc.sm2x]: "/assets/images/pfbg_768@2x.jpg",
+    [BackgroundImageSrc.xs]: "/assets/images/pfbg_576.jpg",
+    [BackgroundImageSrc.xs2x]: "/assets/images/pfbg_576@2x.jpg",
+    [BackgroundImageSrc.filter]: "/assets/images/background-filter.svg#image_overlay"
   };
 
   return (
     <>
-      <Header />
-      <Page>
+      <BackgroundImage src={bgImages} />
+      <Page header={<Header setPage={setPage} />} style={{ height: "100%" }}>
         <Router />
       </Page>
     </>
   );
 }
 
-function Welcome(props: { setPage: (s: Pages) => void; setOpenFile: (file: File | undefined) => void }) {
+function Welcome(props: { setPage: (s: Pages) => void }) {
   const start = () => {
     props.setPage(Pages.FILES);
   };
 
-  useEffect(() => {
-    props.setOpenFile(undefined);
-  }, []);
-
   return (
-    <div>
+    <PageSection>
       <h1>Welcome</h1>
-      <button onClick={start}>Start</button>
-    </div>
+      <Button onClick={start}>Start</Button>
+    </PageSection>
   );
 }
 
-function Files(props: { setPage: (page: Pages) => void; setOpenFile: (file: File | undefined) => void }) {
+function Files(props: {
+  popup: boolean;
+  setPopup: (b: boolean) => void;
+  setPage: (page: Pages) => void;
+  setOpenFile: (file: File) => void;
+}) {
   const [files, setFiles] = useState([] as File[]);
-  const [addFilePopup, setAddFilePopup] = useState(false);
+  const [newFileName, setNewFileName] = useState("");
 
   ipc.on("returnFiles", (event: any, fs: File[]) => {
     setFiles(fs);
   });
 
-  useEffect(() => {
-    props.setOpenFile(undefined);
+  const updateFiles = () => {
     ipc.send("requestFiles");
+  };
+
+  useEffect(() => {
+    updateFiles();
   }, []);
 
   const openFile = (file: File) => {
@@ -124,31 +170,81 @@ function Files(props: { setPage: (page: Pages) => void; setOpenFile: (file: File
     props.setPage(Pages.EDITOR);
   };
 
+  const addFile = (e: any) => {
+    e.preventDefault();
+    console.info("Creating file " + newFileName);
+    ipc.send("createFile", newFileName);
+    updateFiles();
+    props.setPopup(false);
+    setNewFileName("");
+  };
+
   return (
     <>
-      {addFilePopup && <div>Adding file</div>}
-      <div style={{ padding: "10px" }}>
-        {files.map(file => (
-          <div key={file.path}>
-            <a href="#" onClick={() => openFile(file)}>
-              {file.path}
-            </a>
-          </div>
-        ))}
-      </div>
+      {props.popup && (
+        <PatternFlyPopup title={"Add file"} onClose={() => props.setPopup(false)}>
+          <Form>
+            <FormGroup fieldId={"name"} className="pf-c-form__group">
+              <Pf4Label required={true} text={"Name"} />
+              <TextInput aria-label={"name"} onInput={(e: any) => setNewFileName(e.target.value)} value={newFileName} />
+              <ActionGroup>
+                <Button onClick={addFile} variant={"primary"} type={"submit"}>
+                  Add File
+                </Button>
+                <Button onClick={() => props.setPopup(false)} variant={"secondary"}>
+                  Cancel
+                </Button>
+              </ActionGroup>
+            </FormGroup>
+          </Form>
+        </PatternFlyPopup>
+      )}
+      {files.length > 0 && (
+        <PageSection>
+          <Gallery gutter="md">
+            {files.map(file => (
+              <a key={file.path} href={"#"}>
+                <GalleryItem onClick={() => openFile(file)}>
+                  <Card>
+                    <CardBody>
+                      <Split>
+                        <SplitItem isMain={true}>{file.path}</SplitItem>
+                        <SplitItem isMain={false}>
+                          <Badge isRead={true}>1</Badge>
+                        </SplitItem>
+                      </Split>
+                    </CardBody>
+                  </Card>
+                </GalleryItem>
+              </a>
+            ))}
+          </Gallery>
+        </PageSection>
+      )}
+      {files.length === 0 && (
+        <PageSection style={{ display: "flex", justifyContent: "space-around" }}>
+          <EmptyState>
+            <EmptyStateIcon icon={CubesIcon} />
+            <Title headingLevel="h5" size="lg">
+              Oops! Looks like you don't have any Files yet.
+            </Title>
+            <EmptyStateBody>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec orci enim, cursus nec dolor a, efficitur
+              ullamcorper lorem. Aenean blandit est consequat mollis euismod.
+            </EmptyStateBody>
+            <Button variant={"primary"} type={"submit"} onClick={() => props.setPopup(true)}>
+              Add File
+            </Button>
+          </EmptyState>
+        </PageSection>
+      )}
     </>
   );
 }
 
-function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
+function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
   let iframe: HTMLIFrameElement;
   const iframeDomain = "http://localhost:9000";
-
-  const openFileExtension = props.openFile.path.split(".").pop() || "";
-  const languageData = router.get(openFileExtension);
-  if (!languageData) {
-    return <>{"There's no enhanced editor available for the extension " + openFileExtension}</>;
-  }
 
   useEffect(() => {
     const initPolling = setInterval(() => {
@@ -166,15 +262,17 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
           clearInterval(initPolling);
           break;
         case "REQUEST_LANGUAGE":
-          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: languageData };
+          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: router.get("dmn") };
           iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
           break;
         case "REQUEST_SET_CONTENT":
+          console.info("req set");
           const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: "" };
           iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
           break;
         case "RETURN_GET_CONTENT":
           const iframeEditorContent = message.data;
+          console.info("ret get");
           break;
         default:
           console.debug("Unknown message type " + message.type);
@@ -187,12 +285,12 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   }, []);
 
   return (
-    <>
+    <PageSection style={{ padding: "0" }}>
       <iframe
         ref={i => (iframe = i!)}
-        style={{ width: "100%", height: "90%", border: "none" }}
+        style={{ width: "100%", height: "100%", border: "none" }}
         src={"http://localhost:9000"}
       />
-    </>
+    </PageSection>
   );
 }
