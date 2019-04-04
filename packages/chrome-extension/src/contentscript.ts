@@ -196,7 +196,7 @@ function initContentScript() {
 
   //Insert Fullscreen button
   const fullScreenDiv = document.createElement("div");
-  fullScreenDiv.style.cssText = "width: 486px";
+  fullScreenDiv.style.cssText = "margin-left: auto;";
   fullScreenDiv.appendChild(fullScreenButton);
 
   //Insert iframe and Fullscreen button
