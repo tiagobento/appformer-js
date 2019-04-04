@@ -66,7 +66,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
         case "RETURN_GET_CONTENT":
           setFileContentService(props.match.params.space, props.match.params.project, props.match.params.filePath, message.data)
               .then(v => {
-                  console.info("File saved!");
+                  setEphemeralStatus("Saved.");
               });
           break;
         default:
@@ -91,7 +91,6 @@ export function Editor(props: { match: match<{ space: string; project: string; f
 
   const save = () => {
     iframe.contentWindow!.postMessage({ type: "REQUEST_GET_CONTENT", data: undefined }, iframeDomain);
-    setEphemeralStatus("Saved.");
   };
 
   return (

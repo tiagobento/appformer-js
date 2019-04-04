@@ -87,13 +87,24 @@ export class Git implements Provider {
 
   public static newFile(origin: string) {
     return new File("/",
-      "/",
-      "/",
-      FileType.FOLDER,
-      origin,
-      StorageTypes.GIT,
-      origin,
-      origin);
+        "/",
+        "/",
+        FileType.FOLDER,
+        origin,
+        StorageTypes.GIT,
+        origin,
+        origin);
+  }
+
+  public static newEmptyFile(origin: string, relativePath: string) {
+    return new File("",
+        "",
+        relativePath,
+        FileType.FILE,
+        origin,
+        StorageTypes.GIT,
+        origin,
+        origin);
   }
 
   private static _newFile(origin: string, rootPath: string, file: File) {

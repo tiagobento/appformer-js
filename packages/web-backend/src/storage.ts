@@ -76,8 +76,7 @@ export const createProjectFile = (request: any, response: any) => {
     const fileRelativePath = request.query.path;
 
     projects.getProjectByName(spaceName, name).then(project => {
-        const file = new File("", "", fileRelativePath, FileType.FILE, project.url, StorageTypes.GIT, project.url, "");
-        console.log("aaa");
+        const file = Git.newEmptyFile(project.url, fileRelativePath);
         Files.write(file, "").then(v => {
             response.status(200).end();
         }).catch(error => {
