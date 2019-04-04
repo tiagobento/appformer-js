@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Git, Files } from "appformer-js-storage";
-import { config } from "./config";
+import {File, Files, FileType, Git, StorageTypes} from "appformer-js-storage";
+import {config} from "./config";
 import * as projects from "./projects";
+import * as path from "path";
 
 const git = new Git(config.development.git);
 Files.register(git);
@@ -62,6 +63,22 @@ export const setProjectFileContent = (request: any, response: any) => {
     getProjectFiles(spaceName, name).then(files => {
         const file = files.filter(f => f.relative_name === fileRelativePath).pop();
         Files.write(file!, content).then(v => {
+            response.status(200).end();
+        }).catch(error => {
+            response.status(500).send(error);
+        });
+    });
+};
+
+export const createProjectFile = (request: any, response: any) => {
+    const spaceName = request.params.spaceName;
+    const name = request.params.name;
+    const fileRelativePath = request.query.path;
+
+    projects.getProjectByName(spaceName, name).then(project => {
+        const file = new File("", "", fileRelativePath, FileType.FILE, project.url, StorageTypes.GIT, project.url, "");
+        console.log("aaa");
+        Files.write(file, "").then(v => {
             response.status(200).end();
         }).catch(error => {
             response.status(500).send(error);

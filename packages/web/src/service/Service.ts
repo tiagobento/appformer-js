@@ -59,3 +59,12 @@ export function setFileContentService(spaceName: string, project: string, path: 
     body: content
   });
 }
+
+export function createFileService(spaceName: string, project: string, path: string) {
+  return fetch(`http://localhost:9002/spaces/${spaceName}/projects/${project}/file?path=${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain"
+    }
+  });
+}

@@ -31,8 +31,15 @@ export class Git implements Provider {
   }
 
   public write(file: File, content: string): Promise<void> {
-    return this._myfs.write(FS.convert(file), content)
-      .then(() => this.commitAndPush(file.origin, file.relative_name));
+    return this.resolve(file.origin).then(s => {
+      let newFile = file;
+      if (file.full_name === "") {
+        newFile = new File(file.name, path.join(s, file.relative_name), file.relative_name, file.type, file.uri, file.storage, file.origin, path.join(s, file.relative_name));
+      }
+
+      return this._myfs.write(FS.convert(newFile), content)
+          .then(() => this.commitAndPush(file.origin, file.relative_name));
+    });
   }
 
   private resolve(repo: string): Promise<string> {

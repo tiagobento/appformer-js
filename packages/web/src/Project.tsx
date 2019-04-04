@@ -24,7 +24,7 @@ import { Link } from "react-router-dom";
 import { routes } from "./Routes";
 import { Pf4Label } from "./Pf4Label";
 import { useEffect } from "react";
-import { getFiles } from "./service/Service";
+import { getFiles, createFileService } from "./service/Service";
 
 export function Project(props: { match: match<{ space: string; project: string }> }) {
   const [popup, setPopup] = useState(false);
@@ -38,8 +38,11 @@ export function Project(props: { match: match<{ space: string; project: string }
   };
 
   const addFile = () => {
-    setFiles([...files, newFileName]);
-    setPopup(false);
+    createFileService(props.match.params.space, props.match.params.project, newFileName)
+        .then(res => {
+            setFiles([...files, newFileName]);
+            setPopup(false);
+        });
   };
 
   useEffect(() => {

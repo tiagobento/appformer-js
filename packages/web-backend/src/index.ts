@@ -55,6 +55,7 @@ app.delete('/spaces/:spaceName/projects/:name', projects.deleteProject);
 app.get('/spaces/:spaceName/projects/:name/files', storage.getProjectFilesService);
 app.get('/spaces/:spaceName/projects/:name/file', storage.getProjectFileContent);
 app.put('/spaces/:spaceName/projects/:name/file', storage.setProjectFileContent);
+app.post('/spaces/:spaceName/projects/:name/file', storage.createProjectFile);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);

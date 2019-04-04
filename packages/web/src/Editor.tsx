@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { match } from "react-router";
-import {getFileContentService, getFiles, setFileContentService} from "./service/Service";
+import { getFileContentService, setFileContentService } from "./service/Service";
 import { router } from "appformer-js-microeditor-router";
 import { useEffect, useState } from "react";
 import { upper } from "./Util";
