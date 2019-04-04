@@ -26,41 +26,41 @@ import { Project } from "./Project";
 import { Editor } from "./Editor";
 import { AppContext } from "./AppContext";
 import { Welcome } from "./Welcome";
-import {Import} from "./Import";
+import { Import } from "./Import";
+import { Avatar, Brand, Page, PageHeader } from "@patternfly/react-core";
+// import avatarImg from 'https://pf4.patternfly.org//assets/images/img_avatar.svg';
 
 export function Main() {
+
+  const Header = (
+    <PageHeader
+      logo={<Brand src={"/submarine-white.svg"} alt="Kogito"/>}
+      toolbar={NavBar}
+      avatar={<Avatar src={"https://pf4.patternfly.org//assets/images/img_avatar.svg"} alt="Avatar image" />}
+    />
+  );
+
   const appContext = useContext(AppContext);
   return (
     <Router>
       {!appContext.user && <Login />}
       {appContext.user && (
         <>
-          <NavBar user={appContext.user} />
-          <main role="main" className={"pf-c-page__main"}>
-            <section
-              style={{ padding: "20px 0 0 0", overflow: "hidden" }}
-              className={"pf-c-page__main-section pf-m-light"}
-            >
-              <div className={"pf-c-content"} style={{ height: "100%" }}>
-                  <Switch>
-                    <Route exact={true} path={routes.welcome()} component={Welcome} />
-                    <Route exact={true} path={routes.spaces()} component={Spaces} />
-                    <Route exact={true} path={routes.import()} component={Import} />
-                    <Route exact={true} path={routes.space({ space: ":space" })} component={Space} />
-                    <Route
-                      exact={true}
-                      path={routes.project({ space: ":space", project: ":project" })}
-                      component={Project}
-                    />
-                    <Route
-                      exact={true}
-                      path={routes.file({ space: ":space", project: ":project", filePath: ":filePath" })}
-                      component={Editor}
-                    />
-                  </Switch>
-              </div>
-            </section>
-          </main>
+          <Page header={Header} style={{ height: "100%" }}>
+            {/* <NavBar user={appContext.user} /> */}
+            <Switch>
+              <Route exact={true} path={routes.welcome()} component={Welcome} />
+              <Route exact={true} path={routes.spaces()} component={Spaces} />
+              <Route exact={true} path={routes.import()} component={Import} />
+              <Route exact={true} path={routes.space({ space: ":space" })} component={Space} />
+              <Route exact={true} path={routes.project({ space: ":space", project: ":project" })} component={Project} />
+              <Route
+                exact={true}
+                path={routes.file({ space: ":space", project: ":project", filePath: ":filePath" })}
+                component={Editor}
+              />
+            </Switch>
+          </Page>
         </>
       )}
     </Router>
