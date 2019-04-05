@@ -35,7 +35,7 @@ app.on("ready", () => {
         {
           label: "Save",
           click: () => {
-            console.info("OI");
+            mainWindow.webContents.send("requestSave");
           }
         }
       ]
@@ -73,19 +73,35 @@ app.on("ready", () => {
     });
   });
 
-  ipcMain.on("writeContent", () => {/**/});
-
-  ipcMain.on("requestContent", (file: File) => {
-    Files.read(FS.newFile(rootPath, file.path)).then(contents => {
-        mainWindow.webContents.send("returnContents", contents);
-    })
+  ipcMain.on("writeContent", (event: any, data: { path: string, content: string }) => {
+      Files.write(FS.newFile(rootPath, path.join(rootPath, data.path)), data.content).then(v => {
+        console.info("Saved.");
+      }).catch(error => {
+        console.info("Failed to save.");
+      });
   });
 
-  ipcMain.on("createFile", () => {/**/});
+  ipcMain.on("requestContent", (event: any, data: { relativePath: string }) => {
+      const fullPath = path.join(rootPath.toString(), data.relativePath.toString());
+      Files.read(FS.newFile(rootPath, fullPath)).then(content => {
+          mainWindow.webContents.send("returnContent", content);
+      });
+  });
 
-  ipcMain.on("deleteFile", () => {/**/});
+  ipcMain.on("createFile", (event: any, data: { relativePath: string }) => {
 
-  ipcMain.on("renameFile", () => {/**/});
+    // FIXME use storage api
+    const newFilePath = path.join(rootPath, data.relativePath);
+    if (!fs.existsSync(newFilePath)) {
+      fs.writeFileSync(newFilePath, "");
+    }
+    mainWindow.webContents.send("fileCreated");
+    /*Files.write(FS.newFile(rootPath, newFilePath), "").then(v => {
+      console.info("Created.");
+    }).catch(error => {
+      console.info("Failed to create.");
+    });*/
+  });
 });
 
 app.on("window-all-closed", () => {

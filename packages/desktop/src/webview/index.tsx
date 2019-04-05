@@ -79,7 +79,7 @@ function App() {
       case Pages.FILES:
         return <Files setPopup={setPopup} popup={popup} setPage={setPage} setOpenFile={setOpenFile} />;
       case Pages.EDITOR:
-        return <Editor openFile={openFile} setPage={setPage} />;
+        return <Editor openFile={openFile!} setPage={setPage} />;
       default:
         return <>Unknown page</>;
     }
@@ -153,16 +153,26 @@ function Files(props: {
   const [files, setFiles] = useState([] as File[]);
   const [newFileName, setNewFileName] = useState("");
 
-  ipc.on("returnFiles", (event: any, fs: File[]) => {
-    setFiles(fs);
-  });
-
   const updateFiles = () => {
     ipc.send("requestFiles");
   };
 
   useEffect(() => {
+
+    ipc.on("returnFiles", (event: any, fs: File[]) => {
+      setFiles(fs);
+    });
+
+    ipc.on("fileCreated", (event: any) => {
+      updateFiles();
+    });
+
     updateFiles();
+
+    return () => {
+      ipc.removeAllListeners("returnFiles");
+      ipc.removeAllListeners("fileCreated");
+    }
   }, []);
 
   const openFile = (file: File) => {
@@ -173,7 +183,7 @@ function Files(props: {
   const addFile = (e: any) => {
     e.preventDefault();
     console.info("Creating file " + newFileName);
-    ipc.send("createFile", newFileName);
+    ipc.send("createFile", {relativePath: newFileName});
     updateFiles();
     props.setPopup(false);
     setNewFileName("");
@@ -242,11 +252,29 @@ function Files(props: {
   );
 }
 
-function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
+function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   let iframe: HTMLIFrameElement;
   const iframeDomain = "http://localhost:9000";
 
+  const openFileExtension = props.openFile.path.split(".").pop() || "";
+  const languageData = router.get(openFileExtension);
+  if (!languageData) {
+    return <>{"There's no enhanced editor available for the extension " + openFileExtension}</>;
+  }
+
+
   useEffect(() => {
+
+    ipc.on("returnContent", (event: any, content: string) => {
+      const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content };
+      iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
+    });
+
+    ipc.on("requestSave", (event: any) => {
+      const setContentReturnMessage = { type: "REQUEST_GET_CONTENT" };
+      iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
+    });
+
     const initPolling = setInterval(() => {
       const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
       if (iframe && iframe.contentWindow) {
@@ -266,13 +294,13 @@ function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
           iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
           break;
         case "REQUEST_SET_CONTENT":
-          console.info("req set");
-          const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: "" };
-          iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
+
+          console.log("REQUEST_SET_CONTENT: " + props.openFile.path);
+          ipc.send("requestContent", {relativePath: props.openFile.path});
           break;
         case "RETURN_GET_CONTENT":
-          const iframeEditorContent = message.data;
-          console.info("ret get");
+          console.log("RETURN_GET_CONTENT");
+          ipc.send("writeContent", { path: props.openFile.path, content: message.data });
           break;
         default:
           console.debug("Unknown message type " + message.type);
@@ -281,7 +309,11 @@ function Editor(props: { openFile?: File; setPage: (s: Pages) => void }) {
     };
 
     window.addEventListener("message", handler, false);
-    return () => window.removeEventListener("message", handler, false);
+    return () => {
+      ipc.removeAllListeners("returnContent");
+      ipc.removeAllListeners("requestSave");
+      window.removeEventListener("message", handler, false);
+    }
   }, []);
 
   return (
