@@ -18,11 +18,30 @@ import { app, BrowserWindow, ipcMain } from "electron";
 
 import * as path from "path";
 import { Files, FS } from "appformer-js-storage";
-import * as os from "os";
 import * as fs from "fs";
+import { Menu } from "electron";
 
 app.on("ready", () => {
   Files.register(new FS());
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: "Electron",
+      submenu: []
+    },
+    {
+      label: "File",
+      submenu: [
+        {
+          label: "Save",
+          click: () => {
+            console.info("OI");
+          }
+        }
+      ]
+    }
+  ]);
+  Menu.setApplicationMenu(menu);
 
   const mainWindow = new BrowserWindow({
     height: 800,
