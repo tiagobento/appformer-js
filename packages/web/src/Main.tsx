@@ -27,7 +27,7 @@ import { Editor } from "./Editor";
 import { AppContext } from "./AppContext";
 import { Import } from "./Import";
 import { Avatar, BackgroundImage, BackgroundImageSrc, Brand, Page, PageHeader } from "@patternfly/react-core";
-import { Homepage } from "./homepage";
+import { Homepage } from "./HomePage";
 
 const bgImages = {
   [BackgroundImageSrc.lg]: "/assets/images/pfbg_1200.jpg",
