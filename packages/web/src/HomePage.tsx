@@ -47,7 +47,8 @@ import {
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { Pf4Label } from "./Pf4Label";
-import { DesktopIcon, CodeIcon, FileImageIcon } from "@patternfly/react-icons";
+import { DesktopIcon, CodeIcon, FileImageIcon, RepositoryIcon } from "@patternfly/react-icons";
+
 
 interface Space {
   name: string;
@@ -94,7 +95,6 @@ export function Homepage() {
       </PageSection>
       <PageSection variant="dark">
         <Gallery gutter="lg">
-          <GalleryItem>
             <Card>
               <CardHeader>
                 <Title size="2xl">Desktop</Title>
@@ -124,8 +124,6 @@ export function Homepage() {
                 </Split>
               </CardFooter>
             </Card>
-          </GalleryItem>
-          <GalleryItem>
             <Card>
               <CardHeader>
                 <Title size="2xl">Web</Title>
@@ -154,8 +152,6 @@ export function Homepage() {
                 </Split>
               </CardFooter>
             </Card>
-          </GalleryItem>
-          <GalleryItem>
             <Card>
               <CardHeader>
                 <Title size="2xl">Browser extensions</Title>
@@ -169,14 +165,13 @@ export function Homepage() {
                 </TextContent>
                 <List>
                   <ListItem>Community focused</ListItem>
-                  <ListItem>Integrate diretly into source code host (GitHub)</ListItem>
+                  <ListItem>Integrate directly into source code host (GitHub)</ListItem>
                 </List>
               </CardBody>
               <CardFooter>
                 <Split>
                   <SplitItem isMain={true}>
-                    <FileImageIcon size="lg" />
-                    <CodeIcon size="lg" />
+                    <RepositoryIcon size="lg" />
                   </SplitItem>
                   <SplitItem isMain={false}>
                     <Button variant="primary">Get browser extension</Button>
@@ -184,8 +179,6 @@ export function Homepage() {
                 </Split>
               </CardFooter>
             </Card>
-          </GalleryItem>
-          <GalleryItem>
             <Card>
               <CardHeader>
                 <Title size="2xl">IDE extensions</Title>
@@ -207,7 +200,6 @@ export function Homepage() {
                 <Split>
                   <SplitItem isMain={true}>
                     <FileImageIcon size="lg" />
-                    <CodeIcon size="lg" />
                   </SplitItem>
                   <SplitItem isMain={false}>
                     <Button variant="primary">Get IDE extension</Button>
@@ -215,7 +207,6 @@ export function Homepage() {
                 </Split>
               </CardFooter>
             </Card>
-          </GalleryItem>
         </Gallery>
       </PageSection>
     </>
