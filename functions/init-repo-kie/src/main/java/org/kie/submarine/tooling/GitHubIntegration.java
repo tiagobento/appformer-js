@@ -46,7 +46,6 @@ public class GitHubIntegration {
             git.commit().setMessage("KIE Init").call();
             git.push().setCredentialsProvider(credentials.getCredentials()).call();
             final String prNumber = github.getRepository(path).createPullRequest("PR from Submarine Function", GitHubCredentials.GH_USERNAME + ":master", "master", "Some description").getIssueUrl().toString();
-            fork.delete();
             return prNumber;
         } catch (Exception e) {
             e.printStackTrace();

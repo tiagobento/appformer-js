@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "engines": {
-    "vscode": "1.32.3"
+    "vscode": "1.33.0"
   },
   "categories": [
     "Other"
@@ -48,7 +48,7 @@
     "appformer-js-submarine": "0.0.0",
     "appformer-js-microeditor-router": "0.0.0",
     "appformer-js-microeditor-envelope": "0.0.0",
-    "@types/vscode": "^1.32.0",
+    "@types/vscode": "^1.33.0",
     "vscode": "1.1.28"
   }
 }
