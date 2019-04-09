@@ -40,12 +40,13 @@ import {
   Split,
   SplitItem,
   TextInput,
-  Title
+  Title,
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
 import { getProjects, postProject } from "./service/Service";
 import { Pf4Label } from "./Pf4Label";
+import "@patternfly/patternfly/utilities/Spacing/spacing.css";
 
 interface Project {
   name: string;
@@ -133,7 +134,7 @@ export function Space(props: { match: match<{ space: string }> }) {
         </PatternFlyPopup>
       )}
 
-      <PageSection variant={PageSectionVariants.light}>
+      <div className="pf-c-page__main-nav">
         <Breadcrumb>
           <BreadcrumbItem>
             <Link to={routes.spaces()}>Spaces</Link>
@@ -142,6 +143,8 @@ export function Space(props: { match: match<{ space: string }> }) {
             <Link to={routes.space({ space: props.match.params.space })}>{props.match.params.space}</Link>
           </BreadcrumbItem>
         </Breadcrumb>
+      </div>
+      <PageSection variant={PageSectionVariants.light} className="pf-u-pt-sm">
         <Split>
           <SplitItem isMain={true}>
             <Title headingLevel="h1" size="3xl">
@@ -153,26 +156,30 @@ export function Space(props: { match: match<{ space: string }> }) {
       </PageSection>
 
       {projects.length > 0 && (
-          <PageSection>
-            <Gallery gutter="md">
-              {projects.map(project => (
-                <GalleryItem key={project.url}>
-                  <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
-                    <Card>
-                      <CardBody>
-                        <Split>
-                          <SplitItem isMain={true}>{upper(project.name)}</SplitItem>
-                          <SplitItem isMain={false}>
-                            <Badge isRead={true}>1</Badge>
-                          </SplitItem>
-                        </Split>
-                      </CardBody>
-                    </Card>
-                  </Link>
-                </GalleryItem>
-              ))}
-            </Gallery>
-          </PageSection>
+        <PageSection>
+          <Gallery gutter="md">
+            {projects.map(project => (
+              <GalleryItem key={project.url}>
+                <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
+                  <Card>
+                    <CardBody>
+                      <Split>
+                        <SplitItem isMain={true}>
+                          <Title headingLevel="h2" size="xl">
+                            {upper(project.name)}
+                          </Title>
+                        </SplitItem>
+                        <SplitItem isMain={false}>
+                          <Badge isRead={true}>1</Badge>
+                        </SplitItem>
+                      </Split>
+                    </CardBody>
+                  </Card>
+                </Link>
+              </GalleryItem>
+            ))}
+          </Gallery>
+        </PageSection>
       )}
 
       {projects.length === 0 && (

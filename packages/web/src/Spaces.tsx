@@ -120,12 +120,14 @@ export function Spaces() {
         </PatternFlyPopup>
       )}
 
-      <PageSection variant={PageSectionVariants.light}>
+      <div className="pf-c-page__main-nav">
         <Breadcrumb>
           <BreadcrumbItem>
             <Link to={routes.spaces()}>Spaces</Link>
           </BreadcrumbItem>
         </Breadcrumb>
+      </div>
+      <PageSection variant={PageSectionVariants.light} className="pf-u-pt-sm">
         <Split>
           <SplitItem isMain={true}>
             <Title headingLevel="h1" size="3xl">
