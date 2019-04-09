@@ -93,7 +93,7 @@ export function Project(props: { match: match<{ space: string; project: string }
         </PatternFlyPopup>
       )}
 
-      <PageSection variant={PageSectionVariants.light}>
+      <div className="pf-c-page__main-nav">
         <Breadcrumb>
           <BreadcrumbItem>
             <Link to={routes.spaces()}>Spaces</Link>
@@ -107,6 +107,8 @@ export function Project(props: { match: match<{ space: string; project: string }
             </Link>
           </BreadcrumbItem>
         </Breadcrumb>
+      </div>
+      <PageSection variant={PageSectionVariants.light} className="pf-u-pt-sm">
         <Split>
           <SplitItem isMain={true}>
             <Title headingLevel="h1" size="3xl">
