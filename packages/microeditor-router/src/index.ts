@@ -40,5 +40,28 @@ export const router = new Map<string, LanguageData>([
         }
       ]
     }
+  ],
+  [
+    //FIXME: We're creating a `bpmn` entry pointing to the same entry of `dmn`. When we have a working bpmn editor, we can change that.
+    "bpmn",
+    {
+      editorId: "DMNDiagramEditor",
+      gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
+      erraiDomain: "http://localhost:8080",
+      resources: [
+        {
+          type: "css",
+          paths: ["http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css"]
+        },
+        {
+          type: "js",
+          paths: [
+            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js",
+            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js",
+            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js"
+          ]
+        }
+      ]
+    }
   ]
 ]);
