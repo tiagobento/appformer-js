@@ -30,10 +30,12 @@
       {
         "id": "bpmn",
         "extensions": [
-          ".bpmn"
+          ".bpmn",
+          ".bpmn2"
         ],
         "aliases": [
           "bpmn",
+          "bpmn2",
           "Business Process Model and Notation"
         ]
       }
