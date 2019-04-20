@@ -5,6 +5,6 @@ RUN apk add yarn nodejs \
 
 EXPOSE 9000
 
-WORKDIR /usr/local/app/packages/web-backend
+WORKDIR /usr/local/app/packages/microeditor-envelope
 
 CMD ["yarn", "start"]

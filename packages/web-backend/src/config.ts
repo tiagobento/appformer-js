@@ -17,15 +17,15 @@
 export const config = {
     development: {
         database: {
-            host: 'localhost',
+            host: 'db', //postgres service name on docker-compose.yml
             user: 'me',
             database: 'submarine',
             password: 'password',
             port: 5432,
         },
         server: {
-            host: '127.0.0.1',
-            port: '9002'
+            host: '0.0.0.0',
+            port: '9000'
         },
         git: {
             user: "porcelli-test",

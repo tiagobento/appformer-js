@@ -16,19 +16,18 @@
 
 const path = require("path");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    index: "./src/index.ts",
+    index: "./src/index.ts"
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "[name].js",
-    libraryTarget: "commonjs2",
+    libraryTarget: "commonjs2"
   },
   externals: {
     react: {

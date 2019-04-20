@@ -147,7 +147,11 @@ export function Spaces() {
                   <Card>
                     <CardBody>
                       <Split>
-                        <SplitItem isMain={true}>{upper(space.name)}</SplitItem>
+                        <SplitItem isMain={true}>
+                          <Title headingLevel="h2" size="xl">
+                            {upper(space.name)}
+                          </Title>
+                        </SplitItem>
                         <SplitItem isMain={false}>
                           <Badge isRead={true}>1</Badge>
                         </SplitItem>

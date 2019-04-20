@@ -32,7 +32,7 @@
     "test": "jest",
     "init": "yarn",
     "build": "yarn run lint && yarn test && webpack",
-    "start": "webpack-dev-server -d --open"
+    "start": "webpack-dev-server -d --host 0.0.0.0"
   },
   "babel": {
     "presets": [

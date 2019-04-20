@@ -1,0 +1,38 @@
+version: '3'
+services:
+  microeditor-envelope:
+    build: ./packages/microeditor-envelope
+    ports:
+      - "9000:9000"
+    volumes: 
+      - .:/usr/local/app
+  web:
+    build: ./packages/web
+    ports:
+      - "9001:9000"
+    volumes: 
+      - .:/usr/local/app
+  web-backend:
+    build: ./packages/web-backend
+    ports:
+      - "9002:9000"
+    volumes: 
+      - .:/usr/local/app
+  dmn-microeditor:
+    build: ./packages/vscode-extension/dmn-war
+    ports:
+      - "8080:8080" 
+  db:
+    build: ./packages/web-backend/db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports: 
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "me"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "submarine"
+ 
+volumes:
+  db-data:
+    driver: local

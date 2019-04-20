@@ -1,10 +1,10 @@
-FROM node:7.9.0-alpine
+FROM alpine
 
-# Copy application files
-COPY ./dist /usr/src/app
-WORKDIR /usr/src/app
+RUN apk add yarn nodejs \
+ && mkdir -p /usr/local/app
 
-# Install Node.js dependencies
-ENV NODE_ENV production
-RUN yarn install --production --no-progress
-CMD [ "yarn", "start" ]
+EXPOSE 9000
+
+WORKDIR /usr/local/app/packages/web
+
+CMD ["yarn", "start"]

@@ -15,6 +15,7 @@
  */
 
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
@@ -33,6 +34,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(["dist"]),
+    new CopyPlugin([{ from: "static/index.html" }]),
     new CircularDependencyPlugin({
       exclude: /node_modules/, // exclude detection of files based on a RegExp
       failOnError: false, // add errors to webpack instead of warnings
@@ -77,7 +79,7 @@ module.exports = {
     ],
     index: "static/index.html",
     compress: true,
-    port: 9001
+    port: 9000
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".jsx"],
