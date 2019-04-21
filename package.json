@@ -9,7 +9,9 @@
   "scripts": {
     "init": "npx lerna bootstrap",
     "build": "npx lerna run build --stream",
-    "build:colorful": "npx lerna exec -- yarn run build"
+    "build:colorful": "npx lerna exec -- yarn run build",
+    "start": "docker-compose up --build -d",
+    "stop": "docker-compose down --rmi all"
   },
   "devDependencies": {
     "lerna": "3.4.0"

@@ -57,6 +57,9 @@ module.exports = {
     ]
   },
   devServer: {
+    historyApiFallback: {
+      disableDotRule: true
+    },
     disableHostCheck: true,
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -68,7 +71,7 @@ module.exports = {
       path.join(__dirname, "static"),
       path.join(__dirname, "../../node_modules/@patternfly/patternfly/"),
     ],
-    index: "./static/index.html",
+    index: "static/index.html",
     compress: true,
     port: 9000
   },
