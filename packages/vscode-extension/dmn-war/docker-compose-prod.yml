@@ -1,0 +1,6 @@
+version: '3'
+services:
+  editors:
+    image: kiegroup/microeditors
+    ports:
+      - "9003:8080"

@@ -1,11 +1,15 @@
 {
   "name": "appformer-js-vscode-extension",
-  "displayName": "KIE Submarine :: VsCode Extension",
+  "displayName": "KIE :: Micro Editors",
   "description": "",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "engines": {
     "vscode": "^1.33.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kiegroup/appformer-js.git"
   },
   "categories": [
     "Other"
@@ -42,25 +46,28 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "build": "npm run compile",
+    "pack-extension": "vsce package --yarn -o ./dist/kiegroup_microeditors.vsix && yarn run vscode:postpublish",
+    "vscode:prepublish": "docker image build -t kiegroup/microeditors dmn-war && docker image save -o dmn-war/kiegroup_microeditors.dockerimage kiegroup/microeditors && yarn run build",
+    "vscode:postpublish": "docker image rm kiegroup/microeditors && rm dmn-war/kiegroup_microeditors.dockerimage",
+    "build": "webpack",
     "compile": "webpack",
     "watch": "webpack"
   },
   "devDependencies": {
+    "vsce": "1.59.0",
     "@types/mocha": "2.2.42",
     "@types/node": "10.12.21",
     "tslint": "5.12.1",
     "typescript": "3.3.1",
     "webpack": "4.15.1",
-    "webpack-cli": "3.0.8"
+    "webpack-cli": "3.0.8",
+    "@types/vscode": "^1.33.0",
+    "vscode": "1.1.28"
   },
   "dependencies": {
     "appformer-js-core": "0.0.0",
     "appformer-js-submarine": "0.0.0",
     "appformer-js-microeditor-router": "0.0.0",
-    "appformer-js-microeditor-envelope": "0.0.0",
-    "@types/vscode": "^1.33.0",
-    "vscode": "1.1.28"
+    "appformer-js-microeditor-envelope": "0.0.0"
   }
 }
