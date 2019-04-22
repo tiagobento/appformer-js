@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
-import { CustomEditor } from "./CustomEditor";
+import { KieEditorsExtension } from "./KieEditorsExtension";
 import { BackendExecutor } from "./BackendExecutor";
 
 export function activate(context: vscode.ExtensionContext) {
   console.info("Extension is alive.");
-  CustomEditor.registerCommand(context);
-  CustomEditor.registerCustomSaveCommand(context);
+  KieEditorsExtension.subscribeToActiveTextEditorChanges(context);
+  KieEditorsExtension.registerCustomSaveCommand(context);
   //BackendExecutor.run(context);
 }
 
