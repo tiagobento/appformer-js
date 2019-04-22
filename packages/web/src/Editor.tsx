@@ -15,27 +15,17 @@
  */
 
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { match } from "react-router";
 import { getFileContentService, setFileContentService } from "./service/Service";
-import { router } from "appformer-js-microeditor-router";
-import { useEffect, useState } from "react";
-import { upper } from "./Util";
+import { router, services } from "appformer-js-microeditor-router";
 import { AppFormerBusMessage } from "appformer-js-submarine";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  Button,
-  PageSection,
-  PageSectionVariants,
-  Split,
-  SplitItem,
-  Title
-} from "@patternfly/react-core";
+import { Breadcrumb, BreadcrumbItem, Button, PageSection, PageSectionVariants } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
-  const decodedFilePath = decodeURIComponent(props.match.params.filePath.replace(/\+/g, '%20'));
+  const decodedFilePath = decodeURIComponent(props.match.params.filePath.replace(/\+/g, "%20"));
   const fileExtension = decodedFilePath.split(".").pop()!;
   const languageData = router.get(fileExtension);
   if (!languageData) {
@@ -45,8 +35,8 @@ export function Editor(props: { match: match<{ space: string; project: string; f
 
   let iframe: HTMLIFrameElement;
   //FIXME: This URLs will probably be kogito.redhat.com/appformer-js/router or something like that.
-  const iframeDomain = "http://localhost:9000";
-  const iframeSrc = "http://localhost:9000";
+  const iframeDomain = services.microeditor_envelope;
+  const iframeSrc = services.microeditor_envelope;
 
   useEffect(() => {
     const initPolling = setInterval(() => {

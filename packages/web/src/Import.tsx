@@ -17,12 +17,12 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { match } from "react-router";
-import { Location, History } from "history";
+import { History, Location } from "history";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { ActionGroup, Button, Form, FormGroup, TextInput } from "@patternfly/react-core";
 import { routes } from "./Routes";
-import { postSpace, postProject } from "./service/Service";
-import {Pf4Label} from "./Pf4Label";
+import { getProjectByUrl, postProject, postSpace } from "./service/Service";
+import { Pf4Label } from "./Pf4Label";
 
 export function Import(props: { history: History; location: Location; match: match }) {
   const path = new URLSearchParams(props.location.search).get("path");
@@ -48,7 +48,7 @@ export function Import(props: { history: History; location: Location; match: mat
   const projectUrl = pathSplit[0];
   const fileUrl = pathSplit[1];
 
-  const importProject = async (e:any) => {
+  const importProject = async (e: any) => {
     e.preventDefault();
     await postSpace({ name: space });
     const createProject = await postProject(space, { name: project, url: projectUrl });
@@ -64,7 +64,7 @@ export function Import(props: { history: History; location: Location; match: mat
   };
 
   useEffect(() => {
-    fetch(`http://localhost:9002/projects?url=${projectUrl}`).then(res => {
+    getProjectByUrl(projectUrl).then(res => {
       if (res.status === 200) {
         props.history.push(routes.project({ space, project }));
       } else {
@@ -84,7 +84,7 @@ export function Import(props: { history: History; location: Location; match: mat
           </p>
           <Form>
             <FormGroup fieldId={"name"} className="pf-c-form__group">
-              <Pf4Label required={true} text={"Space"}/>
+              <Pf4Label required={true} text={"Space"} />
               <TextInput
                 aria-label={space}
                 placeholder={"Space"}
@@ -93,7 +93,7 @@ export function Import(props: { history: History; location: Location; match: mat
               />
             </FormGroup>
             <FormGroup fieldId={"url"} className="pf-c-form__group">
-              <Pf4Label required={true} text={"Project"}/>
+              <Pf4Label required={true} text={"Project"} />
               <TextInput
                 aria-label={"project"}
                 placeholder={"Project"}

@@ -1,0 +1,6 @@
+version: '3'
+services:
+  editors:
+    build: .
+    ports:
+      - "9003:8080"

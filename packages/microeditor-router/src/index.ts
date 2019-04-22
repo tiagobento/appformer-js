@@ -18,24 +18,34 @@ import { LanguageData } from "./LanguageData";
 
 export * from "./LanguageData";
 
+export const services = {
+  microeditor_envelope: "http://localhost:9000",
+  web: "http://localhost:9001",
+  web_backend: "http://localhost:9002",
+  microeditors: "http://localhost:9003",
+  functions: "http://localhost:9004"
+};
+
 export const router = new Map<string, LanguageData>([
   [
     "dmn",
     {
       editorId: "DMNDiagramEditor",
       gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-      erraiDomain: "http://localhost:8080",
+      erraiDomain: services.microeditors,
       resources: [
         {
           type: "css",
-          paths: ["http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css"]
+          paths: [`${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
         },
         {
           type: "js",
           paths: [
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js",
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js",
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js"
+            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js`,
+            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js`,
+            `${
+              services.microeditors
+            }/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js`
           ]
         }
       ]
@@ -47,18 +57,20 @@ export const router = new Map<string, LanguageData>([
     {
       editorId: "DMNDiagramEditor",
       gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-      erraiDomain: "http://localhost:8080",
+      erraiDomain: services.microeditors,
       resources: [
         {
           type: "css",
-          paths: ["http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css"]
+          paths: [`${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
         },
         {
           type: "js",
           paths: [
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js",
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js",
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js"
+            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js`,
+            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js`,
+            `${
+              services.microeditors
+            }/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js`
           ]
         }
       ]
@@ -70,18 +82,20 @@ export const router = new Map<string, LanguageData>([
     {
       editorId: "DMNDiagramEditor",
       gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-      erraiDomain: "http://localhost:8080",
+      erraiDomain: services.microeditors,
       resources: [
         {
           type: "css",
-          paths: ["http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css"]
+          paths: [`${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
         },
         {
           type: "js",
           paths: [
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js",
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js",
-            "http://localhost:8080/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js"
+            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js`,
+            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js`,
+            `${
+              services.microeditors
+            }/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js`
           ]
         }
       ]

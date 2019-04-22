@@ -17,39 +17,37 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import {
+  ActionGroup,
   BackgroundImage,
   BackgroundImageSrc,
-  Dropdown,
-  KebabToggle,
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  Form,
+  FormGroup,
+  Gallery,
+  GalleryItem,
   Page,
   PageHeader,
   PageSection,
-  Toolbar,
-  ToolbarGroup,
-  ToolbarItem,
-  Gallery,
-  GalleryItem,
-  Card,
-  CardBody,
   Split,
   SplitItem,
-  Badge,
-  Form,
-  FormGroup,
   TextInput,
-  ActionGroup,
-  Button,
-  EmptyState,
-  EmptyStateIcon,
   Title,
-  EmptyStateBody
+  Toolbar,
+  ToolbarGroup,
+  ToolbarItem
 } from "@patternfly/react-core";
 import * as ReactDOM from "react-dom";
 import * as electron from "electron";
 import { CubesIcon } from "@patternfly/react-icons";
 import { File } from "../shared/Protocol";
 import { AppFormerBusMessage } from "appformer-js-submarine";
-import { router } from "appformer-js-microeditor-router";
+import { router, services } from "appformer-js-microeditor-router";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { Pf4Label } from "./Pf4Label";
 
@@ -158,7 +156,6 @@ function Files(props: {
   };
 
   useEffect(() => {
-
     ipc.on("returnFiles", (event: any, fs: File[]) => {
       setFiles(fs);
     });
@@ -172,7 +169,7 @@ function Files(props: {
     return () => {
       ipc.removeAllListeners("returnFiles");
       ipc.removeAllListeners("fileCreated");
-    }
+    };
   }, []);
 
   const openFile = (file: File) => {
@@ -183,7 +180,7 @@ function Files(props: {
   const addFile = (e: any) => {
     e.preventDefault();
     console.info("Creating file " + newFileName);
-    ipc.send("createFile", {relativePath: newFileName});
+    ipc.send("createFile", { relativePath: newFileName });
     updateFiles();
     props.setPopup(false);
     setNewFileName("");
@@ -254,7 +251,7 @@ function Files(props: {
 
 function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   let iframe: HTMLIFrameElement;
-  const iframeDomain = "http://localhost:9000";
+  const iframeDomain = services.microeditor_envelope;
 
   const openFileExtension = props.openFile.path.split(".").pop() || "";
   const languageData = router.get(openFileExtension);
@@ -262,9 +259,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
     return <>{"There's no enhanced editor available for the extension " + openFileExtension}</>;
   }
 
-
   useEffect(() => {
-
     ipc.on("returnContent", (event: any, content: string) => {
       const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content };
       iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
@@ -294,9 +289,8 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
           iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
           break;
         case "REQUEST_SET_CONTENT":
-
           console.log("REQUEST_SET_CONTENT: " + props.openFile.path);
-          ipc.send("requestContent", {relativePath: props.openFile.path});
+          ipc.send("requestContent", { relativePath: props.openFile.path });
           break;
         case "RETURN_GET_CONTENT":
           console.log("RETURN_GET_CONTENT");
@@ -313,7 +307,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
       ipc.removeAllListeners("returnContent");
       ipc.removeAllListeners("requestSave");
       window.removeEventListener("message", handler, false);
-    }
+    };
   }, []);
 
   return (
@@ -321,7 +315,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
       <iframe
         ref={i => (iframe = i!)}
         style={{ width: "100%", height: "100%", border: "none" }}
-        src={"http://localhost:9000"}
+        src={services.microeditor_envelope}
       />
     </PageSection>
   );

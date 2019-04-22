@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { services } from "appformer-js-microeditor-router";
+
 export function getSpaces() {
-    return fetch("http://localhost:9002/spaces");
+  return fetch(`${services.web_backend}/spaces`);
 }
 
 export function postSpace(space: { name: string }) {
-  return fetch("http://localhost:9002/spaces/", {
+  return fetch(`${services.web_backend}/spaces/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -28,12 +30,16 @@ export function postSpace(space: { name: string }) {
   });
 }
 
+export function getProjectByUrl(url: string) {
+  return fetch(`${services.web_backend}/projects?url=${url}`);
+}
+
 export function getProjects(space: string) {
-  return fetch(`http://localhost:9002/spaces/${space}/projects`);
+  return fetch(`${services.web_backend}/spaces/${space}/projects`);
 }
 
 export function postProject(spaceName: string, project: { name: string; url: string }) {
-  return fetch(`http://localhost:9002/spaces/${spaceName}/projects`, {
+  return fetch(`${services.web_backend}/spaces/${spaceName}/projects`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -43,15 +49,15 @@ export function postProject(spaceName: string, project: { name: string; url: str
 }
 
 export function getFiles(space: string, project: string) {
-  return fetch(`http://localhost:9002/spaces/${space}/projects/${project}/files`);
+  return fetch(`${services.web_backend}/spaces/${space}/projects/${project}/files`);
 }
 
 export function getFileContentService(space: string, project: string, path: string) {
-  return fetch(`http://localhost:9002/spaces/${space}/projects/${project}/file?path=${path}`);
+  return fetch(`${services.web_backend}/spaces/${space}/projects/${project}/file?path=${path}`);
 }
 
 export function setFileContentService(spaceName: string, project: string, path: string, content: string) {
-  return fetch(`http://localhost:9002/spaces/${spaceName}/projects/${project}/file?path=${path}`, {
+  return fetch(`${services.web_backend}/spaces/${spaceName}/projects/${project}/file?path=${path}`, {
     method: "PUT",
     headers: {
       "Content-Type": "text/plain"
@@ -61,7 +67,7 @@ export function setFileContentService(spaceName: string, project: string, path: 
 }
 
 export function createFileService(spaceName: string, project: string, path: string) {
-  return fetch(`http://localhost:9002/spaces/${spaceName}/projects/${project}/file?path=${path}`, {
+  return fetch(`${services.web_backend}/spaces/${spaceName}/projects/${project}/file?path=${path}`, {
     method: "POST",
     headers: {
       "Content-Type": "text/plain"

@@ -21,7 +21,7 @@ services:
   dmn-microeditor:
     build: ./packages/vscode-extension/dmn-war
     ports:
-      - "8080:8080" 
+      - "9003:8080"
   db:
     build: ./packages/web-backend/db
     volumes:

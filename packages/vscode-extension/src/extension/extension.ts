@@ -6,7 +6,9 @@ export function activate(context: vscode.ExtensionContext) {
   console.info("Extension is alive.");
   KieEditorsExtension.subscribeToActiveTextEditorChanges(context);
   KieEditorsExtension.registerCustomSaveCommand(context);
-  //BackendExecutor.run(context);
+  // BackendExecutor.run(context);
 }
 
-export function deactivate() {}
+export function deactivate() {
+  //
+}

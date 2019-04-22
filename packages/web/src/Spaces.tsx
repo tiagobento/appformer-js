@@ -18,30 +18,29 @@ import { routes } from "./Routes";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { upper } from "./Util";
-import { postSpace, getSpaces } from "./service/Service";
+import { getSpaces, postSpace } from "./service/Service";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import {
   ActionGroup,
+  Badge,
   Breadcrumb,
   BreadcrumbItem,
   Button,
-  Form,
-  FormGroup,
-  TextInput,
-  Gallery,
-  GalleryItem,
   Card,
   CardBody,
-  Split,
-  SplitItem,
-  Title,
-  PageSection,
-  PageSectionVariants,
-  Badge,
-  EmptyStateSecondaryActions,
+  EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyState
+  Form,
+  FormGroup,
+  Gallery,
+  GalleryItem,
+  PageSection,
+  PageSectionVariants,
+  Split,
+  SplitItem,
+  TextInput,
+  Title
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { CubesIcon } from "@patternfly/react-icons";
@@ -142,7 +141,7 @@ export function Spaces() {
         <PageSection>
           <Gallery gutter="md">
             {spaces.map(space => (
-              <GalleryItem>
+              <GalleryItem key={space.name}>
                 <Link to={routes.space({ space: space.name })}>
                   <Card>
                     <CardBody>

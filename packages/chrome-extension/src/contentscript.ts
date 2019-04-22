@@ -1,5 +1,5 @@
 import { AppFormerBusMessage } from "appformer-js-submarine";
-import { router } from "appformer-js-microeditor-router";
+import { router, services } from "appformer-js-microeditor-router";
 
 declare global {
   export const CodeMirror: any;
@@ -46,7 +46,7 @@ function insertActionButtons(pageHeadActions: Element) {
   openOnKieInterfaceButton.style.cssText = "float:right;";
   openOnKieInterfaceButton.textContent = "Open on KIE";
   openOnKieInterfaceButton.onclick = e => {
-    window.open(`http://localhost:9001/import?path=${window.location}`);
+    window.open(`${services.web}/import?path=${window.location}`);
   };
 
   const setupAsKieProjectButton = document.createElement("button");
@@ -54,7 +54,7 @@ function insertActionButtons(pageHeadActions: Element) {
   setupAsKieProjectButton.style.cssText = "float:right;";
   setupAsKieProjectButton.textContent = "Project";
   setupAsKieProjectButton.onclick = e => {
-    const url = `http://localhost:9004/init?path=${window.location}&type=project`;
+    const url = `${services.functions}/init?path=${window.location}&type=project`;
     fetch(url);
   };
 
@@ -63,7 +63,7 @@ function insertActionButtons(pageHeadActions: Element) {
   setupAsDmnFuntionButton.style.cssText = "float:right;";
   setupAsDmnFuntionButton.textContent = "Function";
   setupAsDmnFuntionButton.onclick = e => {
-    const url = `http://localhost:9004/init?path=${window.location}&type=function`;
+    const url = `${services.functions}/init?path=${window.location}&type=function`;
     fetch(url);
   };
 
@@ -107,8 +107,8 @@ function initContentScript() {
   CodeMirror(document.body);
   CodeMirror.fromTextArea(document.querySelector(".file-editor-textarea"));
 
-  const iframeDomain = "http://localhost:9000";
-  const iframeSrc = "http://localhost:9000";
+  const iframeDomain = services.microeditor_envelope;
+  const iframeSrc = services.microeditor_envelope;
   const embeddedEditorIframe = document.createElement("iframe");
 
   function startInitPolling() {

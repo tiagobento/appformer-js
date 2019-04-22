@@ -54,7 +54,7 @@ export const getAllProjectsFromSpace = (request: any, response: any) => {
             qb.expr()
                 .and("s.id = p.space_id")
                 .and(`s.name = '${spaceName}'`)
-        )
+        );
 
     pool.query(sql.toString(), (error, results) => {
         if (error) {
