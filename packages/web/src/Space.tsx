@@ -18,7 +18,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { match } from "react-router";
 import { upper } from "./Util";
-import { CubesIcon } from "@patternfly/react-icons";
+import { CubesIcon, SearchIcon } from "@patternfly/react-icons";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import {
   ActionGroup,
@@ -35,12 +35,16 @@ import {
   FormGroup,
   Gallery,
   GalleryItem,
+  InputGroup,
   PageSection,
   PageSectionVariants,
   Split,
   SplitItem,
   TextInput,
   Title,
+  Toolbar,
+  ToolbarItem,
+  ToolbarGroup,
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
@@ -151,7 +155,25 @@ export function Space(props: { match: match<{ space: string }> }) {
               Projects
             </Title>
           </SplitItem>
-          <SplitItem isMain={false}>{<AddProjectButton />}</SplitItem>
+          <SplitItem isMain={false}>
+            <Toolbar>
+              <ToolbarGroup>
+                <ToolbarItem>
+                  <InputGroup>
+                    <TextInput placeholder="filter projects" name="textInputSearch" id="textInputSearch" type="search" aria-label="search projects" />
+                    <Button variant={"tertiary"} aria-label="search button for search input">
+                      <SearchIcon />
+                    </Button>
+                  </InputGroup>                
+                </ToolbarItem>
+              </ToolbarGroup>
+              <ToolbarGroup>
+                <ToolbarItem>
+                  {<AddProjectButton />}
+                </ToolbarItem>
+              </ToolbarGroup>
+            </Toolbar>
+          </SplitItem>
         </Split>
       </PageSection>
 
