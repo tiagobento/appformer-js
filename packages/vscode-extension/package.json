@@ -51,7 +51,8 @@
     "vscode:postpublish": "docker image rm kiegroup/microeditors && rm dmn-war/kiegroup_microeditors.dockerimage",
     "build": "webpack",
     "compile": "webpack",
-    "watch": "webpack"
+    "watch": "webpack",
+    "build:prod": "yarn run build && yarn run pack-extension"
   },
   "devDependencies": {
     "vsce": "1.59.0",
