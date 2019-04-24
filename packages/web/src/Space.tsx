@@ -43,8 +43,8 @@ import {
   TextInput,
   Title,
   Toolbar,
-  ToolbarItem,
   ToolbarGroup,
+  ToolbarItem
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
@@ -62,6 +62,7 @@ export function Space(props: { match: match<{ space: string }> }) {
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectUrl, setNewProjectUrl] = useState("");
   const [projects, setProjects] = useState([] as Project[]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const updateProjects = () => {
     getProjects(props.match.params.space)
@@ -90,6 +91,10 @@ export function Space(props: { match: match<{ space: string }> }) {
   useEffect(() => {
     updateProjects();
   }, []);
+
+  const projectsInSearchQuery = (project: Project) => {
+    return searchQuery.length <= 0 || project.name.toLowerCase().includes(searchQuery.toLowerCase());
+  };
 
   const AddProjectButton = () => {
     return (
@@ -160,17 +165,23 @@ export function Space(props: { match: match<{ space: string }> }) {
               <ToolbarGroup>
                 <ToolbarItem>
                   <InputGroup>
-                    <TextInput placeholder="filter projects" name="textInputSearch" id="textInputSearch" type="search" aria-label="search projects" />
+                    <TextInput
+                      placeholder="Filter projects"
+                      name="textInputSearch"
+                      id="textInputSearch"
+                      type="search"
+                      aria-label="search projects"
+                      value={searchQuery}
+                      onInput={(e: any) => setSearchQuery(e.target.value)}
+                    />
                     <Button variant={"tertiary"} aria-label="search button for search input">
                       <SearchIcon />
                     </Button>
-                  </InputGroup>                
+                  </InputGroup>
                 </ToolbarItem>
               </ToolbarGroup>
               <ToolbarGroup>
-                <ToolbarItem>
-                  {<AddProjectButton />}
-                </ToolbarItem>
+                <ToolbarItem>{<AddProjectButton />}</ToolbarItem>
               </ToolbarGroup>
             </Toolbar>
           </SplitItem>
@@ -180,7 +191,7 @@ export function Space(props: { match: match<{ space: string }> }) {
       {projects.length > 0 && (
         <PageSection>
           <Gallery gutter="md">
-            {projects.map(project => (
+            {projects.filter(projectsInSearchQuery).map(project => (
               <GalleryItem key={project.url}>
                 <Link to={routes.project({ space: props.match.params.space, project: project.name })}>
                   <Card>
