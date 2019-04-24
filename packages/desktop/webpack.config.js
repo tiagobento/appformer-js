@@ -82,7 +82,7 @@ module.exports = [
     },
 
     plugins: [
-      new CleanWebpackPlugin(["dist/webview"]),
+      new CleanWebpackPlugin(["dist/webview", "out"]),
       new CopyPlugin([
         { from: "static/index.html" },
         { from: "static/microeditor-envelope-index.html" },
