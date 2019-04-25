@@ -22,7 +22,8 @@ export const services = {
   microeditor_envelope: "http://localhost:9000",
   web: "http://localhost:9001",
   web_backend: "http://localhost:9002",
-  microeditors: "http://localhost:9003",
+  microeditor_dmn: "http://localhost:9003",
+  microeditor_bpmn: "http://localhost:9005",
   functions: "http://localhost:9004"
 };
 
@@ -32,70 +33,42 @@ export const router = new Map<string, LanguageData>([
     {
       editorId: "DMNDiagramEditor",
       gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-      erraiDomain: services.microeditors,
+      erraiDomain: services.microeditor_dmn,
       resources: [
         {
           type: "css",
-          paths: [`${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
+          paths: [`${services.microeditor_dmn}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
         },
         {
           type: "js",
           paths: [
-            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js`,
-            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js`,
+            `${services.microeditor_dmn}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js`,
+            `${services.microeditor_dmn}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js`,
             `${
-              services.microeditors
+              services.microeditor_dmn
             }/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js`
           ]
         }
       ]
     }
   ],
-  //FIXME: We're creating a `bpmn` entry pointing to the same entry of `dmn`. When we have a working bpmn editor, we can change that.
   [
     "bpmn",
     {
-      editorId: "DMNDiagramEditor",
-      gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-      erraiDomain: services.microeditors,
+      editorId: "BPMNStandaloneDiagramEditor",
+      gwtModuleName: "org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase",
+      erraiDomain: services.microeditor_bpmn,
       resources: [
         {
           type: "css",
-          paths: [`${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
+          paths: [`${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/css/patternfly.min.css`]
         },
         {
           type: "js",
           paths: [
-            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js`,
-            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js`,
-            `${
-              services.microeditors
-            }/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js`
-          ]
-        }
-      ]
-    }
-  ],
-  //FIXME: We're creating a `bpmn2` entry pointing to the same entry of `dmn`. When we have a working bpmn2 editor, we can change that.
-  [
-    "bpmn2",
-    {
-      editorId: "DMNDiagramEditor",
-      gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-      erraiDomain: services.microeditors,
-      resources: [
-        {
-          type: "css",
-          paths: [`${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
-        },
-        {
-          type: "js",
-          paths: [
-            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/ace.js`,
-            `${services.microeditors}/org.kie.workbench.common.dmn.showcase.DMNShowcase/ace/theme-chrome.js`,
-            `${
-              services.microeditors
-            }/org.kie.workbench.common.dmn.showcase.DMNShowcase/org.kie.workbench.common.dmn.showcase.DMNShowcase.nocache.js`
+            `${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/ace/ace.js`,
+            `${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/ace/theme-chrome.js`,
+            `${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase.nocache.js`
           ]
         }
       ]

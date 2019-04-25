@@ -22,6 +22,10 @@ services:
     build: ./packages/vscode-extension/dmn-war
     ports:
       - "9003:8080"
+  bpmn-microeditor:
+    build: ./packages/vscode-extension/bpmn-war
+    ports:
+      - "9005:8080"
   db:
     build: ./packages/web-backend/db
     volumes:
