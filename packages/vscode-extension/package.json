@@ -47,8 +47,8 @@
   },
   "scripts": {
     "pack-extension": "vsce package --yarn -o ./dist/kiegroup_microeditors.vsix && yarn run vscode:postpublish",
-    "vscode:prepublish": "docker image build -t kiegroup/microeditors dmn-war && docker image save -o dmn-war/kiegroup_microeditors.dockerimage kiegroup/microeditors && yarn run build",
-    "vscode:postpublish": "docker image rm kiegroup/microeditors && rm dmn-war/kiegroup_microeditors.dockerimage",
+    "vscode:prepublish": "docker image build -t kiegroup/microeditors_bpmn bpmn-war && docker image save -o bpmn-war/kiegroup_microeditors_bpmn.dockerimage kiegroup/microeditors_bpmn && docker image build -t kiegroup/microeditors_dmn dmn-war && docker image save -o dmn-war/kiegroup_microeditors_dmn.dockerimage kiegroup/microeditors_dmn && yarn run build",
+    "vscode:postpublish": "docker image rm kiegroup/microeditors_bpmn && rm bpmn-war/kiegroup_microeditors_bpmn.dockerimage && docker image rm kiegroup/microeditors_dmn && rm dmn-war/kiegroup_microeditors_dmn.dockerimage",
     "build": "webpack",
     "compile": "webpack",
     "watch": "webpack",
