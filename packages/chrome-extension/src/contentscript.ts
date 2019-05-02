@@ -93,14 +93,9 @@ function insertActionButtons(pageHeadActions: Element, openFileLanguage: string)
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          Driver: {
-            Points: 2
-          },
-          Violation: {
-            Type: "speed",
-            "Actual Speed": 120,
-            "Speed Limit": 100
-          }
+          "repo": "https://github.com/xiezhang7/submarine-examples",
+          "branch": "dmn-quarkus-example",
+          "workDir": "dmn-quarkus-example"
         })
       });
     };
