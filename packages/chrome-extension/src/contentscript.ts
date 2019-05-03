@@ -40,7 +40,7 @@ function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain
   embeddedEditorIframe.contentWindow!.postMessage(requestGetContentMessage, iframeDomain);
 }
 
-function insertActionButtons(pageHeadActions: Element, openFileLanguage: string) {
+function insertActionButtons(pageHeadActions: Element) {
   const kiegroupDropdown = document.createElement("li");
   kiegroupDropdown.style.cssText = "position:relative;";
   kiegroupDropdown.innerHTML = `
@@ -81,29 +81,48 @@ function insertActionButtons(pageHeadActions: Element, openFileLanguage: string)
   separatorLi.innerHTML = "&nbsp;";
   pageHeadActions.appendChild(separatorLi);
 
-  if (openFileLanguage === "dmn") {
-    const runDmnButton = document.createElement("button");
-    runDmnButton.className = "btn btn-sm btn-primary";
-    runDmnButton.style.cssText = "float:right;";
-    runDmnButton.textContent = "Run";
-    runDmnButton.onclick = e => {
-      fetch(`${services.dmn_knative}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          "repo": "https://github.com/xiezhang7/submarine-examples",
-          "branch": "dmn-quarkus-example",
-          "workDir": "dmn-quarkus-example"
-        })
-      });
-    };
+  const url = window.location.href;
+  let branch: string;
+  let repo: string;
 
-    const runDmnButtonLi = document.createElement("li");
-    runDmnButtonLi.appendChild(runDmnButton);
-    pageHeadActions.appendChild(runDmnButtonLi);
+  if (url.includes("/tree/")) {
+    repo = url.split("/tree/")[0];
+    branch = url.split("/tree/")[1].split("/")[0];
+  } else if (url.includes("/blob/")) {
+    repo = url.split("/blob/")[0];
+    branch = url.split("/blob/")[1].split("/")[0];
+  } else {
+    repo = url;
+    branch = "master";
   }
+
+  const runDmnButton = document.createElement("button");
+  runDmnButton.className = "btn btn-sm btn-primary";
+  runDmnButton.style.cssText = "float:right;";
+  runDmnButton.textContent = "KNative Build";
+  runDmnButton.onclick = e => {
+    const name = repo.split("/")[repo.split("/").length - 1];
+    const version = "v1";
+    const endpoint = `${services.dmn_knative}/deploy/${name}/${version}`;
+
+    console.info(`Deploying to ${endpoint}`);
+
+    fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        repo: repo,
+        branch: branch,
+        workDir: ""
+      })
+    });
+  };
+
+  const runDmnButtonLi = document.createElement("li");
+  runDmnButtonLi.appendChild(runDmnButton);
+  pageHeadActions.appendChild(runDmnButtonLi);
 
   pageHeadActions.appendChild(kiegroupDropdown);
   document.getElementById("open-on-kie-web-button")!.onclick = e => {
@@ -125,7 +144,7 @@ function initContentScript() {
 
   const pageHeadActions = document.querySelector("ul.pagehead-actions")!;
   if (pageHeadActions) {
-    insertActionButtons(pageHeadActions, openFileLanguage);
+    insertActionButtons(pageHeadActions);
   }
 
   const githubEditor = document.querySelector(".js-code-editor") as HTMLElement;

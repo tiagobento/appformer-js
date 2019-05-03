@@ -25,7 +25,7 @@ export const services = {
   microeditor_dmn: "http://localhost:9003",
   microeditor_bpmn: "http://localhost:9005",
   functions: "http://localhost:9004",
-  dmn_knative: "http://dmn-quarkus-knative-builder.submarine.apps.porcelli.devcluster.openshift.com/deploy/dmn-quarkus-example/v0.1"
+  dmn_knative: "http://dmn-quarkus-knative-builder.submarine.apps.porcelli.devcluster.openshift.com"
 };
 
 export const router = new Map<string, LanguageData>([
