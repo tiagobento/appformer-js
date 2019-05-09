@@ -54,7 +54,7 @@ export class GwtMicroEditor extends AppFormer.Editor {
   }
 
   public setContent(content: string): Promise<void> {
-    this.businessCentralClientEditor.setContent(content);
+    this.businessCentralClientEditor.setContent(content.trim());
     return Promise.resolve();
   }
 }
