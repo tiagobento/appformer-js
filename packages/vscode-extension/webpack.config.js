@@ -15,7 +15,6 @@
  */
 
 const path = require("path");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 const commonConfig = {
@@ -67,7 +66,6 @@ module.exports = [
       "extension/extension": "./src/extension/extension.ts"
     },
     plugins: [
-      new CleanWebpackPlugin(["dist/extension"]),
     ]
   },
   {
@@ -77,7 +75,6 @@ module.exports = [
       "webview/index": "./src/webview/index.ts"
     },
     plugins: [
-      new CleanWebpackPlugin(["dist/webview"]),
     ]
   }
 ];

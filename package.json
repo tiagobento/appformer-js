@@ -9,6 +9,7 @@
   "scripts": {
     "init": "npx lerna bootstrap",
     "build": "npx lerna run build --stream",
+    "build:fast": "npx lerna run build:fast --stream",
     "build:colorful": "npx lerna exec -- yarn run build",
     "start": "docker-compose up --build -d && docker-compose logs -f",
     "stop": "docker-compose down --rmi all",
