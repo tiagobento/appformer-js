@@ -41,45 +41,107 @@ function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain
 }
 
 function insertActionButtons(pageHeadActions: Element) {
-  const openOnKieInterfaceButton = document.createElement("button");
-  openOnKieInterfaceButton.className = "btn btn-sm";
-  openOnKieInterfaceButton.style.cssText = "float:right;";
-  openOnKieInterfaceButton.textContent = "Open on KIE";
-  openOnKieInterfaceButton.onclick = e => {
+  const kiegroupDropdown = document.createElement("li");
+  kiegroupDropdown.style.cssText = "position:relative;";
+  kiegroupDropdown.innerHTML = `
+  <details>
+    <summary class="float-left btn btn-sm">
+      <span data-menu-button="">kiegroup</span>
+    </summary>
+
+    <details-menu class="dropdown-menu dropdown-menu-sw select-menu-modal position-absolute" role="menu">
+      <div class="select-menu-list">
+          <button id="open-on-kie-web-button" type="submit" name="do" value="included" class="select-menu-item width-full" aria-checked="false" role="menuitemradio">
+            <div class="select-menu-item-text">
+              <span class="select-menu-item-heading">Open repository on KIE Web</span>
+              <span class="description">Import this repository into KIE's web interface</span>
+            </div>
+          </button>
+
+          <button id="dmn-sample-button" type="submit" name="do" value="release_only" class="select-menu-item width-full" aria-checked="false" role="menuitemradio">
+            <div class="select-menu-item-text">
+              <span class="select-menu-item-heading">Setup repository as DMN sample</span>
+              <span class="description">Open a Pull Request turning this repository into a DMN project</span>
+            </div>
+          </button>
+
+          <button id="bpmn-sample-button" type="submit" name="do" value="release_only" class="select-menu-item width-full" aria-checked="false" role="menuitemradio">
+            <div class="select-menu-item-text">
+              <span class="select-menu-item-heading">Setup repository as BPMN sample</span>
+              <span class="description">Open a Pull Request turning this repository into a BPMN project</span>
+            </div>
+          </button>
+      </div>
+    </details-menu>
+  </details>
+  `;
+
+  const separatorLi = document.createElement("li");
+  separatorLi.style.cssText = "margin-left: 20px;";
+  separatorLi.innerHTML = "&nbsp;";
+  pageHeadActions.appendChild(separatorLi);
+
+  const url = window.location.href;
+  let branch: string;
+  let repo: string;
+
+  if (url.includes("/tree/")) {
+    repo = url.split("/tree/")[0];
+    branch = url.split("/tree/")[1].split("/")[0];
+  } else if (url.includes("/blob/")) {
+    repo = url.split("/blob/")[0];
+    branch = url.split("/blob/")[1].split("/")[0];
+  } else {
+    repo = url;
+    branch = "master";
+  }
+
+  const runDmnButton = document.createElement("button");
+  runDmnButton.className = "btn btn-sm btn-primary";
+  runDmnButton.style.cssText = "float:right;";
+  runDmnButton.textContent = "KNative Build";
+  runDmnButton.onclick = e => {
+    const name = repo.split("/")[repo.split("/").length - 1];
+    const version = "v1";
+    const endpoint = `${services.dmn_knative}/deploy/${name}/${version}`;
+
+    console.info(`Deploying to ${endpoint}`);
+
+    fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        repo: repo,
+        branch: branch,
+        workDir: ""
+      })
+    });
+  };
+
+  const runDmnButtonLi = document.createElement("li");
+  runDmnButtonLi.appendChild(runDmnButton);
+  pageHeadActions.appendChild(runDmnButtonLi);
+
+  pageHeadActions.appendChild(kiegroupDropdown);
+  document.getElementById("open-on-kie-web-button")!.onclick = e => {
     window.open(`${services.web}/import?path=${window.location}`);
   };
 
-  const setupAsKieProjectButton = document.createElement("button");
-  setupAsKieProjectButton.className = "btn btn-sm";
-  setupAsKieProjectButton.style.cssText = "float:right;";
-  setupAsKieProjectButton.textContent = "Project";
-  setupAsKieProjectButton.onclick = e => {
-    const url = `${services.functions}/init?path=${window.location}&type=project`;
-    fetch(url);
+  document.getElementById("bpmn-sample-button")!.onclick = e => {
+    fetch(`${services.functions}/init?path=${window.location}&type=function`);
   };
 
-  const setupAsDmnFuntionButton = document.createElement("button");
-  setupAsDmnFuntionButton.className = "btn btn-sm";
-  setupAsDmnFuntionButton.style.cssText = "float:right;";
-  setupAsDmnFuntionButton.textContent = "Function";
-  setupAsDmnFuntionButton.onclick = e => {
-    const url = `${services.functions}/init?path=${window.location}&type=function`;
-    fetch(url);
+  document.getElementById("dmn-sample-button")!.onclick = e => {
+    fetch(`${services.functions}/init?path=${window.location}&type=project`);
   };
-
-  const setupAsKieProjectButtonLi = document.createElement("li");
-  setupAsKieProjectButtonLi.appendChild(setupAsKieProjectButton);
-  const setupAsDMNButtonLi = document.createElement("li");
-  setupAsDMNButtonLi.appendChild(setupAsDmnFuntionButton);
-  const openOnKieInterfaceButtonLi = document.createElement("li");
-  openOnKieInterfaceButtonLi.appendChild(openOnKieInterfaceButton);
-
-  pageHeadActions.appendChild(setupAsKieProjectButtonLi);
-  pageHeadActions.appendChild(setupAsDMNButtonLi);
-  pageHeadActions.appendChild(openOnKieInterfaceButtonLi);
 }
 
 function initContentScript() {
+  const splitLocationHref = window.location.href.split(".");
+  const openFileLanguage = splitLocationHref[splitLocationHref.length - 1];
+
   const pageHeadActions = document.querySelector("ul.pagehead-actions")!;
   if (pageHeadActions) {
     insertActionButtons(pageHeadActions);
@@ -91,8 +153,6 @@ function initContentScript() {
     return;
   }
 
-  const splitLocationHref = window.location.href.split(".");
-  const openFileLanguage = splitLocationHref[splitLocationHref.length - 1];
   if (!router.has(openFileLanguage)) {
     console.info(`No enhanced editor available for "${openFileLanguage}" format.`);
     return;

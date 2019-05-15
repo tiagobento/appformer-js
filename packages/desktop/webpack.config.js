@@ -16,7 +16,6 @@
 
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 const commonConfig = {
@@ -71,7 +70,6 @@ module.exports = [
       __dirname: false,
       __filename: false
     },
-    plugins: [new CleanWebpackPlugin(["dist/electron"])]
   },
   {
     ...commonConfig,
@@ -82,7 +80,6 @@ module.exports = [
     },
 
     plugins: [
-      new CleanWebpackPlugin(["dist/webview", "out"]),
       new CopyPlugin([
         { from: "static/index.html" },
         { from: "static/microeditor-envelope-index.html" },

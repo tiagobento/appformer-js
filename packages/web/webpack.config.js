@@ -16,7 +16,6 @@
 
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 module.exports = {
@@ -33,7 +32,6 @@ module.exports = {
     umdNamedDefine: true
   },
   plugins: [
-    new CleanWebpackPlugin(["dist"]),
     new CopyPlugin([{ from: "static/index.html" }]),
     new CircularDependencyPlugin({
       exclude: /node_modules/, // exclude detection of files based on a RegExp

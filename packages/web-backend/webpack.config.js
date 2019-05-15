@@ -15,8 +15,6 @@
  */
 
 const path = require("path");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 module.exports = {
@@ -45,7 +43,6 @@ module.exports = {
     }
   },
   plugins: [
-    new CleanWebpackPlugin(["dist"]),
     new CircularDependencyPlugin({
       exclude: /node_modules/, // exclude detection of files based on a RegExp
       failOnError: false, // add errors to webpack instead of warnings

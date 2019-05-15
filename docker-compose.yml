@@ -22,6 +22,13 @@ services:
     build: ./packages/vscode-extension/dmn-war
     ports:
       - "9003:8080"
+  functions:
+    build: ./functions/init-repo-kie
+    ports:
+      - "9004:8080"
+    volumes:
+      - ./functions/init-repo-kie:/usr/local/app/packages/functions/init-repo-kie
+      - ~/.m2:/root/.m2
   bpmn-microeditor:
     build: ./packages/vscode-extension/bpmn-war
     ports:

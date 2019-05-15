@@ -51,6 +51,7 @@ import { routes } from "./Routes";
 import { getProjects, postProject } from "./service/Service";
 import { Pf4Label } from "./Pf4Label";
 import "@patternfly/patternfly/utilities/Spacing/spacing.css";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface Project {
   name: string;
@@ -58,6 +59,7 @@ interface Project {
 }
 
 export function Space(props: { match: match<{ space: string }> }) {
+  const [loading, setLoading] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectUrl, setNewProjectUrl] = useState("");
@@ -65,9 +67,11 @@ export function Space(props: { match: match<{ space: string }> }) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const updateProjects = () => {
+    setLoading(true);
     getProjects(props.match.params.space)
       .then(res => res.json())
-      .then(json => setProjects(json));
+      .then(json => setProjects(json))
+      .finally(() => setLoading(false));
   };
 
   const addProject = async (e: any) => {
@@ -158,6 +162,7 @@ export function Space(props: { match: match<{ space: string }> }) {
           <SplitItem isMain={true}>
             <Title headingLevel="h1" size="3xl">
               Projects
+              <LoadingSpinner showing={loading} />
             </Title>
           </SplitItem>
           <SplitItem isMain={false}>

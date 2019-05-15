@@ -45,20 +45,24 @@ import {
 import { Link } from "react-router-dom";
 import { CubesIcon } from "@patternfly/react-icons";
 import { Pf4Label } from "./Pf4Label";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface Space {
   name: string;
 }
 
 export function Spaces() {
+  const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
   const [newSpaceName, setNewSpaceName] = useState("");
   const [spaces, setSpaces] = useState([] as Space[]);
 
   const updateSpaces = () => {
+    setLoading(true);
     getSpaces()
       .then(res => res.json())
-      .then(json => setSpaces(json as Space[]));
+      .then(json => setSpaces(json as Space[]))
+      .finally(() => setLoading(false));
   };
 
   const addSpace = (e: any) => {
@@ -131,6 +135,7 @@ export function Spaces() {
           <SplitItem isMain={true}>
             <Title headingLevel="h1" size="3xl">
               Spaces
+              <LoadingSpinner showing={loading} />
             </Title>
           </SplitItem>
           <SplitItem isMain={false}>{<AddSpaceButton />}</SplitItem>

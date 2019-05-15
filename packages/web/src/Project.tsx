@@ -40,16 +40,20 @@ import { routes } from "./Routes";
 import { Pf4Label } from "./Pf4Label";
 import { createFileService, getFiles } from "./service/Service";
 import { FileImageIcon } from "@patternfly/react-icons";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export function Project(props: { match: match<{ space: string; project: string }> }) {
+  const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
   const [newFileName, setNewFileName] = useState("");
   const [files, setFiles] = useState([] as string[]);
 
   const updateFiles = () => {
+    setLoading(true);
     getFiles(props.match.params.space, props.match.params.project)
       .then(res => res.json())
-      .then(json => setFiles(json));
+      .then(json => setFiles(json))
+      .finally(() => setLoading(false));
   };
 
   const addFile = (e: any) => {
@@ -113,6 +117,7 @@ export function Project(props: { match: match<{ space: string; project: string }
           <SplitItem isMain={true}>
             <Title headingLevel="h1" size="3xl">
               Files
+              <LoadingSpinner showing={loading} />
             </Title>
           </SplitItem>
           <SplitItem isMain={false}>

@@ -285,7 +285,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
           clearInterval(initPolling);
           break;
         case "REQUEST_LANGUAGE":
-          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: router.get("dmn") };
+          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: router.get(openFileExtension) };
           iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
           break;
         case "REQUEST_SET_CONTENT":
