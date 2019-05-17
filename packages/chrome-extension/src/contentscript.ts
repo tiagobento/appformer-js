@@ -178,7 +178,7 @@ function initContentScript() {
       if (contentWindow) {
         contentWindow.postMessage(initMessage, iframeDomain);
       }
-    }, 1000);
+    }, 10);
   }
 
   let initPolling = startInitPolling();

@@ -34,7 +34,7 @@ export class CustomEditor {
     const initPolling = setInterval(() => {
       const initMessage = { type: "REQUEST_INIT", data: "vscode" };
       this._panel.webview.postMessage(initMessage);
-    }, 1000);
+    }, 10);
 
     context.subscriptions.push(
       this._panel.webview.onDidReceiveMessage(

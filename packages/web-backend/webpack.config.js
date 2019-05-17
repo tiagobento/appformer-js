@@ -18,6 +18,7 @@ const path = require("path");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 module.exports = {
+  target: "node",
   mode: "development",
   devtool: "inline-source-map",
   entry: {
@@ -72,5 +73,4 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js", ".jsx"],
     modules: [path.resolve("../../node_modules"), path.resolve("./node_modules"), path.resolve("./src")]
   },
-  target: "node"
 };

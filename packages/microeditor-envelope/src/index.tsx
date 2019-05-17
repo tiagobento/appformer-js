@@ -45,6 +45,8 @@ function removeBusinessCentralPanelHeader() {
   }, 1000);
 }
 
+let initializing = false;
+
 function messageHandler(appFormer: AppFormerSubmarine, event: { data: AppFormerBusMessage<any> }) {
   const message = event.data;
   const editor = appFormer.getEditor();
@@ -71,11 +73,15 @@ function messageHandler(appFormer: AppFormerSubmarine, event: { data: AppFormerB
 
   switch (message.type) {
     case "REQUEST_INIT":
-      const targetOrigin = message.data as string;
-      appFormer.setTargetOrigin(targetOrigin);
-      return appFormer.postMessage({ type: "RETURN_INIT", data: undefined }).then(() => {
-        return appFormer.postMessage({ type: "REQUEST_LANGUAGE", data: undefined });
-      });
+      if (!initializing) {
+        initializing = true;
+        const targetOrigin = message.data as string;
+        appFormer.setTargetOrigin(targetOrigin);
+        return appFormer.postMessage({ type: "RETURN_INIT", data: undefined }).then(() => {
+          return appFormer.postMessage({ type: "REQUEST_LANGUAGE", data: undefined });
+        });
+      }
+      return Promise.resolve();
     case "RETURN_LANGUAGE":
       const languageData = message.data as LanguageData;
       window.erraiBusApplicationRoot = languageData.erraiDomain;
