@@ -34,11 +34,13 @@ export const router = new Map<string, LanguageData>([
     {
       editorId: "DMNDiagramEditor",
       gwtModuleName: "org.kie.workbench.common.dmn.showcase.DMNShowcase",
-      erraiDomain: services.microeditor_dmn,
+      erraiDomain: services.microeditor_dmn, //where backend of this editor is running
       resources: [
         {
           type: "css",
-          paths: [`${services.microeditor_dmn}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`]
+          paths: [
+            `${services.microeditor_dmn}/org.kie.workbench.common.dmn.showcase.DMNShowcase/css/patternfly.min.css`
+          ]
         },
         {
           type: "js",
@@ -58,18 +60,28 @@ export const router = new Map<string, LanguageData>([
     {
       editorId: "BPMNStandaloneDiagramEditor",
       gwtModuleName: "org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase",
-      erraiDomain: services.microeditor_bpmn,
+      erraiDomain: services.microeditor_bpmn, //where backend of this editor is running
       resources: [
         {
           type: "css",
-          paths: [`${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/css/patternfly.min.css`]
+          paths: [
+            `${
+              services.microeditor_bpmn
+            }/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/css/patternfly.min.css`
+          ]
         },
         {
           type: "js",
           paths: [
-            `${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/ace/ace.js`,
-            `${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/ace/theme-chrome.js`,
-            `${services.microeditor_bpmn}/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase.nocache.js`
+            `${
+              services.microeditor_bpmn
+            }/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/ace/ace.js`,
+            `${
+              services.microeditor_bpmn
+            }/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/ace/theme-chrome.js`,
+            `${
+              services.microeditor_bpmn
+            }/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase/org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase.nocache.js`
           ]
         }
       ]

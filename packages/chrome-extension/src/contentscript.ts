@@ -1,11 +1,11 @@
-import { AppFormerBusMessage } from "appformer-js-submarine";
 import { router, services } from "appformer-js-microeditor-router";
+import { EnvelopeBusConsumerChromeExtension } from "./EnvelopeBusConsumerChromeExtension";
 
 declare global {
   export const CodeMirror: any;
 }
 
-function getGitHubEditor() {
+function getGitHubEditor(): any {
   const realEditor = document.querySelector(".file-editor-textarea + .CodeMirror") as any;
   if (!realEditor) {
     throw new Error("GitHub editor was not found. GitHub must've change its DOM structure.");
@@ -140,7 +140,7 @@ function insertActionButtons(pageHeadActions: Element) {
 
 function initContentScript() {
   const splitLocationHref = window.location.href.split(".");
-  const openFileLanguage = splitLocationHref[splitLocationHref.length - 1];
+  const openFileExtension = splitLocationHref[splitLocationHref.length - 1];
 
   const pageHeadActions = document.querySelector("ul.pagehead-actions")!;
   if (pageHeadActions) {
@@ -153,8 +153,8 @@ function initContentScript() {
     return;
   }
 
-  if (!router.has(openFileLanguage)) {
-    console.info(`No enhanced editor available for "${openFileLanguage}" format.`);
+  if (!router.has(openFileExtension)) {
+    console.info(`No enhanced editor available for "${openFileExtension}" format.`);
     return;
   }
 
@@ -171,47 +171,16 @@ function initContentScript() {
   const iframeSrc = services.microeditor_envelope;
   const embeddedEditorIframe = document.createElement("iframe");
 
-  function startInitPolling() {
-    return setInterval(() => {
-      const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
-      const contentWindow = embeddedEditorIframe.contentWindow;
-      if (contentWindow) {
-        contentWindow.postMessage(initMessage, iframeDomain);
-      }
-    }, 10);
-  }
-
-  let initPolling = startInitPolling();
-
-  window.addEventListener(
-    "message",
-    (event: MessageEvent) => {
-      const message = event.data as AppFormerBusMessage<any>;
-      switch (message.type) {
-        case "RETURN_INIT":
-          clearInterval(initPolling);
-          break;
-        case "REQUEST_LANGUAGE":
-          const languageReturnMessage = { type: "RETURN_LANGUAGE", data: router.get(openFileLanguage) };
-          embeddedEditorIframe.contentWindow!.postMessage(languageReturnMessage, iframeDomain);
-          break;
-        case "REQUEST_SET_CONTENT":
-          const githubEditorContent = getGitHubEditor().CodeMirror.getValue() || "";
-          const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: githubEditorContent };
-          embeddedEditorIframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
-          break;
-        case "RETURN_GET_CONTENT":
-          const gwtEditorContent = message.data;
-          enableCommitButton();
-          getGitHubEditor().CodeMirror.setValue(gwtEditorContent);
-          break;
-        default:
-          console.info("Unknown message type " + message.type);
-          break;
-      }
-    },
-    false
+  const envelopeBusConsumer = new EnvelopeBusConsumerChromeExtension(
+    window.location.origin,
+    embeddedEditorIframe,
+    iframeDomain,
+    openFileExtension,
+    getGitHubEditor,
+    enableCommitButton
   );
+  envelopeBusConsumer.init();
+  window.addEventListener("message", msg => envelopeBusConsumer.receive(msg.data), false);
 
   //hide GitHub editor
   githubEditor.style.display = "none";
@@ -230,7 +199,7 @@ function initContentScript() {
   fullScreenButton.onclick = e => {
     e.preventDefault();
     document.body.appendChild(embeddedEditorIframe);
-    initPolling = startInitPolling();
+    envelopeBusConsumer.init();
     const originalCss = embeddedEditorIframe.style.cssText;
     embeddedEditorIframe.style.cssText =
       "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
@@ -244,7 +213,7 @@ function initContentScript() {
       "padding-bottom: 5px; cursor: pointer; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
     buttonsDiv.onclick = evt => {
       evt.preventDefault();
-      initPolling = startInitPolling();
+      envelopeBusConsumer.init();
       insertAfterGitHubEditor(embeddedEditorIframe);
       embeddedEditorIframe.style.cssText = originalCss;
       requestGetContent(embeddedEditorIframe, iframeDomain);

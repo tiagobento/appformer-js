@@ -17,12 +17,11 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { match } from "react-router";
-import { getFileContentService, setFileContentService } from "./service/Service";
 import { router, services } from "appformer-js-microeditor-router";
-import { AppFormerBusMessage } from "appformer-js-submarine";
 import { Breadcrumb, BreadcrumbItem, Button, PageSection, PageSectionVariants } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
+import { EnvelopeBusConsumerWeb } from "./EnvelopeBusConsumerWeb";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
   const decodedFilePath = decodeURIComponent(props.match.params.filePath.replace(/\+/g, "%20"));
@@ -34,56 +33,26 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   }
 
   let iframe: HTMLIFrameElement;
-  //FIXME: This URLs will probably be kogito.redhat.com/appformer-js/router or something like that.
   const iframeDomain = services.microeditor_envelope;
   const iframeSrc = services.microeditor_envelope;
 
   useEffect(() => {
-    const initPolling = setInterval(() => {
-      const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
-      if (iframe && iframe.contentWindow) {
-        const contentWindow = iframe.contentWindow;
-        contentWindow.postMessage(initMessage, iframeDomain);
-      }
-    }, 1000);
+    const envelopeBusConsumer = new EnvelopeBusConsumerWeb(
+      window.location.origin,
+      iframe,
+      iframeDomain,
+      fileExtension,
+      decodedFilePath,
+      props.match.params.space,
+      props.match.params.project,
+      setEphemeralStatus
+    );
+    envelopeBusConsumer.init();
 
-    const handler = (event: MessageEvent) => {
-      const message = event.data as AppFormerBusMessage<any>;
-      switch (message.type) {
-        case "RETURN_INIT":
-          clearInterval(initPolling);
-          break;
-        case "REQUEST_LANGUAGE":
-          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: languageData };
-          iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
-          break;
-        case "REQUEST_SET_CONTENT":
-          getFileContentService(props.match.params.space, props.match.params.project, decodedFilePath)
-            .then(res => res.text())
-            .then(content => {
-              const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content.trim() };
-              iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
-            });
-          break;
-        case "RETURN_GET_CONTENT":
-          setFileContentService(
-            props.match.params.space,
-            props.match.params.project,
-            decodedFilePath,
-            message.data
-          ).then(v => {
-            setEphemeralStatus("Saved.");
-          });
-          break;
-        default:
-          console.debug("Unknown message type " + message.type);
-          break;
-      }
-    };
-
-    window.addEventListener("message", handler, false);
+    const handle = (msg: any) => envelopeBusConsumer.receive(msg.data);
+    window.addEventListener("message", handle, false);
     return () => {
-      window.removeEventListener("message", handler, false);
+      window.removeEventListener("message", handle, false);
     };
   }, []);
 

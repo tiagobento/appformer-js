@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Menu } from "electron";
 
 import * as path from "path";
 import { Files, FS } from "appformer-js-storage";
 import * as fs from "fs";
-import { Menu } from "electron";
 
 app.on("ready", () => {
   Files.register(new FS());
@@ -62,7 +61,6 @@ app.on("ready", () => {
 
   const rootPath = path.join(app.getPath("documents"), "KieSubmarine");
   ipcMain.on("requestFiles", () => {
-
     if (!fs.existsSync(rootPath)) {
       fs.mkdirSync(rootPath);
     }
@@ -73,23 +71,24 @@ app.on("ready", () => {
     });
   });
 
-  ipcMain.on("writeContent", (event: any, data: { path: string, content: string }) => {
-      Files.write(FS.newFile(rootPath, path.join(rootPath, data.path)), data.content).then(v => {
+  ipcMain.on("writeContent", (event: any, data: { path: string; content: string }) => {
+    Files.write(FS.newFile(rootPath, path.join(rootPath, data.path)), data.content)
+      .then(v => {
         console.info("Saved.");
-      }).catch(error => {
+      })
+      .catch(error => {
         console.info("Failed to save.");
       });
   });
 
   ipcMain.on("requestContent", (event: any, data: { relativePath: string }) => {
-      const fullPath = path.join(rootPath.toString(), data.relativePath.toString());
-      Files.read(FS.newFile(rootPath, fullPath)).then(content => {
-          mainWindow.webContents.send("returnContent", content);
-      });
+    const fullPath = path.join(rootPath.toString(), data.relativePath.toString());
+    Files.read(FS.newFile(rootPath, fullPath)).then(content => {
+      mainWindow.webContents.send("returnContent", content);
+    });
   });
 
   ipcMain.on("createFile", (event: any, data: { relativePath: string }) => {
-
     // FIXME use storage api
     const newFilePath = path.join(rootPath, data.relativePath);
     if (!fs.existsSync(newFilePath)) {

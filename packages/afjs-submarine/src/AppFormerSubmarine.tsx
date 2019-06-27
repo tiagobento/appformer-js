@@ -4,18 +4,13 @@ import * as AppFormer from "appformer-js-core";
 
 import { App } from "./app/App";
 
-//Exposed API of Visual Studio Code
-declare global {
-  export const acquireVsCodeApi: () => AppFormerBusApi;
-}
-
 export class AppFormerSubmarine implements AppFormer.AppFormer {
   private app?: App;
   private appFormerBusApi: AppFormerBusApi;
   private targetOrigin: string;
 
   constructor() {
-    this.appFormerBusApi = this.initVsCodeApi();
+    this.appFormerBusApi = this.initAppFormerBusApi();
   }
 
   public goTo(af_componentId: string, args?: Map<string, any>): void {
@@ -66,7 +61,7 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
     return this.app!.getEditor();
   }
 
-  private initVsCodeApi() {
+  private initAppFormerBusApi() {
     const noAppFormerBusApi = {
       postMessage: <T extends {}>(message: AppFormerBusMessage<T>) => {
         console.info(`MOCK: Sent message:`);
@@ -114,4 +109,9 @@ interface AppFormerBusApi {
 export interface AppFormerBusMessage<T> {
   type: string;
   data: T;
+}
+
+//Exposed API of Visual Studio Code
+declare global {
+  export const acquireVsCodeApi: () => AppFormerBusApi;
 }

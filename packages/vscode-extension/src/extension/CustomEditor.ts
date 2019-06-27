@@ -15,49 +15,28 @@
  */
 
 import * as vscode from "vscode";
-import * as fs from "fs";
 import * as __path from "path";
-import { router } from "appformer-js-microeditor-router";
-import { AppFormerBusMessage } from "appformer-js-submarine";
+import { EnvelopeBusConsumer } from "appformer-js-submarine";
 import { KieEditorsExtension } from "./KieEditorsExtension";
+import { EnvelopeBusConsumerVsCode } from "./EnvelopeBusConsumerVsCode";
 
 export class CustomEditor {
   public readonly _panel: vscode.WebviewPanel;
   public readonly _path: string;
+  public readonly appFormerBusConsumer: EnvelopeBusConsumer;
 
   public constructor(panel: vscode.WebviewPanel, path: string) {
     this._panel = panel;
     this._path = path;
+    this.appFormerBusConsumer = new EnvelopeBusConsumerVsCode(this._panel, this._path);
   }
 
   public setupPanelEvents(context: vscode.ExtensionContext) {
-    const initPolling = setInterval(() => {
-      const initMessage = { type: "REQUEST_INIT", data: "vscode" };
-      this._panel.webview.postMessage(initMessage);
-    }, 10);
+    this.appFormerBusConsumer.init();
 
     context.subscriptions.push(
       this._panel.webview.onDidReceiveMessage(
-        (message: AppFormerBusMessage<any>) => {
-          switch (message.type) {
-            case "RETURN_INIT":
-              clearInterval(initPolling);
-              break;
-            case "REQUEST_LANGUAGE":
-              const split = this._path.split(".");
-              const languageData = router.get(split[split.length - 1]);
-              this._panel.webview.postMessage({ type: "RETURN_LANGUAGE", data: languageData });
-              break;
-            case "RETURN_GET_CONTENT":
-              fs.writeFileSync(this._path, message.data);
-              vscode.window.setStatusBarMessage("Saved successfully!", 3000);
-              break;
-            case "REQUEST_SET_CONTENT":
-              const content = fs.readFileSync(this._path);
-              this._panel.webview.postMessage({ type: "RETURN_SET_CONTENT", data: content.toString() });
-              break;
-          }
-        },
+        msg => this.appFormerBusConsumer.receive(msg),
         this,
         context.subscriptions
       )
@@ -68,7 +47,10 @@ export class CustomEditor {
         () => {
           if (this._panel.active) {
             KieEditorsExtension.activeCustomEditor = this;
-          } else if (KieEditorsExtension.activeCustomEditor && KieEditorsExtension.activeCustomEditor._path === this._path) {
+          } else if (
+            KieEditorsExtension.activeCustomEditor &&
+            KieEditorsExtension.activeCustomEditor._path === this._path
+          ) {
             KieEditorsExtension.activeCustomEditor = undefined;
           }
         },
@@ -79,7 +61,7 @@ export class CustomEditor {
   }
 
   public requestSave() {
-    this._panel.webview.postMessage({ type: "REQUEST_GET_CONTENT" })
+    this.appFormerBusConsumer.request_getContentResponse();
   }
 
   public setupWebviewContent(context: vscode.ExtensionContext) {

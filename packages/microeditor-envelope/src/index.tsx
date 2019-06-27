@@ -15,7 +15,7 @@
  */
 
 import { AppFormerBusMessage, AppFormerSubmarine } from "appformer-js-submarine";
-import { GwtMicroEditor, BusinessCentralClientEditorFactory } from "./GwtMicroEditor";
+import { BusinessCentralClientEditorFactory, GwtMicroEditor } from "./GwtMicroEditor";
 import { LanguageData, Resource } from "appformer-js-microeditor-router";
 
 //Exposed API of AppFormerGwt
@@ -84,7 +84,8 @@ function messageHandler(appFormer: AppFormerSubmarine, event: { data: AppFormerB
       return Promise.resolve();
     case "RETURN_LANGUAGE":
       const languageData = message.data as LanguageData;
-      window.erraiBusApplicationRoot = languageData.erraiDomain;
+      window.erraiBusApplicationRoot = languageData.erraiDomain; //needed only for backend communication
+
       window.appFormerGwtFinishedLoading = () => {
         Promise.resolve()
           .then(() => removeBusinessCentralHeaderPanel())

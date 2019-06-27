@@ -46,10 +46,10 @@ import * as ReactDOM from "react-dom";
 import * as electron from "electron";
 import { CubesIcon } from "@patternfly/react-icons";
 import { File } from "../shared/Protocol";
-import { AppFormerBusMessage } from "appformer-js-submarine";
 import { router, services } from "appformer-js-microeditor-router";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { Pf4Label } from "./Pf4Label";
+import { EnvelopeBusConsumerDesktop } from "./EnvelopeBusConsumerDesktop";
 
 const ipc = electron.ipcRenderer;
 
@@ -260,53 +260,29 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   }
 
   useEffect(() => {
-    ipc.on("returnContent", (event: any, content: string) => {
-      const setContentReturnMessage = { type: "RETURN_SET_CONTENT", data: content };
-      iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
-    });
+    const appFormerBusConsumer = new EnvelopeBusConsumerDesktop(
+      window.location.origin,
+      iframe,
+      iframeDomain,
+      ipc,
+      openFileExtension,
+      props.openFile.path
+    );
 
-    ipc.on("requestSave", (event: any) => {
-      const setContentReturnMessage = { type: "REQUEST_GET_CONTENT" };
-      iframe.contentWindow!.postMessage(setContentReturnMessage, iframeDomain);
-    });
+    console.info("EFFECT RAN!");
+    appFormerBusConsumer.init();
 
-    const initPolling = setInterval(() => {
-      const initMessage = { type: "REQUEST_INIT", data: window.location.origin };
-      if (iframe && iframe.contentWindow) {
-        const contentWindow = iframe.contentWindow;
-        contentWindow.postMessage(initMessage, iframeDomain);
-      }
-    }, 1000);
+    ipc.on("returnContent", (event: any, content: string) => appFormerBusConsumer.respond_setContentRequest(content));
+    ipc.on("requestSave", () => appFormerBusConsumer.request_getContentResponse());
 
-    const handler = (event: MessageEvent) => {
-      const message = event.data as AppFormerBusMessage<any>;
-      switch (message.type) {
-        case "RETURN_INIT":
-          clearInterval(initPolling);
-          break;
-        case "REQUEST_LANGUAGE":
-          const returnLanguageMessage = { type: "RETURN_LANGUAGE", data: router.get(openFileExtension) };
-          iframe.contentWindow!.postMessage(returnLanguageMessage, iframeDomain);
-          break;
-        case "REQUEST_SET_CONTENT":
-          console.log("REQUEST_SET_CONTENT: " + props.openFile.path);
-          ipc.send("requestContent", { relativePath: props.openFile.path });
-          break;
-        case "RETURN_GET_CONTENT":
-          console.log("RETURN_GET_CONTENT");
-          ipc.send("writeContent", { path: props.openFile.path, content: message.data });
-          break;
-        default:
-          console.debug("Unknown message type " + message.type);
-          break;
-      }
-    };
-
+    const handler = (msg: any) => appFormerBusConsumer.receive(msg.data);
     window.addEventListener("message", handler, false);
+
     return () => {
       ipc.removeAllListeners("returnContent");
       ipc.removeAllListeners("requestSave");
       window.removeEventListener("message", handler, false);
+      appFormerBusConsumer.stopInitRequests();
     };
   }, []);
 

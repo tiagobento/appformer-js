@@ -8,4 +8,5 @@ declare global {
 }
 
 export * from "./AppFormerSubmarine";
+export * from "./EnvelopeBusConsumer";
 export * from "./app/App";
