@@ -21,7 +21,8 @@ import { router, services } from "appformer-js-microeditor-router";
 import { Breadcrumb, BreadcrumbItem, Button, PageSection, PageSectionVariants } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
-import { EnvelopeBusConsumerWeb } from "./EnvelopeBusConsumerWeb";
+import { EnvelopeBusConsumer } from "appformer-js-submarine";
+import { getFileContentService, setFileContentService } from "./service/Service";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
   const decodedFilePath = decodeURIComponent(props.match.params.filePath.replace(/\+/g, "%20"));
@@ -37,19 +38,38 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   const iframeSrc = services.microeditor_envelope;
 
   useEffect(() => {
-    const envelopeBusConsumer = new EnvelopeBusConsumerWeb(
-      window.location.origin,
-      iframe,
-      iframeDomain,
-      fileExtension,
-      decodedFilePath,
-      props.match.params.space,
-      props.match.params.project,
-      setEphemeralStatus
-    );
+    const envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+      send: msg => {
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage(msg, iframeDomain);
+        }
+      },
+      request_init: () => {
+        _this.request_initResponse(window.location.origin);
+      },
+      receive_languageRequest: () => {
+        _this.respond_languageRequest(router.get(fileExtension));
+      },
+      receive_getContentResponse: (content: string) => {
+        setFileContentService(props.match.params.space, props.match.params.project, decodedFilePath, content).then(
+          v => {
+            setEphemeralStatus("Saved.");
+          }
+        );
+      },
+      receive_setContentRequest: () => {
+        getFileContentService(props.match.params.space, props.match.params.project, decodedFilePath)
+          .then(res => res.text())
+          .then(content => _this.respond_setContentRequest(content.trim()));
+      }
+    }));
+
     envelopeBusConsumer.init();
 
-    const handle = (msg: any) => envelopeBusConsumer.receive(msg.data);
+    const handle = (msg: any) => {
+      return envelopeBusConsumer.receive(msg.data);
+    };
+
     window.addEventListener("message", handle, false);
     return () => {
       window.removeEventListener("message", handle, false);

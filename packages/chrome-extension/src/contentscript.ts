@@ -1,5 +1,5 @@
 import { router, services } from "appformer-js-microeditor-router";
-import { EnvelopeBusConsumerChromeExtension } from "./EnvelopeBusConsumerChromeExtension";
+import { EnvelopeBusConsumer } from "appformer-js-submarine";
 
 declare global {
   export const CodeMirror: any;
@@ -171,14 +171,28 @@ function initContentScript() {
   const iframeSrc = services.microeditor_envelope;
   const embeddedEditorIframe = document.createElement("iframe");
 
-  const envelopeBusConsumer = new EnvelopeBusConsumerChromeExtension(
-    window.location.origin,
-    embeddedEditorIframe,
-    iframeDomain,
-    openFileExtension,
-    getGitHubEditor,
-    enableCommitButton
-  );
+  const envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+    send: msg => {
+      if (embeddedEditorIframe && embeddedEditorIframe.contentWindow) {
+        embeddedEditorIframe.contentWindow.postMessage(msg, iframeDomain);
+      }
+    },
+    request_init: () => {
+      _this.request_initResponse(window.location.origin);
+    },
+    receive_languageRequest: () => {
+      _this.respond_languageRequest(router.get(openFileExtension));
+    },
+    receive_getContentResponse: (content: string) => {
+      enableCommitButton();
+      getGitHubEditor().CodeMirror.setValue(content);
+    },
+    receive_setContentRequest: () => {
+      const githubEditorContent = getGitHubEditor().CodeMirror.getValue() || "";
+      _this.respond_setContentRequest(githubEditorContent);
+    }
+  }));
+
   envelopeBusConsumer.init();
   window.addEventListener("message", msg => envelopeBusConsumer.receive(msg.data), false);
 

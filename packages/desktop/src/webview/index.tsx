@@ -49,7 +49,7 @@ import { File } from "../shared/Protocol";
 import { router, services } from "appformer-js-microeditor-router";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { Pf4Label } from "./Pf4Label";
-import { EnvelopeBusConsumerDesktop } from "./EnvelopeBusConsumerDesktop";
+import { EnvelopeBusConsumer } from "appformer-js-submarine";
 
 const ipc = electron.ipcRenderer;
 
@@ -260,29 +260,42 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   }
 
   useEffect(() => {
-    const appFormerBusConsumer = new EnvelopeBusConsumerDesktop(
-      window.location.origin,
-      iframe,
-      iframeDomain,
-      ipc,
-      openFileExtension,
-      props.openFile.path
-    );
+    const envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+      send: msg => {
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage(msg, iframeDomain);
+        }
+      },
+      request_init: () => {
+        _this.request_initResponse(window.location.origin);
+      },
+      receive_languageRequest: () => {
+        _this.respond_languageRequest(router.get(openFileExtension));
+      },
+      receive_getContentResponse: (content: string) => {
+        ipc.send("writeContent", { path: props.openFile.path, content: content });
+      },
+      receive_setContentRequest: () => {
+        ipc.send("requestContent", { relativePath: this.path });
+      }
+    }));
 
-    console.info("EFFECT RAN!");
-    appFormerBusConsumer.init();
+    envelopeBusConsumer.init();
 
-    ipc.on("returnContent", (event: any, content: string) => appFormerBusConsumer.respond_setContentRequest(content));
-    ipc.on("requestSave", () => appFormerBusConsumer.request_getContentResponse());
+    ipc.on("returnContent", (event: any, content: string) => envelopeBusConsumer.respond_setContentRequest(content));
+    ipc.on("requestSave", () => envelopeBusConsumer.request_getContentResponse());
 
-    const handler = (msg: any) => appFormerBusConsumer.receive(msg.data);
+    const handler = (msg: any) => {
+      envelopeBusConsumer.receive(msg.data);
+    };
+
     window.addEventListener("message", handler, false);
 
     return () => {
       ipc.removeAllListeners("returnContent");
       ipc.removeAllListeners("requestSave");
       window.removeEventListener("message", handler, false);
-      appFormerBusConsumer.stopInitRequests();
+      envelopeBusConsumer.receive_initResponse();
     };
   }, []);
 

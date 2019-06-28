@@ -1,24 +1,27 @@
 import { LanguageData } from "appformer-js-microeditor-router";
 import { AppFormerBusMessage } from "./AppFormerSubmarine";
 
-export abstract class EnvelopeBusConsumer {
+export interface EnvelopeBusConsumerImpl {
+  send(msg: AppFormerBusMessage<any>): void;
+  request_init(): void;
+  receive_languageRequest(): void;
+  receive_setContentRequest(): void;
+  receive_getContentResponse(content: string): void;
+}
+
+export class EnvelopeBusConsumer {
   private static TIMEOUT = 20000; //ms
 
   private initPolling?: any;
   private initPollingTimeout?: any;
+  private impl: EnvelopeBusConsumerImpl;
 
-  public abstract send(msg: AppFormerBusMessage<any>): void;
-
-  public abstract receive_languageRequest(): void;
-
-  public abstract receive_getContentResponse(content: string): void;
-
-  public abstract receive_setContentRequest(): void;
-
-  public abstract request_init(): void;
+  public constructor(impl: (self: EnvelopeBusConsumer) => EnvelopeBusConsumerImpl) {
+    this.impl = impl(this);
+  }
 
   public init() {
-    this.initPolling = setInterval(() => this.request_init(), 10);
+    this.initPolling = setInterval(() => this.impl.request_init(), 10);
     this.initPollingTimeout = setTimeout(() => {
       clearTimeout(this.initPolling);
       console.info("Init polling timed out. Looks like the microeditor-envelope is not responding accordingly.");
@@ -31,19 +34,19 @@ export abstract class EnvelopeBusConsumer {
   }
 
   public respond_languageRequest(languageData?: LanguageData) {
-    this.send({ type: "RETURN_LANGUAGE", data: languageData });
+    this.impl.send({ type: "RETURN_LANGUAGE", data: languageData });
   }
 
   public respond_setContentRequest(content: string) {
-    this.send({ type: "RETURN_SET_CONTENT", data: content });
+    this.impl.send({ type: "RETURN_SET_CONTENT", data: content });
   }
 
   public request_getContentResponse() {
-    this.send({ type: "REQUEST_GET_CONTENT", data: undefined });
+    this.impl.send({ type: "REQUEST_GET_CONTENT", data: undefined });
   }
 
   public request_initResponse(origin: string) {
-    this.send({ type: "REQUEST_INIT", data: origin });
+    this.impl.send({ type: "REQUEST_INIT", data: origin });
   }
 
   public receive(message: AppFormerBusMessage<any>) {
@@ -53,13 +56,13 @@ export abstract class EnvelopeBusConsumer {
         this.receive_initResponse();
         break;
       case "REQUEST_LANGUAGE":
-        this.receive_languageRequest();
+        this.impl.receive_languageRequest();
         break;
       case "RETURN_GET_CONTENT":
-        this.receive_getContentResponse(message.data as string);
+        this.impl.receive_getContentResponse(message.data as string);
         break;
       case "REQUEST_SET_CONTENT":
-        this.receive_setContentRequest();
+        this.impl.receive_setContentRequest();
         break;
     }
   }

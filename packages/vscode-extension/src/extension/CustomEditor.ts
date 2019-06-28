@@ -18,25 +18,45 @@ import * as vscode from "vscode";
 import * as __path from "path";
 import { EnvelopeBusConsumer } from "appformer-js-submarine";
 import { KieEditorsExtension } from "./KieEditorsExtension";
-import { EnvelopeBusConsumerVsCode } from "./EnvelopeBusConsumerVsCode";
+import { router } from "appformer-js-microeditor-router";
+import * as fs from "fs";
 
 export class CustomEditor {
   public readonly _panel: vscode.WebviewPanel;
   public readonly _path: string;
-  public readonly appFormerBusConsumer: EnvelopeBusConsumer;
+  public readonly envelopeBusConsumer: EnvelopeBusConsumer;
 
   public constructor(panel: vscode.WebviewPanel, path: string) {
     this._panel = panel;
     this._path = path;
-    this.appFormerBusConsumer = new EnvelopeBusConsumerVsCode(this._panel, this._path);
+    this.envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+      send: msg => {
+        this._panel.webview.postMessage(msg);
+      },
+      request_init: () => {
+        _this.request_initResponse("vscode");
+      },
+      receive_languageRequest: () => {
+        const split = this._path.split(".");
+        _this.respond_languageRequest(router.get(split[split.length - 1]));
+      },
+      receive_getContentResponse: (content: string) => {
+        fs.writeFileSync(this._path, content);
+        vscode.window.setStatusBarMessage("Saved successfully!", 3000);
+      },
+      receive_setContentRequest: () => {
+        const content = fs.readFileSync(this._path);
+        _this.respond_setContentRequest(content.toString());
+      }
+    }));
   }
 
   public setupPanelEvents(context: vscode.ExtensionContext) {
-    this.appFormerBusConsumer.init();
+    this.envelopeBusConsumer.init();
 
     context.subscriptions.push(
       this._panel.webview.onDidReceiveMessage(
-        msg => this.appFormerBusConsumer.receive(msg),
+        msg => this.envelopeBusConsumer.receive(msg),
         this,
         context.subscriptions
       )
@@ -61,7 +81,7 @@ export class CustomEditor {
   }
 
   public requestSave() {
-    this.appFormerBusConsumer.request_getContentResponse();
+    this.envelopeBusConsumer.request_getContentResponse();
   }
 
   public setupWebviewContent(context: vscode.ExtensionContext) {
