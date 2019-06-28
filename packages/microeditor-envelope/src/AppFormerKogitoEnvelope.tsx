@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
-import { App } from "./app/App";
+import { Envelope } from "./app/Envelope";
 import {EnvelopeBusMessage} from "appformer-js-microeditor-envelope-protocol";
 
 //Exposed API of Visual Studio Code
@@ -10,12 +10,12 @@ declare global {
 }
 
 export class AppFormerKogitoEnvelope {
-  private app?: App;
-  private appFormerBusApi: AppFormerKogitoEnvelopeBusApi;
+  private envelope?: Envelope;
+  private busApi: AppFormerKogitoEnvelopeBusApi;
   private targetOrigin: string;
 
   constructor() {
-    this.appFormerBusApi = this.initAppFormerBusApi();
+    this.busApi = this.initAppFormerKogitoEnvelopeBusApi();
   }
 
   public handleMessages(
@@ -42,7 +42,7 @@ export class AppFormerKogitoEnvelope {
     editor.af_onStartup();
     console.info(`${editor.af_componentId} - STARTUP`);
 
-    return this.app!.register(editor).then(() => {
+    return this.envelope!.register(editor).then(() => {
       editor.af_onOpen();
       console.info(`${editor.af_componentId} - OPEN`);
 
@@ -51,11 +51,11 @@ export class AppFormerKogitoEnvelope {
   }
 
   public getEditor(): AppFormer.Editor | undefined {
-    return this.app!.getEditor();
+    return this.envelope!.getEditor();
   }
 
-  private initAppFormerBusApi() {
-    const noAppFormerBusApi = {
+  private initAppFormerKogitoEnvelopeBusApi() {
+    const noAppFormerKogitoEnvelopeBusApi = {
       postMessage: <T extends {}>(message: EnvelopeBusMessage<T>) => {
         console.info(`MOCK: Sent message:`);
         console.info(message);
@@ -66,10 +66,10 @@ export class AppFormerKogitoEnvelope {
       if (acquireVsCodeApi) {
         return acquireVsCodeApi();
       } else {
-        return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerBusApi;
+        return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerKogitoEnvelopeBusApi;
       }
     } catch (e) {
-      return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerBusApi;
+      return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerKogitoEnvelopeBusApi;
     }
   }
 
@@ -77,7 +77,7 @@ export class AppFormerKogitoEnvelope {
     if (!this.targetOrigin) {
       throw new Error("Tried to send message without targetOrigin set");
     }
-    this.appFormerBusApi.postMessage(message, this.targetOrigin);
+    this.busApi.postMessage(message, this.targetOrigin);
     return Promise.resolve();
   }
 
@@ -89,7 +89,7 @@ export class AppFormerKogitoEnvelope {
     return Promise.resolve().then(() => {
       const kogitoEnvelope = new AppFormerKogitoEnvelope();
       return new Promise(res =>
-        ReactDOM.render(<App exposing={self => (kogitoEnvelope.app = self)} />, container, res)
+        ReactDOM.render(<Envelope exposing={self => (kogitoEnvelope.envelope = self)} />, container, res)
       ).then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
     });
   }

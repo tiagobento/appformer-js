@@ -3,7 +3,7 @@ import * as AppFormer from "appformer-js-core";
 import { Main } from "./Main";
 
 interface Props {
-  exposing: (self: App) => void;
+  exposing: (self: Envelope) => void;
 }
 
 interface State {
@@ -28,14 +28,14 @@ function Title(props: { text: string }) {
   return <></>;
 }
 
-export class App extends React.Component<Props, State> {
+export class Envelope extends React.Component<Props, State> {
   private static readonly defaultTitle = "AppFormer.js - QuickSilver";
 
   constructor(props: Props) {
     super(props);
     this.state = {
       editor: undefined,
-      title: App.defaultTitle
+      title: Envelope.defaultTitle
     };
     this.props.exposing(this);
   }
@@ -48,7 +48,7 @@ export class App extends React.Component<Props, State> {
             value={{
               title: this.state.title,
               setTitle: (title: string) => new Promise(res => this.setState({ title: title }, res)),
-              setTitleDefault: () => new Promise(res => this.setState({ title: App.defaultTitle }, res))
+              setTitleDefault: () => new Promise(res => this.setState({ title: Envelope.defaultTitle }, res))
             }}
           >
             <Title text={this.state.title} />
