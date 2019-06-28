@@ -18,9 +18,41 @@ import * as vscode from "vscode";
 import { CustomEditor } from "./CustomEditor";
 
 export class KieEditorsExtension {
-  public static activeCustomEditor: CustomEditor | undefined;
+  public activeCustomEditor?: CustomEditor;
 
-  public static createCustomEditor(path: string, context: vscode.ExtensionContext) {
+  public subscribeToActiveTextEditorChanges(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor((textEditor?: vscode.TextEditor) => {
+          if (!textEditor) {
+            return;
+          }
+
+          if (this.hasLanguage(textEditor)) {
+            this.replaceDefaultEditorByKieCustomEditor(textEditor, context);
+          }
+        })
+    );
+  }
+
+  public registerCustomSaveCommand(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.commands.registerCommand("workbench.action.files.save", () => {
+          // If a custom editor is active, its content is saved manually.
+          if (this.activeCustomEditor && this.activeCustomEditor._path.length > 0) {
+            this.activeCustomEditor.requestSave();
+          }
+
+          // If a text editor is opened, we save it normally.
+          if (vscode.window.activeTextEditor) {
+            vscode.window.activeTextEditor.document.save();
+          }
+
+          return Promise.resolve();
+        })
+    );
+  }
+
+  private createCustomEditor(path: string, context: vscode.ExtensionContext) {
     const pathParts = path.split("/");
     const fileName = pathParts[pathParts.length - 1];
 
@@ -31,27 +63,19 @@ export class KieEditorsExtension {
       { enableCommandUris: true, enableScripts: true, retainContextWhenHidden: true }
     );
 
-    const customEditor = new CustomEditor(panel, path);
+    const customEditor = new CustomEditor(
+      panel,
+      path,
+      editor => (this.activeCustomEditor = editor),
+      editor => !!this.activeCustomEditor && this.activeCustomEditor._path === editor._path
+    );
+
     customEditor.setupPanelEvents(context);
     customEditor.setupWebviewContent(context);
     return customEditor;
   }
 
-  public static subscribeToActiveTextEditorChanges(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-      vscode.window.onDidChangeActiveTextEditor((textEditor?: vscode.TextEditor) => {
-        if (!textEditor) {
-          return;
-        }
-
-        if (this.hasLanguage(textEditor)) {
-          this.replaceDefaultEditorByKieCustomEditor(textEditor, context);
-        }
-      })
-    );
-  }
-
-  private static hasLanguage(textEditor: vscode.TextEditor) {
+  private hasLanguage(textEditor: vscode.TextEditor) {
     const extension = vscode.extensions.getExtension("kiegroup.appformer-js-vscode-extension");
     if (!extension) {
       console.info("Extension configuration not found.");
@@ -64,34 +88,10 @@ export class KieEditorsExtension {
     return matchingLanguages.length > 0;
   }
 
-  private static replaceDefaultEditorByKieCustomEditor(
-    textEditor: vscode.TextEditor,
-    context: vscode.ExtensionContext
-  ) {
+  private replaceDefaultEditorByKieCustomEditor(textEditor: vscode.TextEditor, context: vscode.ExtensionContext) {
     vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
-      KieEditorsExtension.activeCustomEditor = KieEditorsExtension.createCustomEditor(
-        textEditor.document.uri.path,
-        context
-      );
+      this.activeCustomEditor = this.createCustomEditor(textEditor.document.uri.path, context);
       return Promise.resolve();
     });
-  }
-
-  public static registerCustomSaveCommand(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-      vscode.commands.registerCommand("workbench.action.files.save", () => {
-        // If a custom editor is active, its content is saved manually.
-        if (KieEditorsExtension.activeCustomEditor && KieEditorsExtension.activeCustomEditor._path.length > 0) {
-          KieEditorsExtension.activeCustomEditor.requestSave();
-        }
-
-        // If a text editor is opened, we save it normally.
-        if (vscode.window.activeTextEditor) {
-          vscode.window.activeTextEditor.document.save();
-        }
-
-        return Promise.resolve();
-      })
-    );
   }
 }

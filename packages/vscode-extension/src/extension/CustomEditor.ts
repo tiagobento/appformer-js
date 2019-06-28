@@ -15,20 +15,28 @@
  */
 
 import * as vscode from "vscode";
-import * as __path from "path";
-import { EnvelopeBusConsumer } from "appformer-js-submarine";
-import { KieEditorsExtension } from "./KieEditorsExtension";
-import { router } from "appformer-js-microeditor-router";
 import * as fs from "fs";
+import * as __path from "path";
+import { router } from "appformer-js-microeditor-router";
+import { EnvelopeBusConsumer } from "./EnvelopeBusConsumer";
 
 export class CustomEditor {
   public readonly _panel: vscode.WebviewPanel;
   public readonly _path: string;
   public readonly envelopeBusConsumer: EnvelopeBusConsumer;
+  private readonly setActiveCustomEditor: (c?: CustomEditor) => void;
+  private readonly isActiveCustomEditor: (e: CustomEditor) => boolean;
 
-  public constructor(panel: vscode.WebviewPanel, path: string) {
+  public constructor(
+    panel: vscode.WebviewPanel,
+    path: string,
+    setActiveCustomEditor: (c: CustomEditor) => void,
+    isActiveCustomEditor: (e: CustomEditor) => boolean
+  ) {
     this._panel = panel;
     this._path = path;
+    this.setActiveCustomEditor = setActiveCustomEditor;
+    this.isActiveCustomEditor = isActiveCustomEditor;
     this.envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
       send: msg => {
         this._panel.webview.postMessage(msg);
@@ -53,30 +61,29 @@ export class CustomEditor {
 
   public setupPanelEvents(context: vscode.ExtensionContext) {
     this.envelopeBusConsumer.init();
+    context.subscriptions.push(this.setupEnvelopeBusConsumerAsMessageHandler(context));
+    context.subscriptions.push(this.setupPanelViewStateChanged(context));
+  }
 
-    context.subscriptions.push(
-      this._panel.webview.onDidReceiveMessage(
-        msg => this.envelopeBusConsumer.receive(msg),
-        this,
-        context.subscriptions
-      )
+  private setupEnvelopeBusConsumerAsMessageHandler(context: vscode.ExtensionContext) {
+    return this._panel.webview.onDidReceiveMessage(
+      msg => this.envelopeBusConsumer.receive(msg),
+      this,
+      context.subscriptions
     );
+  }
 
-    context.subscriptions.push(
-      this._panel.onDidChangeViewState(
-        () => {
-          if (this._panel.active) {
-            KieEditorsExtension.activeCustomEditor = this;
-          } else if (
-            KieEditorsExtension.activeCustomEditor &&
-            KieEditorsExtension.activeCustomEditor._path === this._path
-          ) {
-            KieEditorsExtension.activeCustomEditor = undefined;
-          }
-        },
-        this,
-        context.subscriptions
-      )
+  private setupPanelViewStateChanged(context: vscode.ExtensionContext) {
+    return this._panel.onDidChangeViewState(
+      () => {
+        if (this._panel.active) {
+          this.setActiveCustomEditor(this);
+        } else if (this.isActiveCustomEditor(this)) {
+          this.setActiveCustomEditor(undefined);
+        }
+      },
+      this,
+      context.subscriptions
     );
   }
 
