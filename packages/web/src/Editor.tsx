@@ -21,7 +21,7 @@ import { router, services } from "appformer-js-microeditor-router";
 import { Breadcrumb, BreadcrumbItem, Button, PageSection, PageSectionVariants } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
-import { EnvelopeBusConsumer } from "appformer-js-submarine";
+import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
 import { getFileContentService, setFileContentService } from "./service/Service";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {

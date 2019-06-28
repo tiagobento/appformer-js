@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
 import { App } from "./app/App";
-import {EnvelopeBusMessage} from "appformer-js-submarine";
+import {EnvelopeBusMessage} from "appformer-js-microeditor-envelope-protocol";
 
 //Exposed API of Visual Studio Code
 declare global {

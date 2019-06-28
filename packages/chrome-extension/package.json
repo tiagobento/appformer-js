@@ -16,7 +16,7 @@
     "copy-webpack-plugin": "^5.0.2",
     "react": "16.8.0",
     "react-dom": "16.8.4",
-    "appformer-js-submarine": "0.0.0",
+    "appformer-js-microeditor-envelope-protocol": "0.0.0",
     "appformer-js-microeditor-router": "0.0.0"
   },
   "scripts": {

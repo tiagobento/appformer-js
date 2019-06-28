@@ -20,7 +20,7 @@
     "@types/react-router-dom": "4.3.1",
     "appformer-js-core": "0.0.0",
     "appformer-js-storage": "0.0.0",
-    "appformer-js-submarine": "0.0.0",
+    "appformer-js-microeditor-envelope-protocol": "0.0.0",
     "jsoneditor": "5.31.1",
     "react": "16.8.0",
     "react-dom": "16.8.4",

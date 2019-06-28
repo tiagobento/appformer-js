@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EnvelopeBusMessage } from "appformer-js-submarine";
+import { EnvelopeBusMessage } from "appformer-js-microeditor-envelope-protocol";
 import { AppFormerSubmarine } from "./AppFormerSubmarine";
 import { BusinessCentralClientEditorFactory, GwtMicroEditor } from "./GwtMicroEditor";
 import { LanguageData, Resource } from "appformer-js-microeditor-router";

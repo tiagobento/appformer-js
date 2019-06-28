@@ -18,7 +18,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as __path from "path";
 import { router } from "appformer-js-microeditor-router";
-import { EnvelopeBusConsumer } from "appformer-js-submarine";
+import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
 
 export class KogitoEditor {
   public readonly path: string;

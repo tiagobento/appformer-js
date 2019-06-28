@@ -49,7 +49,7 @@ import { File } from "../shared/Protocol";
 import { router, services } from "appformer-js-microeditor-router";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { Pf4Label } from "./Pf4Label";
-import { EnvelopeBusConsumer } from "appformer-js-submarine";
+import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
 
 const ipc = electron.ipcRenderer;
 

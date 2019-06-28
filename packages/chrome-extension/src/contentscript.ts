@@ -1,5 +1,5 @@
 import { router, services } from "appformer-js-microeditor-router";
-import { EnvelopeBusConsumer } from "appformer-js-submarine";
+import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
 
 declare global {
   export const CodeMirror: any;
