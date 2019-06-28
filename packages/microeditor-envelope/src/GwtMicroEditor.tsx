@@ -34,7 +34,7 @@ export class GwtMicroEditor extends AppFormer.Editor {
   private businessCentralClientEditor: BusinessCentralClientEditor;
 
   constructor(erraiCdiBeanName: string) {
-    super("appformer-gwt-editor");
+    super("appformer-gwt-client-editor");
     this.af_componentTitle = "GwtMicroEditor";
     this.af_isReact = true;
     this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.get();

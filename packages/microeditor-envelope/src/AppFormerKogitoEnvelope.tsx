@@ -6,32 +6,20 @@ import {EnvelopeBusMessage} from "appformer-js-microeditor-envelope-protocol";
 
 //Exposed API of Visual Studio Code
 declare global {
-  export const acquireVsCodeApi: () => AppFormerBusApi;
+  export const acquireVsCodeApi: () => AppFormerKogitoEnvelopeBusApi;
 }
 
-export class AppFormerSubmarine implements AppFormer.AppFormer {
+export class AppFormerKogitoEnvelope {
   private app?: App;
-  private appFormerBusApi: AppFormerBusApi;
+  private appFormerBusApi: AppFormerKogitoEnvelopeBusApi;
   private targetOrigin: string;
 
   constructor() {
     this.appFormerBusApi = this.initAppFormerBusApi();
   }
 
-  public goTo(af_componentId: string, args?: Map<string, any>): void {
-    throw new Error("Go-tos are not supported by this AppFormer.js distribution.");
-  }
-
-  public registerPerspective(perspective: AppFormer.Perspective): void {
-    throw new Error("Perspectives are not supported by this AppFormer.js distribution.");
-  }
-
-  public registerScreen(screen: AppFormer.Screen): void {
-    throw new Error("Screens are not supported by this AppFormer.js distribution.");
-  }
-
   public handleMessages(
-    handler: (appFormer: AppFormerSubmarine, event: { data: EnvelopeBusMessage<any> }) => Promise<void>
+    handler: (appFormer: AppFormerKogitoEnvelope, event: { data: EnvelopeBusMessage<any> }) => Promise<void>
   ) {
     window.addEventListener("message", event => handler(this, event));
     return Promise.resolve();
@@ -78,10 +66,10 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
       if (acquireVsCodeApi) {
         return acquireVsCodeApi();
       } else {
-        return (window.parent as AppFormerBusApi) || noAppFormerBusApi;
+        return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerBusApi;
       }
     } catch (e) {
-      return (window.parent as AppFormerBusApi) || noAppFormerBusApi;
+      return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerBusApi;
     }
   }
 
@@ -97,16 +85,16 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
     this.targetOrigin = targetOrigin;
   }
 
-  public static init(container: HTMLElement): Promise<AppFormerSubmarine> {
+  public static init(container: HTMLElement): Promise<AppFormerKogitoEnvelope> {
     return Promise.resolve().then(() => {
-      const appFormerSubmarine = new AppFormerSubmarine();
+      const kogitoEnvelope = new AppFormerKogitoEnvelope();
       return new Promise(res =>
-        ReactDOM.render(<App exposing={self => (appFormerSubmarine.app = self)} />, container, res)
-      ).then(() => (window.AppFormer.Submarine = appFormerSubmarine));
+        ReactDOM.render(<App exposing={self => (kogitoEnvelope.app = self)} />, container, res)
+      ).then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
     });
   }
 }
 
-interface AppFormerBusApi {
+interface AppFormerKogitoEnvelopeBusApi {
   postMessage<T>(message: EnvelopeBusMessage<T>, targetOrigin?: any, fdfd?: any): any;
 }

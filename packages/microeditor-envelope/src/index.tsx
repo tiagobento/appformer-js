@@ -15,14 +15,14 @@
  */
 
 import { EnvelopeBusMessage } from "appformer-js-microeditor-envelope-protocol";
-import { AppFormerSubmarine } from "./AppFormerSubmarine";
+import { AppFormerKogitoEnvelope } from "./AppFormerKogitoEnvelope";
 import { BusinessCentralClientEditorFactory, GwtMicroEditor } from "./GwtMicroEditor";
 import { LanguageData, Resource } from "appformer-js-microeditor-router";
 
 
 declare global {
   export interface AppFormer {
-    Submarine: AppFormerSubmarine;
+    KogitoEnvelope: AppFormerKogitoEnvelope;
   }
 }
 
@@ -54,31 +54,31 @@ function removeBusinessCentralPanelHeader() {
   }, 1000);
 }
 
+function loadResource(resource: Resource) {
+  resource.paths.forEach(path => {
+    switch (resource.type) {
+      case "css":
+        const link = document.createElement("link");
+        link.href = path;
+        link.rel = "text/css";
+        document.body.appendChild(link);
+        break;
+      case "js":
+        const script = document.createElement("script");
+        script.src = path;
+        script.type = "text/javascript";
+        document.body.appendChild(script);
+        break;
+      default:
+    }
+  });
+}
+
 let initializing = false;
 
-function messageHandler(appFormer: AppFormerSubmarine, event: { data: EnvelopeBusMessage<any> }) {
+function messageHandler(appFormer: AppFormerKogitoEnvelope, event: { data: EnvelopeBusMessage<any> }) {
   const message = event.data;
   const editor = appFormer.getEditor();
-
-  function loadResource(resource: Resource) {
-    resource.paths.forEach(path => {
-      switch (resource.type) {
-        case "css":
-          const link = document.createElement("link");
-          link.href = path;
-          link.rel = "text/css";
-          document.body.appendChild(link);
-          break;
-        case "js":
-          const script = document.createElement("script");
-          script.src = path;
-          script.type = "text/javascript";
-          document.body.appendChild(script);
-          break;
-        default:
-      }
-    });
-  }
 
   switch (message.type) {
     case "REQUEST_INIT":
@@ -127,7 +127,7 @@ function messageHandler(appFormer: AppFormerSubmarine, event: { data: EnvelopeBu
 }
 
 export function init(container: HTMLElement) {
-  AppFormerSubmarine.init(container).then(appFormer => {
-    return appFormer.handleMessages(messageHandler);
+  AppFormerKogitoEnvelope.init(container).then(kogitoEnvelope => {
+    return kogitoEnvelope.handleMessages(messageHandler);
   });
 }

@@ -276,7 +276,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
         ipc.send("writeContent", { path: props.openFile.path, content: content });
       },
       receive_setContentRequest: () => {
-        ipc.send("requestContent", { relativePath: this.path });
+        ipc.send("requestContent", { relativePath: props.openFile.path });
       }
     }));
 

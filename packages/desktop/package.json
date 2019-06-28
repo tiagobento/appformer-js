@@ -27,7 +27,7 @@
     "init": "yarn -f",
     "build": "yarn run lint && yarn test && yarn run build:fast",
     "build:fast": "rm -rf dist out && webpack",
-    "build:prod": "yarn run build --mode production && electron-packager . KieSubmarine --platform=darwin --arch=x64 --out out --overwrite"
+    "build:prod": "yarn run build --mode production && electron-packager . KogitoDesktop --platform=darwin --arch=x64 --out out --overwrite"
   },
   "babel": {
     "presets": [

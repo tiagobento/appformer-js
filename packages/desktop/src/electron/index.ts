@@ -59,7 +59,7 @@ app.on("ready", () => {
     console.info("Desktop app is loaded.");
   });
 
-  const rootPath = path.join(app.getPath("documents"), "KieSubmarine");
+  const rootPath = path.join(app.getPath("documents"), "KogitoDesktop");
   ipcMain.on("requestFiles", () => {
     if (!fs.existsSync(rootPath)) {
       fs.mkdirSync(rootPath);
