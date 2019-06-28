@@ -3,14 +3,14 @@ import { AppFormerBusMessage } from "./AppFormerSubmarine";
 
 export interface EnvelopeBusConsumerImpl {
   send(msg: AppFormerBusMessage<any>): void;
-  request_init(): void;
+  pollInit(): void;
   receive_languageRequest(): void;
   receive_setContentRequest(): void;
   receive_getContentResponse(content: string): void;
 }
 
 export class EnvelopeBusConsumer {
-  private static TIMEOUT = 20000; //ms
+  private static INIT_POLLING_TIMEOUT_IN_MS = 20000;
 
   private initPolling?: any;
   private initPollingTimeout?: any;
@@ -21,11 +21,11 @@ export class EnvelopeBusConsumer {
   }
 
   public init() {
-    this.initPolling = setInterval(() => this.impl.request_init(), 10);
+    this.initPolling = setInterval(() => this.impl.pollInit(), 10);
     this.initPollingTimeout = setTimeout(() => {
       clearTimeout(this.initPolling);
       console.info("Init polling timed out. Looks like the microeditor-envelope is not responding accordingly.");
-    }, EnvelopeBusConsumer.TIMEOUT);
+    }, EnvelopeBusConsumer.INIT_POLLING_TIMEOUT_IN_MS);
   }
 
   public receive_initResponse() {

@@ -5,7 +5,7 @@ declare global {
   export const CodeMirror: any;
 }
 
-function getGitHubEditor(): any {
+function getGitHubEditor() {
   const realEditor = document.querySelector(".file-editor-textarea + .CodeMirror") as any;
   if (!realEditor) {
     throw new Error("GitHub editor was not found. GitHub must've change its DOM structure.");
@@ -177,7 +177,7 @@ function initContentScript() {
         embeddedEditorIframe.contentWindow.postMessage(msg, iframeDomain);
       }
     },
-    request_init: () => {
+    pollInit: () => {
       _this.request_initResponse(window.location.origin);
     },
     receive_languageRequest: () => {

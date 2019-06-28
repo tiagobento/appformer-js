@@ -44,7 +44,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
           iframe.contentWindow.postMessage(msg, iframeDomain);
         }
       },
-      request_init: () => {
+      pollInit: () => {
         _this.request_initResponse(window.location.origin);
       },
       receive_languageRequest: () => {

@@ -4,6 +4,11 @@ import * as AppFormer from "appformer-js-core";
 
 import { App } from "./app/App";
 
+//Exposed API of Visual Studio Code
+declare global {
+  export const acquireVsCodeApi: () => AppFormerBusApi;
+}
+
 export class AppFormerSubmarine implements AppFormer.AppFormer {
   private app?: App;
   private appFormerBusApi: AppFormerBusApi;
@@ -109,9 +114,4 @@ interface AppFormerBusApi {
 export interface AppFormerBusMessage<T> {
   type: string;
   data: T;
-}
-
-//Exposed API of Visual Studio Code
-declare global {
-  export const acquireVsCodeApi: () => AppFormerBusApi;
 }

@@ -266,7 +266,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
           iframe.contentWindow.postMessage(msg, iframeDomain);
         }
       },
-      request_init: () => {
+      pollInit: () => {
         _this.request_initResponse(window.location.origin);
       },
       receive_languageRequest: () => {

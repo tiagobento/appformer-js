@@ -20,75 +20,70 @@ import * as __path from "path";
 import { router } from "appformer-js-microeditor-router";
 import { EnvelopeBusConsumer } from "./EnvelopeBusConsumer";
 
-export class CustomEditor {
-  public readonly _panel: vscode.WebviewPanel;
-  public readonly _path: string;
+export class KogitoEditor {
+  public readonly path: string;
   public readonly envelopeBusConsumer: EnvelopeBusConsumer;
-  private readonly setActiveCustomEditor: (c?: CustomEditor) => void;
-  private readonly isActiveCustomEditor: (e: CustomEditor) => boolean;
+  public panel?: vscode.WebviewPanel;
 
-  public constructor(
-    panel: vscode.WebviewPanel,
-    path: string,
-    setActiveCustomEditor: (c: CustomEditor) => void,
-    isActiveCustomEditor: (e: CustomEditor) => boolean
-  ) {
-    this._panel = panel;
-    this._path = path;
-    this.setActiveCustomEditor = setActiveCustomEditor;
-    this.isActiveCustomEditor = isActiveCustomEditor;
+  public constructor(path: string) {
+    this.path = path;
     this.envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
       send: msg => {
-        this._panel.webview.postMessage(msg);
+        if (this.panel) {
+          this.panel.webview.postMessage(msg);
+        }
       },
-      request_init: () => {
+      pollInit: () => {
         _this.request_initResponse("vscode");
       },
       receive_languageRequest: () => {
-        const split = this._path.split(".");
-        _this.respond_languageRequest(router.get(split[split.length - 1]));
+        _this.respond_languageRequest(router.get(this.path.split(".").pop()!));
       },
       receive_getContentResponse: (content: string) => {
-        fs.writeFileSync(this._path, content);
+        fs.writeFileSync(this.path, content);
         vscode.window.setStatusBarMessage("Saved successfully!", 3000);
       },
       receive_setContentRequest: () => {
-        const content = fs.readFileSync(this._path);
-        _this.respond_setContentRequest(content.toString());
+        _this.respond_setContentRequest(fs.readFileSync(this.path).toString());
       }
     }));
   }
 
-  public setupPanelEvents(context: vscode.ExtensionContext) {
-    this.envelopeBusConsumer.init();
-    context.subscriptions.push(this.setupEnvelopeBusConsumerAsMessageHandler(context));
-    context.subscriptions.push(this.setupPanelViewStateChanged(context));
-  }
-
-  private setupEnvelopeBusConsumerAsMessageHandler(context: vscode.ExtensionContext) {
-    return this._panel.webview.onDidReceiveMessage(
-      msg => this.envelopeBusConsumer.receive(msg),
-      this,
-      context.subscriptions
+  public open() {
+    this.panel = vscode.window.createWebviewPanel(
+        "kogito-editor", // Identifies the type of the webview. Used internally
+        this.fileNameWithExtension() + " 🦉", // Title of the panel displayed to the user
+        { viewColumn: vscode.ViewColumn.Active, preserveFocus: true }, // Editor column to show the new webview panel in.
+        { enableCommandUris: true, enableScripts: true, retainContextWhenHidden: true }
     );
   }
 
-  private setupPanelViewStateChanged(context: vscode.ExtensionContext) {
-    return this._panel.onDidChangeViewState(
-      () => {
-        if (this._panel.active) {
-          this.setActiveCustomEditor(this);
-        } else if (this.isActiveCustomEditor(this)) {
-          this.setActiveCustomEditor(undefined);
-        }
-      },
+  public setupMessageBus(context: vscode.ExtensionContext) {
+    this.envelopeBusConsumer.init();
+    context.subscriptions.push(
+      this.panel!.webview.onDidReceiveMessage(msg => this.envelopeBusConsumer.receive(msg), this, context.subscriptions)
+    );
+  }
+
+  public setupPanelViewStateChanged(
+    context: vscode.ExtensionContext,
+    onPanelViewStateChanged: (isPanelActive: boolean) => void
+  ) {
+    return this.panel!.onDidChangeViewState(
+      () => onPanelViewStateChanged(this.panel!.active),
       this,
       context.subscriptions
     );
   }
 
   public requestSave() {
-    this.envelopeBusConsumer.request_getContentResponse();
+    if (this.path.length > 0) {
+      this.envelopeBusConsumer.request_getContentResponse();
+    }
+  }
+
+  private fileNameWithExtension() {
+    return this.path.split("/").pop()!;
   }
 
   public setupWebviewContent(context: vscode.ExtensionContext) {
@@ -96,7 +91,7 @@ export class CustomEditor {
       scheme: "vscode-resource"
     });
 
-    this._panel.webview.html = `
+    this.panel!.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
             <head>
