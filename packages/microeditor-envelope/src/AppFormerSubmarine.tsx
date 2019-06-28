@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
-
 import { App } from "./app/App";
+import {EnvelopeBusMessage} from "appformer-js-submarine";
 
 //Exposed API of Visual Studio Code
 declare global {
@@ -31,7 +31,7 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
   }
 
   public handleMessages(
-    handler: (appFormer: AppFormerSubmarine, event: { data: AppFormerBusMessage<any> }) => Promise<void>
+    handler: (appFormer: AppFormerSubmarine, event: { data: EnvelopeBusMessage<any> }) => Promise<void>
   ) {
     window.addEventListener("message", event => handler(this, event));
     return Promise.resolve();
@@ -68,7 +68,7 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
 
   private initAppFormerBusApi() {
     const noAppFormerBusApi = {
-      postMessage: <T extends {}>(message: AppFormerBusMessage<T>) => {
+      postMessage: <T extends {}>(message: EnvelopeBusMessage<T>) => {
         console.info(`MOCK: Sent message:`);
         console.info(message);
       }
@@ -85,7 +85,7 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
     }
   }
 
-  public postMessage<T>(message: AppFormerBusMessage<T>) {
+  public postMessage<T>(message: EnvelopeBusMessage<T>) {
     if (!this.targetOrigin) {
       throw new Error("Tried to send message without targetOrigin set");
     }
@@ -108,10 +108,5 @@ export class AppFormerSubmarine implements AppFormer.AppFormer {
 }
 
 interface AppFormerBusApi {
-  postMessage<T>(message: AppFormerBusMessage<T>, targetOrigin?: any, fdfd?: any): any;
-}
-
-export interface AppFormerBusMessage<T> {
-  type: string;
-  data: T;
+  postMessage<T>(message: EnvelopeBusMessage<T>, targetOrigin?: any, fdfd?: any): any;
 }

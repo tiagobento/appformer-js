@@ -21,28 +21,12 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    index: "./src/index.tsx"
+    index: "./src/index.ts"
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
-    filename: "index.js",
-    library: "AppFormer.Submarine",
-    libraryTarget: "umd",
-    umdNamedDefine: true
-  },
-  externals: {
-    react: {
-      root: "React", //indicates global variable
-      commonjs: "react",
-      commonjs2: "react",
-      amd: "react"
-    },
-    "react-dom": {
-      root: "ReactDOM", //indicates global variable
-      commonjs: "react-dom",
-      commonjs2: "react-dom",
-      amd: "react-dom"
-    }
+    filename: "[name].js",
+    libraryTarget: "commonjs2"
   },
   plugins: [
     new CircularDependencyPlugin({

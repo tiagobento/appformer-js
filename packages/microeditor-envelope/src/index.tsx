@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { AppFormerBusMessage, AppFormerSubmarine } from "appformer-js-submarine";
+import { EnvelopeBusMessage } from "appformer-js-submarine";
+import { AppFormerSubmarine } from "./AppFormerSubmarine";
 import { BusinessCentralClientEditorFactory, GwtMicroEditor } from "./GwtMicroEditor";
 import { LanguageData, Resource } from "appformer-js-microeditor-router";
+
+
+declare global {
+  export interface AppFormer {
+    Submarine: AppFormerSubmarine;
+  }
+}
+
 
 //Exposed API of AppFormerGwt
 declare global {
@@ -47,7 +56,7 @@ function removeBusinessCentralPanelHeader() {
 
 let initializing = false;
 
-function messageHandler(appFormer: AppFormerSubmarine, event: { data: AppFormerBusMessage<any> }) {
+function messageHandler(appFormer: AppFormerSubmarine, event: { data: EnvelopeBusMessage<any> }) {
   const message = event.data;
   const editor = appFormer.getEditor();
 

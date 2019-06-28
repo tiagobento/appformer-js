@@ -1,8 +1,8 @@
 import { LanguageData } from "appformer-js-microeditor-router";
-import { AppFormerBusMessage } from "./AppFormerSubmarine";
+import { EnvelopeBusMessage } from "./EnvelopeBusMessage";
 
 export interface EnvelopeBusConsumerImpl {
-  send(msg: AppFormerBusMessage<any>): void;
+  send(msg: EnvelopeBusMessage<any>): void;
   pollInit(): void;
   receive_languageRequest(): void;
   receive_setContentRequest(): void;
@@ -49,7 +49,7 @@ export class EnvelopeBusConsumer {
     this.impl.send({ type: "REQUEST_INIT", data: origin });
   }
 
-  public receive(message: AppFormerBusMessage<any>) {
+  public receive(message: EnvelopeBusMessage<any>) {
     this.receive_initResponse();
     switch (message.type) {
       case "RETURN_INIT":
