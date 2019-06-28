@@ -10,7 +10,7 @@ export interface EnvelopeBusConsumerImpl {
 }
 
 export class EnvelopeBusConsumer {
-  private static INIT_POLLING_TIMEOUT_IN_MS = 20000;
+  private static INIT_POLLING_TIMEOUT_IN_MS = 10000;
 
   private initPolling?: any;
   private initPollingTimeout?: any;

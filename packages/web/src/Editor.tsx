@@ -51,10 +51,8 @@ export function Editor(props: { match: match<{ space: string; project: string; f
         _this.respond_languageRequest(router.get(fileExtension));
       },
       receive_getContentResponse: (content: string) => {
-        setFileContentService(props.match.params.space, props.match.params.project, decodedFilePath, content).then(
-          v => {
-            setEphemeralStatus("Saved.");
-          }
+        setFileContentService(props.match.params.space, props.match.params.project, decodedFilePath, content).then(v =>
+          setEphemeralStatus("Saved.")
         );
       },
       receive_setContentRequest: () => {
