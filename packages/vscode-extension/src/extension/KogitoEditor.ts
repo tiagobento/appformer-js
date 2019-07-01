@@ -16,28 +16,34 @@
 
 import * as vscode from "vscode";
 import * as fs from "fs";
-import * as __path from "path";
-import { router } from "appformer-js-microeditor-router";
+import { LocalRouter } from "./LocalRouter";
 import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
 
 export class KogitoEditor {
   public readonly path: string;
+  public readonly context: vscode.ExtensionContext;
+  public readonly router: LocalRouter;
   public readonly envelopeBusConsumer: EnvelopeBusConsumer;
   public panel?: vscode.WebviewPanel;
 
-  public constructor(path: string) {
+  public constructor(path: string, context: vscode.ExtensionContext) {
     this.path = path;
+    this.context = context;
+    this.router = new LocalRouter(context);
     this.envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
       send: msg => {
         if (this.panel) {
           this.panel.webview.postMessage(msg);
+        } else {
+          console.info("Message not delivered because panel is not set.");
         }
       },
       pollInit: () => {
         _this.request_initResponse("vscode");
       },
       receive_languageRequest: () => {
-        _this.respond_languageRequest(router.get(this.path.split(".").pop()!));
+        const fileExtension = this.path.split(".").pop()!;
+        _this.respond_languageRequest(this.router.getLanguageData(fileExtension));
       },
       receive_getContentResponse: (content: string) => {
         fs.writeFileSync(this.path, content);
@@ -51,46 +57,49 @@ export class KogitoEditor {
 
   public open() {
     this.panel = vscode.window.createWebviewPanel(
-        "kogito-editor", // Identifies the type of the webview. Used internally
-        this.fileNameWithExtension() + " 🦉", // Title of the panel displayed to the user
-        { viewColumn: vscode.ViewColumn.Active, preserveFocus: true }, // Editor column to show the new webview panel in.
-        { enableCommandUris: true, enableScripts: true, retainContextWhenHidden: true }
+      "kogito-editor", // Identifies the type of the webview. Used internally by VsCode
+      this.panelTitle(), // Title of the panel displayed to the user
+      { viewColumn: vscode.ViewColumn.Active, preserveFocus: true }, // Editor column to show the new webview panel in.
+      { enableCommandUris: true, enableScripts: true, retainContextWhenHidden: true }
     );
   }
 
-  public setupMessageBus(context: vscode.ExtensionContext) {
+  public setupMessageBus() {
     this.envelopeBusConsumer.init();
-    context.subscriptions.push(
-      this.panel!.webview.onDidReceiveMessage(msg => this.envelopeBusConsumer.receive(msg), this, context.subscriptions)
+    this.context.subscriptions.push(
+      this.panel!.webview.onDidReceiveMessage(
+        msg => this.envelopeBusConsumer.receive(msg),
+        this,
+        this.context.subscriptions
+      )
     );
   }
 
-  public setupPanelViewStateChanged(
-    context: vscode.ExtensionContext,
-    onPanelViewStateChanged: (isPanelActive: boolean) => void
-  ) {
+  public setupPanelViewStateChanged(onPanelViewStateChanged: (panelBecameActive: boolean) => void) {
     return this.panel!.onDidChangeViewState(
       () => onPanelViewStateChanged(this.panel!.active),
       this,
-      context.subscriptions
+      this.context.subscriptions
     );
   }
 
   public requestSave() {
     if (this.path.length > 0) {
       this.envelopeBusConsumer.request_getContentResponse();
+    } else {
+      console.info("Save skipped because path is empty.");
     }
   }
 
-  private fileNameWithExtension() {
-    return this.path.split("/").pop()!;
+  private panelTitle() {
+    return this.path.split("/").pop()! + " 🦉";
   }
 
-  public setupWebviewContent(context: vscode.ExtensionContext) {
-    const webviewIndexPath = vscode.Uri.file(__path.join(context.extensionPath, "dist", "webview", "index.js")).with({
-      scheme: "vscode-resource"
-    });
+  private getWebviewIndexJsPath() {
+    return this.router.getRelativePathTo("dist/webview/index.js").toString();
+  }
 
+  public setupWebviewContent() {
     this.panel!.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -110,8 +119,8 @@ export class KogitoEditor {
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
             </head>
             <body>
-            <div id="app"></div>
-            <script src="${webviewIndexPath.toString()}"></script>
+            <div id="microeditor-envelope-container"></div>
+            <script src="${this.getWebviewIndexJsPath()}"></script>
             </body>
         </html>
     `;

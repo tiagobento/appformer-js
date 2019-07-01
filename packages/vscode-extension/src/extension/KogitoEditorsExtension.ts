@@ -65,17 +65,17 @@ export class KogitoEditorsExtension {
   }
 
   private newKogitoEditor(path: string) {
-    const kogitoEditor = new KogitoEditor(path);
+    const kogitoEditor = new KogitoEditor(path, this.context);
     kogitoEditor.open();
-    kogitoEditor.setupMessageBus(this.context);
-    kogitoEditor.setupPanelViewStateChanged(this.context, isPanelActive => {
-      if (isPanelActive) {
+    kogitoEditor.setupMessageBus();
+    kogitoEditor.setupPanelViewStateChanged(panelBecameActive => {
+      if (panelBecameActive) {
         this.activeKogitoEditor = kogitoEditor;
       } else if (this.activeKogitoEditor && this.activeKogitoEditor.path === kogitoEditor.path) {
         this.activeKogitoEditor = undefined;
       }
     });
-    kogitoEditor.setupWebviewContent(this.context);
+    kogitoEditor.setupWebviewContent();
     return kogitoEditor;
   }
 

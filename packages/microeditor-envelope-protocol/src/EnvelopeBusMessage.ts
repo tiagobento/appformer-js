@@ -1,4 +1,6 @@
+import { EnvelopeBusMessageType } from "./EnvelopeBusMessageType";
+
 export interface EnvelopeBusMessage<T> {
-    type: string;
-    data: T;
+  type: EnvelopeBusMessageType;
+  data: T;
 }

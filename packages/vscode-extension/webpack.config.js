@@ -16,6 +16,7 @@
 
 const path = require("path");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const commonConfig = {
   mode: "development",
@@ -61,6 +62,7 @@ const commonConfig = {
 module.exports = [
   {
     ...commonConfig,
+    mode: "production",
     target: "node",
     entry: {
       "extension/extension": "./src/extension/extension.ts"
@@ -70,11 +72,13 @@ module.exports = [
   },
   {
     ...commonConfig,
+    mode: "production",
     target: "web",
     entry: {
       "webview/index": "./src/webview/index.ts"
     },
     plugins: [
+        new CopyWebpackPlugin([{from: "src/resources/dmn", to: "webview/editors/dmn"}])
     ]
   }
 ];

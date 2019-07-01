@@ -1,5 +1,6 @@
 import { LanguageData } from "appformer-js-microeditor-router";
 import { EnvelopeBusMessage } from "./EnvelopeBusMessage";
+import { EnvelopeBusMessageType } from "./EnvelopeBusMessageType";
 
 export interface EnvelopeBusConsumerImpl {
   send(msg: EnvelopeBusMessage<any>): void;
@@ -34,34 +35,34 @@ export class EnvelopeBusConsumer {
   }
 
   public respond_languageRequest(languageData?: LanguageData) {
-    this.impl.send({ type: "RETURN_LANGUAGE", data: languageData });
+    this.impl.send({ type: EnvelopeBusMessageType.RETURN_LANGUAGE, data: languageData });
   }
 
   public respond_setContentRequest(content: string) {
-    this.impl.send({ type: "RETURN_SET_CONTENT", data: content });
+    this.impl.send({ type: EnvelopeBusMessageType.RETURN_SET_CONTENT, data: content });
   }
 
   public request_getContentResponse() {
-    this.impl.send({ type: "REQUEST_GET_CONTENT", data: undefined });
+    this.impl.send({ type: EnvelopeBusMessageType.REQUEST_GET_CONTENT, data: undefined });
   }
 
   public request_initResponse(origin: string) {
-    this.impl.send({ type: "REQUEST_INIT", data: origin });
+    this.impl.send({ type: EnvelopeBusMessageType.REQUEST_INIT, data: origin });
   }
 
   public receive(message: EnvelopeBusMessage<any>) {
     this.receive_initResponse();
     switch (message.type) {
-      case "RETURN_INIT":
+      case EnvelopeBusMessageType.RETURN_INIT:
         this.receive_initResponse();
         break;
-      case "REQUEST_LANGUAGE":
+      case EnvelopeBusMessageType.REQUEST_LANGUAGE:
         this.impl.receive_languageRequest();
         break;
-      case "RETURN_GET_CONTENT":
+      case EnvelopeBusMessageType.RETURN_GET_CONTENT:
         this.impl.receive_getContentResponse(message.data as string);
         break;
-      case "REQUEST_SET_CONTENT":
+      case EnvelopeBusMessageType.REQUEST_SET_CONTENT:
         this.impl.receive_setContentRequest();
         break;
     }

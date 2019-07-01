@@ -18,14 +18,13 @@ import { EnvelopeBusMessage } from "appformer-js-microeditor-envelope-protocol";
 import { AppFormerKogitoEnvelope } from "./AppFormerKogitoEnvelope";
 import { BusinessCentralClientEditorFactory, GwtMicroEditor } from "./GwtMicroEditor";
 import { LanguageData, Resource } from "appformer-js-microeditor-router";
-
+import { EnvelopeBusMessageType } from "appformer-js-microeditor-envelope-protocol";
 
 declare global {
   export interface AppFormer {
     KogitoEnvelope: AppFormerKogitoEnvelope;
   }
 }
-
 
 //Exposed API of AppFormerGwt
 declare global {
@@ -81,17 +80,17 @@ function messageHandler(appFormer: AppFormerKogitoEnvelope, event: { data: Envel
   const editor = appFormer.getEditor();
 
   switch (message.type) {
-    case "REQUEST_INIT":
+    case EnvelopeBusMessageType.REQUEST_INIT:
       if (!initializing) {
         initializing = true;
         const targetOrigin = message.data as string;
         appFormer.setTargetOrigin(targetOrigin);
-        return appFormer.postMessage({ type: "RETURN_INIT", data: undefined }).then(() => {
-          return appFormer.postMessage({ type: "REQUEST_LANGUAGE", data: undefined });
+        return appFormer.postMessage({ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined }).then(() => {
+          return appFormer.postMessage({ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined });
         });
       }
       return Promise.resolve();
-    case "RETURN_LANGUAGE":
+    case EnvelopeBusMessageType.RETURN_LANGUAGE:
       const languageData = message.data as LanguageData;
       window.erraiBusApplicationRoot = languageData.erraiDomain; //needed only for backend communication
 
@@ -99,7 +98,7 @@ function messageHandler(appFormer: AppFormerKogitoEnvelope, event: { data: Envel
         Promise.resolve()
           .then(() => removeBusinessCentralHeaderPanel())
           .then(() => appFormer.registerEditor(() => new GwtMicroEditor(languageData.editorId)))
-          .then(() => appFormer.postMessage({ type: "REQUEST_SET_CONTENT", data: undefined }))
+          .then(() => appFormer.postMessage({ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined }))
           .then(() => removeBusinessCentralPanelHeader());
       };
 
@@ -108,18 +107,20 @@ function messageHandler(appFormer: AppFormerKogitoEnvelope, event: { data: Envel
       });
 
       return Promise.resolve();
-    case "RETURN_SET_CONTENT":
+    case EnvelopeBusMessageType.RETURN_SET_CONTENT:
       if (!editor) {
         console.info(`Message was received when no editor was registered: "${message.type}"`);
         return Promise.resolve();
       }
       return editor.setContent(message.data);
-    case "REQUEST_GET_CONTENT":
+    case EnvelopeBusMessageType.REQUEST_GET_CONTENT:
       if (!editor) {
         console.info(`Message was received when no editor was registered: "${message.type}"`);
         return Promise.resolve();
       }
-      return editor.getContent().then(content => appFormer.postMessage({ type: "RETURN_GET_CONTENT", data: content }));
+      return editor
+        .getContent()
+        .then(content => appFormer.postMessage({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: content }));
     default:
       console.info(`Unknown message type received: ${message.type}"`);
       return Promise.resolve();

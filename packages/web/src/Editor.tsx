@@ -34,11 +34,12 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   }
 
   let iframe: HTMLIFrameElement;
+  let envelopeBusConsumer: EnvelopeBusConsumer;
   const iframeDomain = services.microeditor_envelope;
   const iframeSrc = services.microeditor_envelope;
 
   useEffect(() => {
-    const envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+    envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
       send: msg => {
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage(msg, iframeDomain);
@@ -83,7 +84,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   };
 
   const save = () => {
-    iframe.contentWindow!.postMessage({ type: "REQUEST_GET_CONTENT", data: undefined }, iframeDomain);
+    envelopeBusConsumer.request_getContentResponse();
   };
 
   return (

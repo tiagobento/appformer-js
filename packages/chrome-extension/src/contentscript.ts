@@ -35,11 +35,6 @@ function insertAfterGitHubEditor(...elements: HTMLElement[]) {
   });
 }
 
-function requestGetContent(embeddedEditorIframe: HTMLIFrameElement, iframeDomain: string) {
-  const requestGetContentMessage = { type: "REQUEST_GET_CONTENT", data: undefined };
-  embeddedEditorIframe.contentWindow!.postMessage(requestGetContentMessage, iframeDomain);
-}
-
 function insertActionButtons(pageHeadActions: Element) {
   const kiegroupDropdown = document.createElement("li");
   kiegroupDropdown.style.cssText = "position:relative;";
@@ -230,7 +225,7 @@ function initContentScript() {
       envelopeBusConsumer.init();
       insertAfterGitHubEditor(embeddedEditorIframe);
       embeddedEditorIframe.style.cssText = originalCss;
-      requestGetContent(embeddedEditorIframe, iframeDomain);
+      envelopeBusConsumer.request_getContentResponse();
       buttonsDiv.remove();
     };
 
@@ -250,7 +245,7 @@ function initContentScript() {
   setInterval(
     () => {
       enableCommitButton();
-      requestGetContent(embeddedEditorIframe, iframeDomain);
+      envelopeBusConsumer.request_getContentResponse();
     },
     1000,
     3000

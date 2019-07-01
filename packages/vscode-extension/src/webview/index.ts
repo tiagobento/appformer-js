@@ -1,3 +1,4 @@
 import * as MicroEditorEnvelope from "appformer-js-microeditor-envelope";
 
-MicroEditorEnvelope.init(document.getElementById("app")!);
+(window as any).erraiBusRemoteCommunicationEnabled = false;
+MicroEditorEnvelope.init(document.getElementById("microeditor-envelope-container")!);

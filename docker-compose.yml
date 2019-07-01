@@ -19,7 +19,7 @@ services:
     volumes: 
       - .:/usr/local/app
   dmn-microeditor:
-    build: ./packages/vscode-extension/dmn-war
+    build: wars/dmn
     ports:
       - "9003:8080"
   functions:
@@ -30,7 +30,7 @@ services:
       - ./functions/init-repo-kie:/usr/local/app/packages/functions/init-repo-kie
       - ~/.m2:/root/.m2
   bpmn-microeditor:
-    build: ./packages/vscode-extension/bpmn-war
+    build: wars/bpmn
     ports:
       - "9005:8080"
   db:
