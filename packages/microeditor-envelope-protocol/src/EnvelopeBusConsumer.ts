@@ -51,7 +51,6 @@ export class EnvelopeBusConsumer {
   }
 
   public receive(message: EnvelopeBusMessage<any>) {
-    this.receive_initResponse();
     switch (message.type) {
       case EnvelopeBusMessageType.RETURN_INIT:
         this.receive_initResponse();
@@ -65,6 +64,9 @@ export class EnvelopeBusConsumer {
       case EnvelopeBusMessageType.REQUEST_SET_CONTENT:
         this.impl.receive_setContentRequest();
         break;
+      default:
+        console.info(`Unknown message type received: ${message.type}"`);
+        return Promise.resolve();
     }
   }
 }

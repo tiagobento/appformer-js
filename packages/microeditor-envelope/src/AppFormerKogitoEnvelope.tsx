@@ -2,33 +2,25 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
 import { Envelope } from "./app/Envelope";
-import {EnvelopeBusMessage} from "appformer-js-microeditor-envelope-protocol";
-
-//Exposed API of Visual Studio Code
-declare global {
-  export const acquireVsCodeApi: () => AppFormerKogitoEnvelopeBusApi;
-}
+import { EnvelopeBusProducer } from "./EnvelopeBusProducer";
+import { Resource } from "appformer-js-microeditor-router";
 
 export class AppFormerKogitoEnvelope {
   private envelope?: Envelope;
-  private busApi: AppFormerKogitoEnvelopeBusApi;
-  private targetOrigin: string;
+  public readonly envelopeBusProducer: EnvelopeBusProducer;
 
   constructor() {
-    this.busApi = this.initAppFormerKogitoEnvelopeBusApi();
+    this.envelopeBusProducer = new EnvelopeBusProducer(this);
   }
 
-  public handleMessages(
-    handler: (appFormer: AppFormerKogitoEnvelope, event: { data: EnvelopeBusMessage<any> }) => Promise<void>
-  ) {
-    window.addEventListener("message", event => handler(this, event));
-    return Promise.resolve();
+  public startListeningOnMessageBus() {
+    this.envelopeBusProducer.startListening();
   }
 
-  public registerEditor(editorFactory: () => AppFormer.Editor) {
+  public registerEditor(editorDelegate: () => AppFormer.Editor) {
     //TODO: No-op when same Editor class?
 
-    const editor = editorFactory.apply(this);
+    const editor = editorDelegate.apply(this);
     const previousEditor = this.getEditor();
 
     if (previousEditor) {
@@ -54,35 +46,24 @@ export class AppFormerKogitoEnvelope {
     return this.envelope!.getEditor();
   }
 
-  private initAppFormerKogitoEnvelopeBusApi() {
-    const noAppFormerKogitoEnvelopeBusApi = {
-      postMessage: <T extends {}>(message: EnvelopeBusMessage<T>) => {
-        console.info(`MOCK: Sent message:`);
-        console.info(message);
+  public loadResource(resource: Resource) {
+    resource.paths.forEach(path => {
+      switch (resource.type) {
+        case "css":
+          const link = document.createElement("link");
+          link.href = path;
+          link.rel = "text/css";
+          document.body.appendChild(link);
+          break;
+        case "js":
+          const script = document.createElement("script");
+          script.src = path;
+          script.type = "text/javascript";
+          document.body.appendChild(script);
+          break;
+        default:
       }
-    };
-
-    try {
-      if (acquireVsCodeApi) {
-        return acquireVsCodeApi();
-      } else {
-        return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerKogitoEnvelopeBusApi;
-      }
-    } catch (e) {
-      return (window.parent as AppFormerKogitoEnvelopeBusApi) || noAppFormerKogitoEnvelopeBusApi;
-    }
-  }
-
-  public postMessage<T>(message: EnvelopeBusMessage<T>) {
-    if (!this.targetOrigin) {
-      throw new Error("Tried to send message without targetOrigin set");
-    }
-    this.busApi.postMessage(message, this.targetOrigin);
-    return Promise.resolve();
-  }
-
-  public setTargetOrigin(targetOrigin: string) {
-    this.targetOrigin = targetOrigin;
+    });
   }
 
   public static init(container: HTMLElement): Promise<AppFormerKogitoEnvelope> {
@@ -90,11 +71,11 @@ export class AppFormerKogitoEnvelope {
       const kogitoEnvelope = new AppFormerKogitoEnvelope();
       return new Promise(res =>
         ReactDOM.render(<Envelope exposing={self => (kogitoEnvelope.envelope = self)} />, container, res)
-      ).then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
+      )
+        .then(() => {
+          kogitoEnvelope.startListeningOnMessageBus();
+        })
+        .then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
     });
   }
-}
-
-interface AppFormerKogitoEnvelopeBusApi {
-  postMessage<T>(message: EnvelopeBusMessage<T>, targetOrigin?: any, fdfd?: any): any;
 }

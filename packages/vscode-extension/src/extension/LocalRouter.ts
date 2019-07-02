@@ -9,57 +9,57 @@ const bpmnDistPath = `dist/webview/editors/bpmn/`;
 
 export class LocalRouter {
   private readonly context: vscode.ExtensionContext;
-
-  private readonly languageDataByFileExtension = new Map<string, LanguageData>([
-    [
-      "dmn",
-      {
-        editorId: "DMNDiagramEditor",
-        gwtModuleName: dmnGwtModuleName,
-        erraiDomain: "",
-        resources: [
-          {
-            type: "css",
-            paths: [this.getRelativePathTo(`${dmnDistPath}${dmnGwtModuleName}/css/patternfly.min.css`)]
-          },
-          {
-            type: "js",
-            paths: [
-              this.getRelativePathTo(`${dmnDistPath}/${dmnGwtModuleName}/ace/ace.js`),
-              this.getRelativePathTo(`${dmnDistPath}/${dmnGwtModuleName}/ace/theme-chrome.js`),
-              this.getRelativePathTo(`${dmnDistPath}/${dmnGwtModuleName}/${dmnGwtModuleName}.nocache.js`)
-            ]
-          }
-        ]
-      }
-    ],
-    [
-      //FIXME: BPMN doesn't have a client-side only editor yet.
-      "bpmn",
-      {
-        editorId: "BPMNStandaloneDiagramEditor",
-        gwtModuleName: bpmnGwtModuleName,
-        erraiDomain: "",
-        resources: [
-          {
-            type: "css",
-            paths: [this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/css/patternfly.min.css`)]
-          },
-          {
-            type: "js",
-            paths: [
-              this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/ace/ace.js`),
-              this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/ace/theme-chrome.js`),
-              this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/${bpmnGwtModuleName}.nocache.js`)
-            ]
-          }
-        ]
-      }
-    ]
-  ]);
+  private readonly languageDataByFileExtension: Map<string, LanguageData>;
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
+    this.languageDataByFileExtension = new Map<string, LanguageData>([
+      [
+        "dmn",
+        {
+          editorId: "DMNDiagramEditor",
+          gwtModuleName: dmnGwtModuleName,
+          erraiDomain: "",
+          resources: [
+            {
+              type: "css",
+              paths: [this.getRelativePathTo(`${dmnDistPath}${dmnGwtModuleName}/css/patternfly.min.css`)]
+            },
+            {
+              type: "js",
+              paths: [
+                this.getRelativePathTo(`${dmnDistPath}/${dmnGwtModuleName}/ace/ace.js`),
+                this.getRelativePathTo(`${dmnDistPath}/${dmnGwtModuleName}/ace/theme-chrome.js`),
+                this.getRelativePathTo(`${dmnDistPath}/${dmnGwtModuleName}/${dmnGwtModuleName}.nocache.js`)
+              ]
+            }
+          ]
+        }
+      ],
+      [
+        //FIXME: BPMN doesn't have a client-side only editor yet.
+        "bpmn",
+        {
+          editorId: "BPMNStandaloneDiagramEditor",
+          gwtModuleName: bpmnGwtModuleName,
+          erraiDomain: "",
+          resources: [
+            {
+              type: "css",
+              paths: [this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/css/patternfly.min.css`)]
+            },
+            {
+              type: "js",
+              paths: [
+                this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/ace/ace.js`),
+                this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/ace/theme-chrome.js`),
+                this.getRelativePathTo(`${bpmnDistPath}/${bpmnGwtModuleName}/${bpmnGwtModuleName}.nocache.js`)
+              ]
+            }
+          ]
+        }
+      ]
+    ]);
   }
 
   public getRelativePathTo(uri: string): string {

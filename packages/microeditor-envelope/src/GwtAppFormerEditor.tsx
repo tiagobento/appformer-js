@@ -27,7 +27,7 @@ export interface BusinessCentralClientEditor {
   isDirty(): boolean;
 }
 
-export class GwtMicroEditor extends AppFormer.Editor {
+export class GwtAppFormerEditor extends AppFormer.Editor {
 
   public af_componentTitle: string;
 
@@ -38,6 +38,12 @@ export class GwtMicroEditor extends AppFormer.Editor {
     this.af_componentTitle = "GwtMicroEditor";
     this.af_isReact = true;
     this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.get();
+  }
+
+
+  public af_onOpen(): void {
+    this.removeBusinessCentralHeaderPanel();
+    this.removeBusinessCentralPanelHeader();
   }
 
   public af_componentRoot(): AppFormer.Element {
@@ -56,5 +62,24 @@ export class GwtMicroEditor extends AppFormer.Editor {
   public setContent(content: string): Promise<void> {
     this.businessCentralClientEditor.setContent(content.trim());
     return Promise.resolve();
+  }
+
+  private removeBusinessCentralHeaderPanel() {
+    const headerPanel = document.getElementById("workbenchHeaderPanel");
+    if (headerPanel) {
+      const parentNode = headerPanel.parentNode as HTMLElement;
+      if (parentNode) {
+        parentNode.remove();
+      }
+    }
+  }
+
+  private removeBusinessCentralPanelHeader() {
+    setTimeout(() => {
+      const panelHeader = document.querySelector(".panel-heading.uf-listbar-panel-header");
+      if (panelHeader) {
+        panelHeader.remove();
+      }
+    }, 1000);
   }
 }

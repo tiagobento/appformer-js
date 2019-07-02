@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as AppFormer from "appformer-js-core";
-import { Main } from "./Main";
+import { EditorContainer } from "./EditorContainer";
 
 interface Props {
   exposing: (self: Envelope) => void;
@@ -29,7 +29,7 @@ function Title(props: { text: string }) {
 }
 
 export class Envelope extends React.Component<Props, State> {
-  private static readonly defaultTitle = "AppFormer.js - QuickSilver";
+  private static readonly defaultTitle = "AppFormer :: Kogito Envelope :: Editor";
 
   constructor(props: Props) {
     super(props);
@@ -52,7 +52,7 @@ export class Envelope extends React.Component<Props, State> {
             }}
           >
             <Title text={this.state.title} />
-            <Main editor={this.state.editor} />
+            <EditorContainer editor={this.state.editor} />
           </AppContext.Provider>
         </div>
       </>
