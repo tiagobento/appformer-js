@@ -23,7 +23,11 @@ export class EnvelopeBusInnerMessageHandler {
     this.envelopeBusApi = this.initEnvelopeBusApi();
   }
 
-  //respond
+  public startListening() {
+    window.addEventListener("message", event => this.receive(event.data));
+  }
+
+  // send
   private respond_initRequest() {
     return this.send({ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined });
   }
@@ -32,7 +36,6 @@ export class EnvelopeBusInnerMessageHandler {
     return this.send({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: content });
   }
 
-  //request
   private request_languageResponse() {
     return this.send({ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined });
   }
@@ -67,8 +70,8 @@ export class EnvelopeBusInnerMessageHandler {
     window.erraiBusApplicationRoot = languageData.erraiDomain; //needed only for backend communication
 
     window.appFormerGwtFinishedLoading = () => {
-      this.kogitoEnvelope
-        .registerEditor(() => new GwtAppFormerEditor(languageData.editorId))
+      return Promise.resolve()
+        .then(() => this.kogitoEnvelope.registerEditor(() => new GwtAppFormerEditor(languageData.editorId)))
         .then(() => this.request_setContentResponse());
     };
 
@@ -89,18 +92,14 @@ export class EnvelopeBusInnerMessageHandler {
 
   //
 
-  public send<T>(message: EnvelopeBusMessage<T>) {
+  private send<T>(message: EnvelopeBusMessage<T>) {
     if (!this.targetOrigin) {
       throw new Error("Tried to send message without targetOrigin set");
     }
     this.envelopeBusApi.postMessage(message, this.targetOrigin);
   }
 
-  //
-
-  public receive(event: { data: EnvelopeBusMessage<any> }) {
-    const message = event.data;
-
+  private receive(message: EnvelopeBusMessage<any>) {
     switch (message.type) {
       case EnvelopeBusMessageType.REQUEST_INIT:
         this.receive_initRequest(message.data as string);
@@ -121,25 +120,34 @@ export class EnvelopeBusInnerMessageHandler {
   }
 
   private initEnvelopeBusApi() {
-    const noAppFormerKogitoEnvelopeBusApi = {
-      postMessage: <T extends {}>(message: EnvelopeBusMessage<T>) => {
-        console.info(`MOCK: Sent message:`);
-        console.info(message);
-      }
-    };
-
     try {
-      if (acquireVsCodeApi) {
-        return acquireVsCodeApi();
-      } else {
-        return (window.parent as EnvelopeBusApi) || noAppFormerKogitoEnvelopeBusApi;
-      }
+      return this.obtainEnvelopeBusApi();
     } catch (e) {
-      return (window.parent as EnvelopeBusApi) || noAppFormerKogitoEnvelopeBusApi;
+      console.error("Error while obtaining EnvelopeBus API.");
+      console.error(e);
+      return this.noOpEnvelopeBusApi();
     }
   }
 
-  public startListening() {
-    window.addEventListener("message", event => this.receive(event));
+  private obtainEnvelopeBusApi() {
+    if (acquireVsCodeApi) {
+      return acquireVsCodeApi();
+    }
+
+    if (window.parent) {
+      return window.parent as EnvelopeBusApi;
+    }
+
+    console.info("No EnvelopeBus API available. Fallback is a no-op implementation.");
+    return this.noOpEnvelopeBusApi();
+  }
+
+  private noOpEnvelopeBusApi() {
+    return {
+      postMessage: (message: EnvelopeBusMessage<any>) => {
+        console.info(`[no-op EnvelopeBus API] Sending message:`);
+        console.info(message);
+      }
+    };
   }
 }
