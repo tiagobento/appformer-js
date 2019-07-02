@@ -1,5 +1,5 @@
 import { router, services } from "appformer-js-microeditor-router";
-import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
+import { EnvelopeBusOuterMessageHandler } from "appformer-js-microeditor-envelope-protocol";
 
 declare global {
   export const CodeMirror: any;
@@ -166,7 +166,7 @@ function initContentScript() {
   const iframeSrc = services.microeditor_envelope;
   const embeddedEditorIframe = document.createElement("iframe");
 
-  const envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+  const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
     send: msg => {
       if (embeddedEditorIframe && embeddedEditorIframe.contentWindow) {
         embeddedEditorIframe.contentWindow.postMessage(msg, iframeDomain);
@@ -188,8 +188,8 @@ function initContentScript() {
     }
   }));
 
-  envelopeBusConsumer.init();
-  window.addEventListener("message", msg => envelopeBusConsumer.receive(msg.data), false);
+  envelopeBusOuterMessageHandler.init();
+  window.addEventListener("message", msg => envelopeBusOuterMessageHandler.receive(msg.data), false);
 
   //hide GitHub editor
   githubEditor.style.display = "none";
@@ -208,7 +208,7 @@ function initContentScript() {
   fullScreenButton.onclick = e => {
     e.preventDefault();
     document.body.appendChild(embeddedEditorIframe);
-    envelopeBusConsumer.init();
+    envelopeBusOuterMessageHandler.init();
     const originalCss = embeddedEditorIframe.style.cssText;
     embeddedEditorIframe.style.cssText =
       "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
@@ -222,10 +222,10 @@ function initContentScript() {
       "padding-bottom: 5px; cursor: pointer; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
     buttonsDiv.onclick = evt => {
       evt.preventDefault();
-      envelopeBusConsumer.init();
+      envelopeBusOuterMessageHandler.init();
       insertAfterGitHubEditor(embeddedEditorIframe);
       embeddedEditorIframe.style.cssText = originalCss;
-      envelopeBusConsumer.request_getContentResponse();
+      envelopeBusOuterMessageHandler.request_getContentResponse();
       buttonsDiv.remove();
     };
 
@@ -245,7 +245,7 @@ function initContentScript() {
   setInterval(
     () => {
       enableCommitButton();
-      envelopeBusConsumer.request_getContentResponse();
+      envelopeBusOuterMessageHandler.request_getContentResponse();
     },
     1000,
     3000

@@ -21,7 +21,7 @@ import { router, services } from "appformer-js-microeditor-router";
 import { Breadcrumb, BreadcrumbItem, Button, PageSection, PageSectionVariants } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { routes } from "./Routes";
-import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
+import { EnvelopeBusOuterMessageHandler } from "appformer-js-microeditor-envelope-protocol";
 import { getFileContentService, setFileContentService } from "./service/Service";
 
 export function Editor(props: { match: match<{ space: string; project: string; filePath: string }> }) {
@@ -34,12 +34,12 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   }
 
   let iframe: HTMLIFrameElement;
-  let envelopeBusConsumer: EnvelopeBusConsumer;
+  let envelopeBusOuterMessageHandler: EnvelopeBusOuterMessageHandler;
   const iframeDomain = services.microeditor_envelope;
   const iframeSrc = services.microeditor_envelope;
 
   useEffect(() => {
-    envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+    envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
       send: msg => {
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage(msg, iframeDomain);
@@ -63,10 +63,10 @@ export function Editor(props: { match: match<{ space: string; project: string; f
       }
     }));
 
-    envelopeBusConsumer.init();
+    envelopeBusOuterMessageHandler.init();
 
     const handle = (msg: any) => {
-      return envelopeBusConsumer.receive(msg.data);
+      return envelopeBusOuterMessageHandler.receive(msg.data);
     };
 
     window.addEventListener("message", handle, false);
@@ -84,7 +84,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   };
 
   const save = () => {
-    envelopeBusConsumer.request_getContentResponse();
+    envelopeBusOuterMessageHandler.request_getContentResponse();
   };
 
   return (

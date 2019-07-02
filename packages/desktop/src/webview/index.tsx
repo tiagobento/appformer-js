@@ -49,7 +49,7 @@ import { File } from "../shared/Protocol";
 import { router, services } from "appformer-js-microeditor-router";
 import { PatternFlyPopup } from "./PatternFlyPopup";
 import { Pf4Label } from "./Pf4Label";
-import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
+import { EnvelopeBusOuterMessageHandler } from "appformer-js-microeditor-envelope-protocol";
 
 const ipc = electron.ipcRenderer;
 
@@ -260,7 +260,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   }
 
   useEffect(() => {
-    const envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+    const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
       send: msg => {
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage(msg, iframeDomain);
@@ -280,13 +280,13 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
       }
     }));
 
-    envelopeBusConsumer.init();
+    envelopeBusOuterMessageHandler.init();
 
-    ipc.on("returnContent", (event: any, content: string) => envelopeBusConsumer.respond_setContentRequest(content));
-    ipc.on("requestSave", () => envelopeBusConsumer.request_getContentResponse());
+    ipc.on("returnContent", (event: any, content: string) => envelopeBusOuterMessageHandler.respond_setContentRequest(content));
+    ipc.on("requestSave", () => envelopeBusOuterMessageHandler.request_getContentResponse());
 
     const handler = (msg: any) => {
-      envelopeBusConsumer.receive(msg.data);
+      envelopeBusOuterMessageHandler.receive(msg.data);
     };
 
     window.addEventListener("message", handler, false);
@@ -295,7 +295,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
       ipc.removeAllListeners("returnContent");
       ipc.removeAllListeners("requestSave");
       window.removeEventListener("message", handler, false);
-      envelopeBusConsumer.receive_initResponse();
+      envelopeBusOuterMessageHandler.receive_initResponse();
     };
   }, []);
 

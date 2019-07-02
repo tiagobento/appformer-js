@@ -2,7 +2,7 @@ import { LanguageData } from "appformer-js-microeditor-router";
 import { EnvelopeBusMessage } from "./EnvelopeBusMessage";
 import { EnvelopeBusMessageType } from "./EnvelopeBusMessageType";
 
-export interface EnvelopeBusConsumerImpl {
+export interface EnvelopeBusOuterMessageHandlerImpl {
   send(msg: EnvelopeBusMessage<any>): void;
   pollInit(): void;
   receive_languageRequest(): void;
@@ -10,14 +10,14 @@ export interface EnvelopeBusConsumerImpl {
   receive_getContentResponse(content: string): void;
 }
 
-export class EnvelopeBusConsumer {
+export class EnvelopeBusOuterMessageHandler {
   private static INIT_POLLING_TIMEOUT_IN_MS = 10000;
 
   private initPolling?: any;
   private initPollingTimeout?: any;
-  private impl: EnvelopeBusConsumerImpl;
+  private impl: EnvelopeBusOuterMessageHandlerImpl;
 
-  public constructor(impl: (self: EnvelopeBusConsumer) => EnvelopeBusConsumerImpl) {
+  public constructor(impl: (self: EnvelopeBusOuterMessageHandler) => EnvelopeBusOuterMessageHandlerImpl) {
     this.impl = impl(this);
   }
 
@@ -26,7 +26,7 @@ export class EnvelopeBusConsumer {
     this.initPollingTimeout = setTimeout(() => {
       clearTimeout(this.initPolling);
       console.info("Init polling timed out. Looks like the microeditor-envelope is not responding accordingly.");
-    }, EnvelopeBusConsumer.INIT_POLLING_TIMEOUT_IN_MS);
+    }, EnvelopeBusOuterMessageHandler.INIT_POLLING_TIMEOUT_IN_MS);
   }
 
   public receive_initResponse() {

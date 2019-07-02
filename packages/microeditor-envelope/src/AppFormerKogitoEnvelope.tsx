@@ -2,19 +2,19 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
 import { Envelope } from "./app/Envelope";
-import { EnvelopeBusProducer } from "./EnvelopeBusProducer";
+import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 import { Resource } from "appformer-js-microeditor-router";
 
 export class AppFormerKogitoEnvelope {
   private envelope?: Envelope;
-  public readonly envelopeBusProducer: EnvelopeBusProducer;
+  public readonly EnvelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
 
   constructor() {
-    this.envelopeBusProducer = new EnvelopeBusProducer(this);
+    this.EnvelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(this);
   }
 
   public startListeningOnMessageBus() {
-    this.envelopeBusProducer.startListening();
+    this.EnvelopeBusInnerMessageHandler.startListening();
   }
 
   public registerEditor(editorDelegate: () => AppFormer.Editor) {

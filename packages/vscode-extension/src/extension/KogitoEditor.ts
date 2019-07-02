@@ -17,20 +17,20 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { LocalRouter } from "./LocalRouter";
-import { EnvelopeBusConsumer } from "appformer-js-microeditor-envelope-protocol";
+import { EnvelopeBusOuterMessageHandler } from "appformer-js-microeditor-envelope-protocol";
 
 export class KogitoEditor {
   public readonly path: string;
   public readonly context: vscode.ExtensionContext;
   public readonly router: LocalRouter;
-  public readonly envelopeBusConsumer: EnvelopeBusConsumer;
+  public readonly envelopeBusOuterMessageHandler: EnvelopeBusOuterMessageHandler;
   public panel?: vscode.WebviewPanel;
 
   public constructor(path: string, context: vscode.ExtensionContext) {
     this.path = path;
     this.context = context;
     this.router = new LocalRouter(context);
-    this.envelopeBusConsumer = new EnvelopeBusConsumer(_this => ({
+    this.envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
       send: msg => {
         if (this.panel) {
           this.panel.webview.postMessage(msg);
@@ -65,10 +65,10 @@ export class KogitoEditor {
   }
 
   public setupMessageBus() {
-    this.envelopeBusConsumer.init();
+    this.envelopeBusOuterMessageHandler.init();
     this.context.subscriptions.push(
       this.panel!.webview.onDidReceiveMessage(
-        msg => this.envelopeBusConsumer.receive(msg),
+        msg => this.envelopeBusOuterMessageHandler.receive(msg),
         this,
         this.context.subscriptions
       )
@@ -85,7 +85,7 @@ export class KogitoEditor {
 
   public requestSave() {
     if (this.path.length > 0) {
-      this.envelopeBusConsumer.request_getContentResponse();
+      this.envelopeBusOuterMessageHandler.request_getContentResponse();
     } else {
       console.info("Save skipped because path is empty.");
     }
