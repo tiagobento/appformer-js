@@ -75,18 +75,18 @@ function loadResource(resource: Resource) {
 
 let initializing = false;
 
-function messageHandler(appFormer: AppFormerKogitoEnvelope, event: { data: EnvelopeBusMessage<any> }) {
+function messageHandler(kogitoEnvelope: AppFormerKogitoEnvelope, event: { data: EnvelopeBusMessage<any> }) {
   const message = event.data;
-  const editor = appFormer.getEditor();
+  const editor = kogitoEnvelope.getEditor();
 
   switch (message.type) {
     case EnvelopeBusMessageType.REQUEST_INIT:
       if (!initializing) {
         initializing = true;
         const targetOrigin = message.data as string;
-        appFormer.setTargetOrigin(targetOrigin);
-        return appFormer.postMessage({ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined }).then(() => {
-          return appFormer.postMessage({ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined });
+        kogitoEnvelope.setTargetOrigin(targetOrigin);
+        return kogitoEnvelope.postMessage({ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined }).then(() => {
+          return kogitoEnvelope.postMessage({ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined });
         });
       }
       return Promise.resolve();
@@ -97,8 +97,8 @@ function messageHandler(appFormer: AppFormerKogitoEnvelope, event: { data: Envel
       window.appFormerGwtFinishedLoading = () => {
         Promise.resolve()
           .then(() => removeBusinessCentralHeaderPanel())
-          .then(() => appFormer.registerEditor(() => new GwtMicroEditor(languageData.editorId)))
-          .then(() => appFormer.postMessage({ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined }))
+          .then(() => kogitoEnvelope.registerEditor(() => new GwtMicroEditor(languageData.editorId)))
+          .then(() => kogitoEnvelope.postMessage({ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined }))
           .then(() => removeBusinessCentralPanelHeader());
       };
 
@@ -120,7 +120,7 @@ function messageHandler(appFormer: AppFormerKogitoEnvelope, event: { data: Envel
       }
       return editor
         .getContent()
-        .then(content => appFormer.postMessage({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: content }));
+        .then(content => kogitoEnvelope.postMessage({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: content }));
     default:
       console.info(`Unknown message type received: ${message.type}"`);
       return Promise.resolve();

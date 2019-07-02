@@ -28,34 +28,6 @@ export abstract class Editor extends Component {
     super({ type: ComponentTypes.EDITOR, af_componentId: componentId });
   }
 
-  public af_onStartup(): void {
-    //
-  }
-
-  public af_onOpen(): void {
-    //
-  }
-
-  public af_onFocus(): void {
-    //
-  }
-
-  public af_onLostFocus(): void {
-    //
-  }
-
-  public af_onMayClose(): boolean {
-    return true;
-  }
-
-  public af_onClose(): void {
-    //
-  }
-
-  public af_onShutdown(): void {
-    //
-  }
-
   public abstract setContent(content: string): Promise<void>;
 
   public abstract getContent(): Promise<string>;
