@@ -12,6 +12,7 @@ export interface EnvelopeBusOuterMessageHandlerImpl {
 
 export class EnvelopeBusOuterMessageHandler {
   private static INIT_POLLING_TIMEOUT_IN_MS = 10000;
+  private static INIT_POLLING_INTERVAL_IN_MS = 10;
 
   private initPolling?: any;
   private initPollingTimeout?: any;
@@ -22,7 +23,11 @@ export class EnvelopeBusOuterMessageHandler {
   }
 
   public init() {
-    this.initPolling = setInterval(() => this.impl.pollInit(), 10);
+    this.initPolling = setInterval(
+      () => this.impl.pollInit(),
+      EnvelopeBusOuterMessageHandler.INIT_POLLING_INTERVAL_IN_MS
+    );
+
     this.initPollingTimeout = setTimeout(() => {
       clearTimeout(this.initPolling);
       console.info("Init polling timed out. Looks like the microeditor-envelope is not responding accordingly.");
