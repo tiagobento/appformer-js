@@ -6,6 +6,6 @@ declare global {
   }
 }
 
-//FIXME: move that to envelope consumer? channels should not know about existance of errai..
+//FIXME: move that to somewhere else? channels should not know about existence of errai..
 window.erraiBusRemoteCommunicationEnabled = false;
 MicroEditorEnvelope.init(document.getElementById("microeditor-envelope-container")!);
