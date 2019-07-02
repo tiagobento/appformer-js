@@ -44,21 +44,23 @@ export class EnvelopeBusInnerMessageHandler {
   //receive
   private receive_initRequest(targetOrigin: string) {
     if (this.initializing) {
-      return Promise.resolve();
+      return;
     }
 
     this.initializing = true;
     this.targetOrigin = targetOrigin;
-    return this.respond_initRequest().then(() => this.request_languageResponse());
+
+    this.respond_initRequest();
+    this.request_languageResponse();
   }
 
   private receive_setContentReturn(content: string) {
     const editor = this.kogitoEnvelope.getEditor();
     if (!editor) {
       console.info(`Message was received when no editor was registered: setContentReturn"`);
-      return Promise.resolve();
+      return;
     }
-    return editor.setContent(content);
+    editor.setContent(content);
   }
 
   private receive_languageResponse(languageData: LanguageData) {
@@ -73,18 +75,16 @@ export class EnvelopeBusInnerMessageHandler {
     languageData.resources.forEach(resource => {
       this.kogitoEnvelope.loadResource(resource);
     });
-
-    return Promise.resolve();
   }
 
   private receive_getContentRequest() {
     const editor = this.kogitoEnvelope.getEditor();
     if (!editor) {
       console.info(`Message was received when no editor was registered: "getContentRequest"`);
-      return Promise.resolve();
+      return;
     }
 
-    return editor.getContent().then(content => this.respond_getContentRequest(content));
+    editor.getContent().then(content => this.respond_getContentRequest(content));
   }
 
   //
@@ -94,31 +94,33 @@ export class EnvelopeBusInnerMessageHandler {
       throw new Error("Tried to send message without targetOrigin set");
     }
     this.envelopeBusApi.postMessage(message, this.targetOrigin);
-    return Promise.resolve();
   }
 
   //
 
-  public receive(event: { data: EnvelopeBusMessage<any> }): Promise<void> {
+  public receive(event: { data: EnvelopeBusMessage<any> }) {
     const message = event.data;
 
     switch (message.type) {
       case EnvelopeBusMessageType.REQUEST_INIT:
-        return this.receive_initRequest(message.data as string);
+        this.receive_initRequest(message.data as string);
+        break;
       case EnvelopeBusMessageType.RETURN_LANGUAGE:
-        return this.receive_languageResponse(message.data as LanguageData);
+        this.receive_languageResponse(message.data as LanguageData);
+        break;
       case EnvelopeBusMessageType.RETURN_SET_CONTENT:
-        return this.receive_setContentReturn(message.data as string);
+        this.receive_setContentReturn(message.data as string);
+        break;
       case EnvelopeBusMessageType.REQUEST_GET_CONTENT:
-        return this.receive_getContentRequest();
+        this.receive_getContentRequest();
+        break;
       default:
         console.info(`Unknown message type received: ${message.type}"`);
-        return Promise.resolve();
+        break;
     }
   }
 
   private initEnvelopeBusApi() {
-
     const noAppFormerKogitoEnvelopeBusApi = {
       postMessage: <T extends {}>(message: EnvelopeBusMessage<T>) => {
         console.info(`MOCK: Sent message:`);
