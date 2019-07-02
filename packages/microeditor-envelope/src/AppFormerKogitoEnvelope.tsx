@@ -61,21 +61,21 @@ export class AppFormerKogitoEnvelope {
           script.type = "text/javascript";
           document.body.appendChild(script);
           break;
-        default:
       }
     });
   }
 
   public static init(container: HTMLElement): Promise<AppFormerKogitoEnvelope> {
-    return Promise.resolve().then(() => {
-      const kogitoEnvelope = new AppFormerKogitoEnvelope();
-      return new Promise(res =>
-        ReactDOM.render(<Envelope exposing={self => (kogitoEnvelope.envelope = self)} />, container, res)
-      )
-        .then(() => {
-          kogitoEnvelope.startListeningOnMessageBus();
-        })
-        .then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
-    });
+    const kogitoEnvelope = new AppFormerKogitoEnvelope();
+    return Promise.resolve()
+      .then(() => this.renderEnvelope(kogitoEnvelope, container))
+      .then(() => kogitoEnvelope.startListeningOnMessageBus())
+      .then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
+  }
+
+  private static renderEnvelope(kogitoEnvelope: AppFormerKogitoEnvelope, container: HTMLElement) {
+    return new Promise(res =>
+      ReactDOM.render(<Envelope exposing={self => (kogitoEnvelope.envelope = self)} />, container, res)
+    );
   }
 }
