@@ -260,29 +260,35 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   }
 
   useEffect(() => {
-    const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(self => ({
-      send: msg => {
-        if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.postMessage(msg, iframeDomain);
+    const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(
+      {
+        postMessage: msg => {
+          if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage(msg, iframeDomain);
+          }
         }
       },
-      pollInit: () => {
-        self.request_initResponse(window.location.origin);
-      },
-      receive_languageRequest: () => {
-        self.respond_languageRequest(router.get(openFileExtension));
-      },
-      receive_getContentResponse: (content: string) => {
-        ipc.send("writeContent", { path: props.openFile.path, content: content });
-      },
-      receive_setContentRequest: () => {
-        ipc.send("requestContent", { relativePath: props.openFile.path });
-      }
-    }));
+      self => ({
+        pollInit: () => {
+          self.request_initResponse(window.location.origin);
+        },
+        receive_languageRequest: () => {
+          self.respond_languageRequest(router.get(openFileExtension));
+        },
+        receive_getContentResponse: (content: string) => {
+          ipc.send("writeContent", { path: props.openFile.path, content: content });
+        },
+        receive_setContentRequest: () => {
+          ipc.send("requestContent", { relativePath: props.openFile.path });
+        }
+      })
+    );
 
     envelopeBusOuterMessageHandler.startInitPolling();
 
-    ipc.on("returnContent", (event: any, content: string) => envelopeBusOuterMessageHandler.respond_setContentRequest(content));
+    ipc.on("returnContent", (event: any, content: string) =>
+      envelopeBusOuterMessageHandler.respond_setContentRequest(content)
+    );
     ipc.on("requestSave", () => envelopeBusOuterMessageHandler.request_getContentResponse());
 
     const handler = (msg: any) => {

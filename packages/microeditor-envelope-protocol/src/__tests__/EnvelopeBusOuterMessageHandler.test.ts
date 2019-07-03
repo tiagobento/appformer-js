@@ -12,23 +12,25 @@ beforeEach(() => {
   receivedMessages = [];
   initPollCount = 0;
 
-  handler = new EnvelopeBusOuterMessageHandler(self => ({
-    send: (msg: EnvelopeBusMessage<any>) => {
-      sentMessages.push(msg);
+  handler = new EnvelopeBusOuterMessageHandler(
+    {
+      postMessage: msg => sentMessages.push(msg)
     },
-    pollInit: () => {
-      initPollCount++;
-    },
-    receive_languageRequest: () => {
-      receivedMessages.push("languageRequest");
-    },
-    receive_setContentRequest: () => {
-      receivedMessages.push("setContentRequest");
-    },
-    receive_getContentResponse: (content: string) => {
-      receivedMessages.push("getContentResponse_" + content);
-    }
-  }));
+    self => ({
+      pollInit: () => {
+        initPollCount++;
+      },
+      receive_languageRequest: () => {
+        receivedMessages.push("languageRequest");
+      },
+      receive_setContentRequest: () => {
+        receivedMessages.push("setContentRequest");
+      },
+      receive_getContentResponse: (content: string) => {
+        receivedMessages.push("getContentResponse_" + content);
+      }
+    })
+  );
 });
 
 const delay = (ms: number) => {

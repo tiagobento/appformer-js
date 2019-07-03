@@ -1,7 +1,6 @@
 import { EnvelopeBusInnerMessageHandler } from "../EnvelopeBusInnerMessageHandler";
-import { EnvelopeBusMessage } from "appformer-js-microeditor-envelope-protocol/src";
-import { LanguageData } from "appformer-js-microeditor-router/src";
 import { EnvelopeBusMessageType } from "appformer-js-microeditor-envelope-protocol";
+import { LanguageData } from "appformer-js-microeditor-router";
 
 let handler: EnvelopeBusInnerMessageHandler;
 let receivedMessages: any[];
@@ -13,9 +12,7 @@ beforeEach(() => {
 
   handler = new EnvelopeBusInnerMessageHandler(
     {
-      postMessage<T>(message: EnvelopeBusMessage<T>, targetOrigin?: any, _?: any): any {
-        sentMessages.push([message, targetOrigin]);
-      }
+      postMessage: (message, targetOrigin) => sentMessages.push([message, targetOrigin])
     },
     self => ({
       receive_setContentResponse: (content: string) => {

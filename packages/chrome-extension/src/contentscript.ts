@@ -166,27 +166,31 @@ function initContentScript() {
   const iframeSrc = services.microeditor_envelope;
   const embeddedEditorIframe = document.createElement("iframe");
 
-  const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(self => ({
-    send: msg => {
-      if (embeddedEditorIframe && embeddedEditorIframe.contentWindow) {
-        embeddedEditorIframe.contentWindow.postMessage(msg, iframeDomain);
+  const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(
+    {
+      postMessage: msg => {
+        if (embeddedEditorIframe && embeddedEditorIframe.contentWindow) {
+          embeddedEditorIframe.contentWindow.postMessage(msg, iframeDomain);
+        }
       }
     },
-    pollInit: () => {
-      self.request_initResponse(window.location.origin);
-    },
-    receive_languageRequest: () => {
-      self.respond_languageRequest(router.get(openFileExtension));
-    },
-    receive_getContentResponse: (content: string) => {
-      enableCommitButton();
-      getGitHubEditor().CodeMirror.setValue(content);
-    },
-    receive_setContentRequest: () => {
-      const githubEditorContent = getGitHubEditor().CodeMirror.getValue() || "";
-      self.respond_setContentRequest(githubEditorContent);
-    }
-  }));
+    self => ({
+      pollInit: () => {
+        self.request_initResponse(window.location.origin);
+      },
+      receive_languageRequest: () => {
+        self.respond_languageRequest(router.get(openFileExtension));
+      },
+      receive_getContentResponse: (content: string) => {
+        enableCommitButton();
+        getGitHubEditor().CodeMirror.setValue(content);
+      },
+      receive_setContentRequest: () => {
+        const githubEditorContent = getGitHubEditor().CodeMirror.getValue() || "";
+        self.respond_setContentRequest(githubEditorContent);
+      }
+    })
+  );
 
   envelopeBusOuterMessageHandler.startInitPolling();
   window.addEventListener("message", msg => envelopeBusOuterMessageHandler.receive(msg.data), false);

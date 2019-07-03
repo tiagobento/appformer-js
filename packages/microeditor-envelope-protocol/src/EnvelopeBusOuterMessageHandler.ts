@@ -1,9 +1,9 @@
 import { LanguageData } from "appformer-js-microeditor-router";
 import { EnvelopeBusMessage } from "./EnvelopeBusMessage";
 import { EnvelopeBusMessageType } from "./EnvelopeBusMessageType";
+import { EnvelopeBusApi } from "./EnvelopeBusApi";
 
 export interface EnvelopeBusOuterMessageHandlerImpl {
-  send(msg: EnvelopeBusMessage<any>): void;
   pollInit(): void;
   receive_languageRequest(): void;
   receive_setContentRequest(): void;
@@ -17,8 +17,13 @@ export class EnvelopeBusOuterMessageHandler {
   public initPolling: any | false;
   public initPollingTimeout: any | false;
   public impl: EnvelopeBusOuterMessageHandlerImpl;
+  public busApi: EnvelopeBusApi;
 
-  public constructor(impl: (self: EnvelopeBusOuterMessageHandler) => EnvelopeBusOuterMessageHandlerImpl) {
+  public constructor(
+    busApi: EnvelopeBusApi,
+    impl: (self: EnvelopeBusOuterMessageHandler) => EnvelopeBusOuterMessageHandlerImpl
+  ) {
+    this.busApi = busApi;
     this.impl = impl(this);
     this.initPolling = false;
     this.initPollingTimeout = false;
@@ -44,19 +49,19 @@ export class EnvelopeBusOuterMessageHandler {
   }
 
   public respond_languageRequest(languageData?: LanguageData) {
-    this.impl.send({ type: EnvelopeBusMessageType.RETURN_LANGUAGE, data: languageData });
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.RETURN_LANGUAGE, data: languageData });
   }
 
   public respond_setContentRequest(content: string) {
-    this.impl.send({ type: EnvelopeBusMessageType.RETURN_SET_CONTENT, data: content });
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.RETURN_SET_CONTENT, data: content });
   }
 
   public request_getContentResponse() {
-    this.impl.send({ type: EnvelopeBusMessageType.REQUEST_GET_CONTENT, data: undefined });
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.REQUEST_GET_CONTENT, data: undefined });
   }
 
   public request_initResponse(origin: string) {
-    this.impl.send({ type: EnvelopeBusMessageType.REQUEST_INIT, data: origin });
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.REQUEST_INIT, data: origin });
   }
 
   public receive(message: EnvelopeBusMessage<any>) {

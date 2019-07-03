@@ -30,29 +30,33 @@ export class KogitoEditor {
     this.path = path;
     this.context = context;
     this.router = new LocalRouter(context);
-    this.envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(self => ({
-      send: msg => {
-        if (this.panel) {
-          this.panel.webview.postMessage(msg);
-        } else {
-          console.info("Message not delivered because panel is not set.");
+    this.envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(
+      {
+        postMessage: msg => {
+          if (this.panel) {
+            this.panel.webview.postMessage(msg);
+          } else {
+            console.info("Message not delivered because panel is not set.");
+          }
         }
       },
-      pollInit: () => {
-        self.request_initResponse("vscode");
-      },
-      receive_languageRequest: () => {
-        const fileExtension = this.path.split(".").pop()!;
-        self.respond_languageRequest(this.router.getLanguageData(fileExtension));
-      },
-      receive_getContentResponse: (content: string) => {
-        fs.writeFileSync(this.path, content);
-        vscode.window.setStatusBarMessage("Saved successfully!", 3000);
-      },
-      receive_setContentRequest: () => {
-        self.respond_setContentRequest(fs.readFileSync(this.path).toString());
-      }
-    }));
+      self => ({
+        pollInit: () => {
+          self.request_initResponse("vscode");
+        },
+        receive_languageRequest: () => {
+          const fileExtension = this.path.split(".").pop()!;
+          self.respond_languageRequest(this.router.getLanguageData(fileExtension));
+        },
+        receive_getContentResponse: (content: string) => {
+          fs.writeFileSync(this.path, content);
+          vscode.window.setStatusBarMessage("Saved successfully!", 3000);
+        },
+        receive_setContentRequest: () => {
+          self.respond_setContentRequest(fs.readFileSync(this.path).toString());
+        }
+      })
+    );
   }
 
   public open() {

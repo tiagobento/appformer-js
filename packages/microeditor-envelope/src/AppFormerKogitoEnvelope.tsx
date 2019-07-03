@@ -4,7 +4,7 @@ import * as AppFormer from "appformer-js-core";
 import { Envelope } from "./app/Envelope";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 import { Resource } from "appformer-js-microeditor-router";
-import { EnvelopeBusApi } from "./EnvelopeBusApi";
+import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 import { LanguageData } from "appformer-js-microeditor-router/src";
 import { GwtAppFormerEditor } from "./GwtAppFormerEditor";
 
