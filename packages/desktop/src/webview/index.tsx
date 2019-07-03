@@ -260,17 +260,17 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
   }
 
   useEffect(() => {
-    const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
+    const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(self => ({
       send: msg => {
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage(msg, iframeDomain);
         }
       },
       pollInit: () => {
-        _this.request_initResponse(window.location.origin);
+        self.request_initResponse(window.location.origin);
       },
       receive_languageRequest: () => {
-        _this.respond_languageRequest(router.get(openFileExtension));
+        self.respond_languageRequest(router.get(openFileExtension));
       },
       receive_getContentResponse: (content: string) => {
         ipc.send("writeContent", { path: props.openFile.path, content: content });
@@ -280,7 +280,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
       }
     }));
 
-    envelopeBusOuterMessageHandler.init();
+    envelopeBusOuterMessageHandler.startInitPolling();
 
     ipc.on("returnContent", (event: any, content: string) => envelopeBusOuterMessageHandler.respond_setContentRequest(content));
     ipc.on("requestSave", () => envelopeBusOuterMessageHandler.request_getContentResponse());

@@ -4,7 +4,7 @@ import { EnvelopeBusMessageType } from "../EnvelopeBusMessageType";
 
 let sentMessages: Array<EnvelopeBusMessage<any>>;
 let receivedMessages: string[];
-let envelopeBusOuterMessageHandler: EnvelopeBusOuterMessageHandler;
+let handler: EnvelopeBusOuterMessageHandler;
 let initPollCount: number;
 
 beforeEach(() => {
@@ -12,7 +12,7 @@ beforeEach(() => {
   receivedMessages = [];
   initPollCount = 0;
 
-  envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
+  handler = new EnvelopeBusOuterMessageHandler(self => ({
     send: (msg: EnvelopeBusMessage<any>) => {
       sentMessages.push(msg);
     },
@@ -37,95 +37,81 @@ const delay = (ms: number) => {
 
 describe("new instance", () => {
   test("does nothing", () => {
-    expect(envelopeBusOuterMessageHandler.initPolling).toBeFalsy();
-    expect(envelopeBusOuterMessageHandler.initPollingTimeout).toBeFalsy();
+    expect(handler.initPolling).toBeFalsy();
+    expect(handler.initPollingTimeout).toBeFalsy();
     expect(sentMessages.length).toEqual(0);
     expect(receivedMessages.length).toEqual(0);
   });
 });
 
-describe("init", () => {
+describe("startInitPolling", () => {
   test("polls for init response", async () => {
-    envelopeBusOuterMessageHandler.init();
-    expect(envelopeBusOuterMessageHandler.initPolling).toBeTruthy();
-    expect(envelopeBusOuterMessageHandler.initPollingTimeout).toBeTruthy();
+    handler.startInitPolling();
+    expect(handler.initPolling).toBeTruthy();
+    expect(handler.initPollingTimeout).toBeTruthy();
 
     //less than the timeout
     await delay(100);
 
-    envelopeBusOuterMessageHandler.receive({ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined });
+    handler.receive({ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined });
 
     expect(initPollCount).toBeGreaterThan(0);
-    expect(envelopeBusOuterMessageHandler.initPolling).toBeFalsy();
-    expect(envelopeBusOuterMessageHandler.initPollingTimeout).toBeFalsy();
+    expect(handler.initPolling).toBeFalsy();
+    expect(handler.initPollingTimeout).toBeFalsy();
   });
 
   test("stops polling after timeout", async () => {
     EnvelopeBusOuterMessageHandler.INIT_POLLING_TIMEOUT_IN_MS = 200;
 
-    envelopeBusOuterMessageHandler.init();
-    expect(envelopeBusOuterMessageHandler.initPolling).toBeTruthy();
-    expect(envelopeBusOuterMessageHandler.initPollingTimeout).toBeTruthy();
+    handler.startInitPolling();
+    expect(handler.initPolling).toBeTruthy();
+    expect(handler.initPollingTimeout).toBeTruthy();
 
     //more than the timeout
     await delay(300);
 
     expect(initPollCount).toBeGreaterThan(0);
-    expect(envelopeBusOuterMessageHandler.initPolling).toBeFalsy();
-    expect(envelopeBusOuterMessageHandler.initPollingTimeout).toBeFalsy();
+    expect(handler.initPolling).toBeFalsy();
+    expect(handler.initPollingTimeout).toBeFalsy();
   });
 });
 
 describe("receive", () => {
   test("language request", () => {
-    envelopeBusOuterMessageHandler.receive({ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined });
+    handler.receive({ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined });
     expect(receivedMessages).toEqual(["languageRequest"]);
   });
 
   test("set content request", () => {
-    envelopeBusOuterMessageHandler.receive({ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined });
+    handler.receive({ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined });
     expect(receivedMessages).toEqual(["setContentRequest"]);
   });
 
   test("get content response", () => {
-    envelopeBusOuterMessageHandler.receive({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: "foo" });
+    handler.receive({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: "foo" });
     expect(receivedMessages).toEqual(["getContentResponse_foo"]);
   });
 });
 
-describe("request", () => {
-  test("getContentResponse", () => {
-    envelopeBusOuterMessageHandler.request_getContentResponse();
-
-    expect(sentMessages.length).toEqual(1);
-    expect(sentMessages[0].type).toBe(EnvelopeBusMessageType.REQUEST_GET_CONTENT);
-    expect(sentMessages[0].data).toBe(undefined);
+describe("send", () => {
+  test("request getContentResponse", () => {
+    handler.request_getContentResponse();
+    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.REQUEST_GET_CONTENT, data: undefined }]);
   });
 
-  test("setContentRequest", () => {
-    envelopeBusOuterMessageHandler.request_initResponse("test-origin");
-
-    expect(sentMessages.length).toEqual(1);
-    expect(sentMessages[0].type).toBe(EnvelopeBusMessageType.REQUEST_INIT);
-    expect(sentMessages[0].data).toBe("test-origin");
+  test("request setContentRequest", () => {
+    handler.request_initResponse("test-origin");
+    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.REQUEST_INIT, data: "test-origin" }]);
   });
-});
 
-describe("respond", () => {
-  test("languageRequest", () => {
+  test("respond languageRequest", () => {
     const languageData = { editorId: "id", gwtModuleName: "name", erraiDomain: "domain", resources: [] };
-    envelopeBusOuterMessageHandler.respond_languageRequest(languageData);
-
-    expect(sentMessages.length).toEqual(1);
-    expect(sentMessages[0].type).toBe(EnvelopeBusMessageType.RETURN_LANGUAGE);
-    expect(sentMessages[0].data).toBe(languageData);
+    handler.respond_languageRequest(languageData);
+    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.RETURN_LANGUAGE, data: languageData }]);
   });
 
-  test("setContentRequest", () => {
-    envelopeBusOuterMessageHandler.respond_setContentRequest("bar");
-
-    expect(sentMessages.length).toEqual(1);
-    expect(sentMessages[0].type).toBe(EnvelopeBusMessageType.RETURN_SET_CONTENT);
-    expect(sentMessages[0].data).toBe("bar");
+  test("respond setContentRequest", () => {
+    handler.respond_setContentRequest("bar");
+    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.RETURN_SET_CONTENT, data: "bar" }]);
   });
 });

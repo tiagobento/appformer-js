@@ -21,14 +21,13 @@ declare global {
   export interface AppFormer {
     KogitoEnvelope: AppFormerKogitoEnvelope;
   }
-}
 
-//Exposed API of AppFormerGwt
-declare global {
+  //Exposed API of AppFormerGwt
   interface Window {
     gwtEditorBeans: Map<string, BusinessCentralClientEditorFactory>;
     appFormerGwtFinishedLoading: () => any;
     erraiBusApplicationRoot: string;
+    erraiBusRemoteCommunicationEnabled: boolean;
   }
 }
 

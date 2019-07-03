@@ -28,7 +28,6 @@ export interface BusinessCentralClientEditor {
 }
 
 export class GwtAppFormerEditor extends AppFormer.Editor {
-
   public af_componentTitle: string;
 
   private businessCentralClientEditor: BusinessCentralClientEditor;
@@ -39,7 +38,6 @@ export class GwtAppFormerEditor extends AppFormer.Editor {
     this.af_isReact = true;
     this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.get();
   }
-
 
   public af_onOpen(): void {
     this.removeBusinessCentralHeaderPanel();

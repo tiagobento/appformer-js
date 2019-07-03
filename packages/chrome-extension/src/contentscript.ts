@@ -166,17 +166,17 @@ function initContentScript() {
   const iframeSrc = services.microeditor_envelope;
   const embeddedEditorIframe = document.createElement("iframe");
 
-  const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
+  const envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(self => ({
     send: msg => {
       if (embeddedEditorIframe && embeddedEditorIframe.contentWindow) {
         embeddedEditorIframe.contentWindow.postMessage(msg, iframeDomain);
       }
     },
     pollInit: () => {
-      _this.request_initResponse(window.location.origin);
+      self.request_initResponse(window.location.origin);
     },
     receive_languageRequest: () => {
-      _this.respond_languageRequest(router.get(openFileExtension));
+      self.respond_languageRequest(router.get(openFileExtension));
     },
     receive_getContentResponse: (content: string) => {
       enableCommitButton();
@@ -184,11 +184,11 @@ function initContentScript() {
     },
     receive_setContentRequest: () => {
       const githubEditorContent = getGitHubEditor().CodeMirror.getValue() || "";
-      _this.respond_setContentRequest(githubEditorContent);
+      self.respond_setContentRequest(githubEditorContent);
     }
   }));
 
-  envelopeBusOuterMessageHandler.init();
+  envelopeBusOuterMessageHandler.startInitPolling();
   window.addEventListener("message", msg => envelopeBusOuterMessageHandler.receive(msg.data), false);
 
   //hide GitHub editor
@@ -208,7 +208,7 @@ function initContentScript() {
   fullScreenButton.onclick = e => {
     e.preventDefault();
     document.body.appendChild(embeddedEditorIframe);
-    envelopeBusOuterMessageHandler.init();
+    envelopeBusOuterMessageHandler.startInitPolling();
     const originalCss = embeddedEditorIframe.style.cssText;
     embeddedEditorIframe.style.cssText =
       "width:100vw; height:100vh; position:absolute; top:0px; z-index:999; border:none;";
@@ -222,7 +222,7 @@ function initContentScript() {
       "padding-bottom: 5px; cursor: pointer; z-index: 1000; color: white;text-align: center; position:fixed; width: 80px; top:0; left: 50%; margin-left: -40px; background-color: #363636; border-radius: 0 0 5px 5px";
     buttonsDiv.onclick = evt => {
       evt.preventDefault();
-      envelopeBusOuterMessageHandler.init();
+      envelopeBusOuterMessageHandler.startInitPolling();
       insertAfterGitHubEditor(embeddedEditorIframe);
       embeddedEditorIframe.style.cssText = originalCss;
       envelopeBusOuterMessageHandler.request_getContentResponse();

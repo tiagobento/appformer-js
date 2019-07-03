@@ -5,13 +5,47 @@ import { Envelope } from "./app/Envelope";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 import { Resource } from "appformer-js-microeditor-router";
 import { EnvelopeBusApi } from "./EnvelopeBusApi";
+import { LanguageData } from "appformer-js-microeditor-router/src";
+import { GwtAppFormerEditor } from "./GwtAppFormerEditor";
 
 export class AppFormerKogitoEnvelope {
   private envelope?: Envelope;
   public readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
 
   constructor(busApi: EnvelopeBusApi) {
-    this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(this, busApi);
+    this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(busApi, self =>
+      this.setupEnvelopeBusInnerMessageHandler(self)
+    );
+  }
+
+  private setupEnvelopeBusInnerMessageHandler(self: EnvelopeBusInnerMessageHandler) {
+    return {
+      receive_setContentResponse: (content: string) => {
+        const editor = this.getEditor();
+        if (editor) {
+          editor.setContent(content);
+        }
+      },
+      receive_getContentRequest: () => {
+        const editor = this.getEditor();
+        if (editor) {
+          editor.getContent().then(content => self.respond_getContentRequest(content));
+        }
+      },
+      receive_languageResponse: (languageData: LanguageData) => {
+        window.erraiBusApplicationRoot = languageData.erraiDomain; //needed only for backend communication
+
+        window.appFormerGwtFinishedLoading = () => {
+          return Promise.resolve()
+            .then(() => this.registerEditor(() => new GwtAppFormerEditor(languageData.editorId)))
+            .then(() => self.request_setContentResponse());
+        };
+
+        languageData.resources.forEach(resource => {
+          this.loadResource(resource);
+        });
+      }
+    };
   }
 
   public startListeningOnMessageBus() {
@@ -19,7 +53,7 @@ export class AppFormerKogitoEnvelope {
   }
 
   public registerEditor(editorDelegate: () => AppFormer.Editor) {
-    //TODO: Create messages to control the lifecycle of enveloped componentes?
+    //TODO: Create messages to control the lifecycle of enveloped components?
     //TODO: No-op when same Editor class?
 
     const editor = editorDelegate.apply(this);
@@ -44,11 +78,11 @@ export class AppFormerKogitoEnvelope {
     });
   }
 
-  public getEditor(): AppFormer.Editor | undefined {
+  private getEditor(): AppFormer.Editor | undefined {
     return this.envelope!.getEditor();
   }
 
-  public loadResource(resource: Resource) {
+  private loadResource(resource: Resource) {
     resource.paths.forEach(path => {
       switch (resource.type) {
         case "css":
@@ -68,7 +102,10 @@ export class AppFormerKogitoEnvelope {
   }
 
   public static init(args: Args): Promise<AppFormerKogitoEnvelope> {
+    window.erraiBusRemoteCommunicationEnabled = !args.clientSideOnly;
+
     const kogitoEnvelope = new AppFormerKogitoEnvelope(args.busApi);
+
     return Promise.resolve()
       .then(() => this.renderEnvelope(kogitoEnvelope, args.container))
       .then(() => kogitoEnvelope.startListeningOnMessageBus())
@@ -85,4 +122,5 @@ export class AppFormerKogitoEnvelope {
 export interface Args {
   container: HTMLElement;
   busApi: EnvelopeBusApi;
+  clientSideOnly: boolean;
 }

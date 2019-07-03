@@ -30,7 +30,7 @@ export class KogitoEditor {
     this.path = path;
     this.context = context;
     this.router = new LocalRouter(context);
-    this.envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
+    this.envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(self => ({
       send: msg => {
         if (this.panel) {
           this.panel.webview.postMessage(msg);
@@ -39,18 +39,18 @@ export class KogitoEditor {
         }
       },
       pollInit: () => {
-        _this.request_initResponse("vscode");
+        self.request_initResponse("vscode");
       },
       receive_languageRequest: () => {
         const fileExtension = this.path.split(".").pop()!;
-        _this.respond_languageRequest(this.router.getLanguageData(fileExtension));
+        self.respond_languageRequest(this.router.getLanguageData(fileExtension));
       },
       receive_getContentResponse: (content: string) => {
         fs.writeFileSync(this.path, content);
         vscode.window.setStatusBarMessage("Saved successfully!", 3000);
       },
       receive_setContentRequest: () => {
-        _this.respond_setContentRequest(fs.readFileSync(this.path).toString());
+        self.respond_setContentRequest(fs.readFileSync(this.path).toString());
       }
     }));
   }
@@ -65,7 +65,7 @@ export class KogitoEditor {
   }
 
   public setupMessageBus() {
-    this.envelopeBusOuterMessageHandler.init();
+    this.envelopeBusOuterMessageHandler.startInitPolling();
     this.context.subscriptions.push(
       this.panel!.webview.onDidReceiveMessage(
         msg => this.envelopeBusOuterMessageHandler.receive(msg),

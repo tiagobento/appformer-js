@@ -39,17 +39,17 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   const iframeSrc = services.microeditor_envelope;
 
   useEffect(() => {
-    envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(_this => ({
+    envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(self => ({
       send: msg => {
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage(msg, iframeDomain);
         }
       },
       pollInit: () => {
-        _this.request_initResponse(window.location.origin);
+        self.request_initResponse(window.location.origin);
       },
       receive_languageRequest: () => {
-        _this.respond_languageRequest(router.get(fileExtension));
+        self.respond_languageRequest(router.get(fileExtension));
       },
       receive_getContentResponse: (content: string) => {
         setFileContentService(props.match.params.space, props.match.params.project, decodedFilePath, content).then(v =>
@@ -59,11 +59,11 @@ export function Editor(props: { match: match<{ space: string; project: string; f
       receive_setContentRequest: () => {
         getFileContentService(props.match.params.space, props.match.params.project, decodedFilePath)
           .then(res => res.text())
-          .then(content => _this.respond_setContentRequest(content.trim()));
+          .then(content => self.respond_setContentRequest(content.trim()));
       }
     }));
 
-    envelopeBusOuterMessageHandler.init();
+    envelopeBusOuterMessageHandler.startInitPolling();
 
     const handle = (msg: any) => {
       return envelopeBusOuterMessageHandler.receive(msg.data);

@@ -24,7 +24,7 @@ export class EnvelopeBusOuterMessageHandler {
     this.initPollingTimeout = false;
   }
 
-  public init() {
+  public startInitPolling() {
     this.initPolling = setInterval(
       () => this.impl.pollInit(),
       EnvelopeBusOuterMessageHandler.INIT_POLLING_INTERVAL_IN_MS
