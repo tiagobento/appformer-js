@@ -2,15 +2,7 @@ import { EnvelopeBusMessage, EnvelopeBusMessageType } from "appformer-js-microed
 import { AppFormerKogitoEnvelope } from "./AppFormerKogitoEnvelope";
 import { GwtAppFormerEditor } from "./GwtAppFormerEditor";
 import { LanguageData } from "appformer-js-microeditor-router";
-
-//Exposed API of Visual Studio Code
-declare global {
-  export const acquireVsCodeApi: () => EnvelopeBusApi;
-}
-
-interface EnvelopeBusApi {
-  postMessage<T>(message: EnvelopeBusMessage<T>, targetOrigin?: any, _?: any): any;
-}
+import { EnvelopeBusApi } from "./EnvelopeBusApi";
 
 export class EnvelopeBusInnerMessageHandler {
   private initializing = false;
@@ -18,9 +10,9 @@ export class EnvelopeBusInnerMessageHandler {
   private readonly kogitoEnvelope: AppFormerKogitoEnvelope;
   private readonly envelopeBusApi: EnvelopeBusApi;
 
-  constructor(kogitoEnvelope: AppFormerKogitoEnvelope) {
+  constructor(kogitoEnvelope: AppFormerKogitoEnvelope, busApi: EnvelopeBusApi) {
     this.kogitoEnvelope = kogitoEnvelope;
-    this.envelopeBusApi = this.initEnvelopeBusApi();
+    this.envelopeBusApi = busApi;
   }
 
   public startListening() {
@@ -117,37 +109,5 @@ export class EnvelopeBusInnerMessageHandler {
         console.info(`Unknown message type received: ${message.type}"`);
         break;
     }
-  }
-
-  private initEnvelopeBusApi() {
-    try {
-      return this.obtainEnvelopeBusApi();
-    } catch (e) {
-      console.error("Error while obtaining EnvelopeBus API.");
-      console.error(e);
-      return this.noOpEnvelopeBusApi();
-    }
-  }
-
-  private obtainEnvelopeBusApi() {
-    if (acquireVsCodeApi) {
-      return acquireVsCodeApi();
-    }
-
-    if (window.parent) {
-      return window.parent as EnvelopeBusApi;
-    }
-
-    console.info("No EnvelopeBus API available. Fallback is a no-op implementation.");
-    return this.noOpEnvelopeBusApi();
-  }
-
-  private noOpEnvelopeBusApi() {
-    return {
-      postMessage: (message: EnvelopeBusMessage<any>) => {
-        console.info(`[no-op EnvelopeBus API] Sending message:`);
-        console.info(message);
-      }
-    };
   }
 }

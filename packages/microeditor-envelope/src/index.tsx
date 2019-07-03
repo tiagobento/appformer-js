@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppFormerKogitoEnvelope } from "./AppFormerKogitoEnvelope";
+import { AppFormerKogitoEnvelope, Args } from "./AppFormerKogitoEnvelope";
 import { BusinessCentralClientEditorFactory } from "./GwtAppFormerEditor";
 
 declare global {
@@ -32,6 +32,6 @@ declare global {
   }
 }
 
-export function init(container: HTMLElement) {
-  return AppFormerKogitoEnvelope.init(container);
+export function init(args: Args) {
+  return AppFormerKogitoEnvelope.init(args);
 }

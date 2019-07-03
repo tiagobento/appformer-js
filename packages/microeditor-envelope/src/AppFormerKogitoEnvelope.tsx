@@ -4,20 +4,22 @@ import * as AppFormer from "appformer-js-core";
 import { Envelope } from "./app/Envelope";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 import { Resource } from "appformer-js-microeditor-router";
+import { EnvelopeBusApi } from "./EnvelopeBusApi";
 
 export class AppFormerKogitoEnvelope {
   private envelope?: Envelope;
-  public readonly EnvelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
+  public readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
 
-  constructor() {
-    this.EnvelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(this);
+  constructor(busApi: EnvelopeBusApi) {
+    this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(this, busApi);
   }
 
   public startListeningOnMessageBus() {
-    this.EnvelopeBusInnerMessageHandler.startListening();
+    this.envelopeBusInnerMessageHandler.startListening();
   }
 
   public registerEditor(editorDelegate: () => AppFormer.Editor) {
+    //TODO: Create messages to control the lifecycle of enveloped componentes?
     //TODO: No-op when same Editor class?
 
     const editor = editorDelegate.apply(this);
@@ -65,10 +67,10 @@ export class AppFormerKogitoEnvelope {
     });
   }
 
-  public static init(container: HTMLElement): Promise<AppFormerKogitoEnvelope> {
-    const kogitoEnvelope = new AppFormerKogitoEnvelope();
+  public static init(args: Args): Promise<AppFormerKogitoEnvelope> {
+    const kogitoEnvelope = new AppFormerKogitoEnvelope(args.busApi);
     return Promise.resolve()
-      .then(() => this.renderEnvelope(kogitoEnvelope, container))
+      .then(() => this.renderEnvelope(kogitoEnvelope, args.container))
       .then(() => kogitoEnvelope.startListeningOnMessageBus())
       .then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
   }
@@ -78,4 +80,9 @@ export class AppFormerKogitoEnvelope {
       ReactDOM.render(<Envelope exposing={self => (kogitoEnvelope.envelope = self)} />, container, res)
     );
   }
+}
+
+export interface Args {
+  container: HTMLElement;
+  busApi: EnvelopeBusApi;
 }

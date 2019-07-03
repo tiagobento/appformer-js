@@ -1,11 +1,20 @@
 import * as MicroEditorEnvelope from "appformer-js-microeditor-envelope";
 
 declare global {
+  export const acquireVsCodeApi: any;
+}
+
+//**
+//FIXME: move that to somewhere else? channels should not know about existence of errai..
+declare global {
   interface Window {
     erraiBusRemoteCommunicationEnabled: boolean;
   }
 }
-
-//FIXME: move that to somewhere else? channels should not know about existence of errai..
 window.erraiBusRemoteCommunicationEnabled = false;
-MicroEditorEnvelope.init(document.getElementById("microeditor-envelope-container")!);
+//**
+
+MicroEditorEnvelope.init({
+  container: document.getElementById("microeditor-envelope-container")!,
+  busApi: acquireVsCodeApi()
+});

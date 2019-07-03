@@ -16,4 +16,7 @@
 
 import * as MicroEditorEnvelope from "./index";
 
-MicroEditorEnvelope.init(document.getElementById("app")!);
+MicroEditorEnvelope.init({
+  container: document.getElementById("app")!,
+  busApi: window.parent
+});
