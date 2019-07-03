@@ -18,26 +18,32 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import { LocalRouter } from "./LocalRouter";
 import { EnvelopeBusOuterMessageHandler } from "appformer-js-microeditor-envelope-protocol";
+import { KogitoEditorStore } from "./KogitoEditorStore";
 
 export class KogitoEditor {
-  public readonly path: string;
-  public readonly context: vscode.ExtensionContext;
-  public readonly router: LocalRouter;
-  public readonly envelopeBusOuterMessageHandler: EnvelopeBusOuterMessageHandler;
-  public panel?: vscode.WebviewPanel;
+  private readonly path: string;
+  private readonly context: vscode.ExtensionContext;
+  private readonly router: LocalRouter;
+  private readonly panel: vscode.WebviewPanel;
+  private readonly editorStore: KogitoEditorStore;
+  private readonly envelopeBusOuterMessageHandler: EnvelopeBusOuterMessageHandler;
 
-  public constructor(path: string, context: vscode.ExtensionContext) {
+  public constructor(
+    path: string,
+    panel: vscode.WebviewPanel,
+    context: vscode.ExtensionContext,
+    router: LocalRouter,
+    editorStore: KogitoEditorStore
+  ) {
     this.path = path;
+    this.panel = panel;
     this.context = context;
-    this.router = new LocalRouter(context);
+    this.router = router;
+    this.editorStore = editorStore;
     this.envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(
       {
         postMessage: msg => {
-          if (this.panel) {
-            this.panel.webview.postMessage(msg);
-          } else {
-            console.info("Message not delivered because panel is not set.");
-          }
+          this.panel.webview.postMessage(msg);
         }
       },
       self => ({
@@ -59,34 +65,6 @@ export class KogitoEditor {
     );
   }
 
-  public open() {
-    this.panel = vscode.window.createWebviewPanel(
-      "kogito-editor", // Identifies the type of the webview. Used internally by VsCode
-      this.panelTitle(), // Title of the panel displayed to the user
-      { viewColumn: vscode.ViewColumn.Active, preserveFocus: true }, // Editor column to show the new webview panel in.
-      { enableCommandUris: true, enableScripts: true, retainContextWhenHidden: true }
-    );
-  }
-
-  public setupMessageBus() {
-    this.envelopeBusOuterMessageHandler.startInitPolling();
-    this.context.subscriptions.push(
-      this.panel!.webview.onDidReceiveMessage(
-        msg => this.envelopeBusOuterMessageHandler.receive(msg),
-        this,
-        this.context.subscriptions
-      )
-    );
-  }
-
-  public setupPanelViewStateChanged(onPanelViewStateChanged: (panelBecameActive: boolean) => void) {
-    return this.panel!.onDidChangeViewState(
-      () => onPanelViewStateChanged(this.panel!.active),
-      this,
-      this.context.subscriptions
-    );
-  }
-
   public requestSave() {
     if (this.path.length > 0) {
       this.envelopeBusOuterMessageHandler.request_getContentResponse();
@@ -95,16 +73,35 @@ export class KogitoEditor {
     }
   }
 
-  private panelTitle() {
-    return this.path.split("/").pop()! + " 🦉";
+  public setupEnvelopeBus() {
+    this.context.subscriptions.push(
+      this.panel.webview.onDidReceiveMessage(
+        msg => this.envelopeBusOuterMessageHandler.receive(msg),
+        this,
+        this.context.subscriptions
+      )
+    );
+    this.envelopeBusOuterMessageHandler.startInitPolling();
   }
 
-  private getWebviewIndexJsPath() {
-    return this.router.getRelativePathTo("dist/webview/index.js").toString();
+  public setupPanelActiveStatusChange() {
+    this.panel.onDidChangeViewState(
+      () => {
+        if (this.panel.active) {
+          this.editorStore.setActive(this);
+        }
+
+        if (!this.panel.active && this.editorStore.isActive(this)) {
+          this.editorStore.setNoneActive();
+        }
+      },
+      this,
+      this.context.subscriptions
+    );
   }
 
   public setupWebviewContent() {
-    this.panel!.webview.html = `
+    this.panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
             <head>
@@ -128,5 +125,13 @@ export class KogitoEditor {
             </body>
         </html>
     `;
+  }
+
+  private getWebviewIndexJsPath() {
+    return this.router.getRelativePathTo("dist/webview/index.js").toString();
+  }
+
+  public sameAs(editor: KogitoEditor) {
+    return this.path === editor.path;
   }
 }

@@ -15,23 +15,29 @@
  */
 
 import * as vscode from "vscode";
-import { KogitoEditor } from "./KogitoEditor";
+import { KogitoEditorStore } from "./KogitoEditorStore";
+import { KogitoEditorFactory } from "./KogitoEditorFactory";
 
 export class KogitoEditorsExtension {
   private readonly context: vscode.ExtensionContext;
-  private activeKogitoEditor?: KogitoEditor;
+  private readonly kogitoEditorStore: KogitoEditorStore;
+  private readonly kogitoEditorFactory: KogitoEditorFactory;
 
-  constructor(context: vscode.ExtensionContext) {
+  constructor(
+    context: vscode.ExtensionContext,
+    kogitoEditorStore: KogitoEditorStore,
+    kogitoEditorFactory: KogitoEditorFactory
+  ) {
     this.context = context;
+    this.kogitoEditorStore = kogitoEditorStore;
+    this.kogitoEditorFactory = kogitoEditorFactory;
   }
 
   public registerCustomSaveCommand() {
     this.context.subscriptions.push(
       vscode.commands.registerCommand("workbench.action.files.save", () => {
         // If a kogito editor is active, its content is saved manually.
-        if (this.activeKogitoEditor) {
-          this.activeKogitoEditor.requestSave();
-        }
+        this.kogitoEditorStore.withActive(editor => editor.requestSave());
 
         // If a text editor is active, we save it normally.
         if (vscode.window.activeTextEditor) {
@@ -43,7 +49,7 @@ export class KogitoEditorsExtension {
     );
   }
 
-  public subscribeToActiveTextEditorChanges() {
+  public startReplacingTextEditorsByKogitoEditorsAsTheyOpenIfLanguageIsSupported() {
     this.context.subscriptions.push(
       vscode.window.onDidChangeActiveTextEditor((textEditor?: vscode.TextEditor) => {
         if (!textEditor) {
@@ -51,32 +57,17 @@ export class KogitoEditorsExtension {
         }
 
         if (this.supportsLanguage(textEditor.document.languageId)) {
-          this.replaceDefaultEditorByKogitoEditor(textEditor);
+          this.replaceTextEditorByKogitoEditor(textEditor);
         }
       })
     );
   }
 
-  private replaceDefaultEditorByKogitoEditor(textEditor: vscode.TextEditor) {
+  private replaceTextEditorByKogitoEditor(textEditor: vscode.TextEditor) {
     vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
-      this.activeKogitoEditor = this.newKogitoEditor(textEditor.document.uri.path);
+      this.kogitoEditorFactory.openNew(textEditor.document.uri.path);
       return Promise.resolve();
     });
-  }
-
-  private newKogitoEditor(path: string) {
-    const kogitoEditor = new KogitoEditor(path, this.context);
-    kogitoEditor.open();
-    kogitoEditor.setupMessageBus();
-    kogitoEditor.setupPanelViewStateChanged(panelBecameActive => {
-      if (panelBecameActive) {
-        this.activeKogitoEditor = kogitoEditor;
-      } else if (this.activeKogitoEditor && this.activeKogitoEditor.path === kogitoEditor.path) {
-        this.activeKogitoEditor = undefined;
-      }
-    });
-    kogitoEditor.setupWebviewContent();
-    return kogitoEditor;
   }
 
   private supportsLanguage(languageId: string) {
