@@ -295,7 +295,7 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
       ipc.removeAllListeners("returnContent");
       ipc.removeAllListeners("requestSave");
       window.removeEventListener("message", handler, false);
-      envelopeBusOuterMessageHandler.receive_initResponse();
+      envelopeBusOuterMessageHandler.stopInitPolling();
     };
   }, []);
 

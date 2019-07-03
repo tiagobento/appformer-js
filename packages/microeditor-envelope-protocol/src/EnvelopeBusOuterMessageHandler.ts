@@ -11,32 +11,36 @@ export interface EnvelopeBusOuterMessageHandlerImpl {
 }
 
 export class EnvelopeBusOuterMessageHandler {
-  private static INIT_POLLING_TIMEOUT_IN_MS = 10000;
-  private static INIT_POLLING_INTERVAL_IN_MS = 10;
+  public static INIT_POLLING_TIMEOUT_IN_MS = 10000;
+  public static INIT_POLLING_INTERVAL_IN_MS = 10;
 
-  private initPolling?: any;
-  private initPollingTimeout?: any;
-  private impl: EnvelopeBusOuterMessageHandlerImpl;
+  public initPolling: number | false;
+  public initPollingTimeout: number | false;
+  public impl: EnvelopeBusOuterMessageHandlerImpl;
 
   public constructor(impl: (self: EnvelopeBusOuterMessageHandler) => EnvelopeBusOuterMessageHandlerImpl) {
     this.impl = impl(this);
+    this.initPolling = false;
+    this.initPollingTimeout = false;
   }
 
   public init() {
-    this.initPolling = setInterval(
+    this.initPolling = window.setInterval(
       () => this.impl.pollInit(),
       EnvelopeBusOuterMessageHandler.INIT_POLLING_INTERVAL_IN_MS
     );
 
-    this.initPollingTimeout = setTimeout(() => {
-      clearTimeout(this.initPolling);
+    this.initPollingTimeout = window.setTimeout(() => {
+      this.stopInitPolling();
       console.info("Init polling timed out. Looks like the microeditor-envelope is not responding accordingly.");
     }, EnvelopeBusOuterMessageHandler.INIT_POLLING_TIMEOUT_IN_MS);
   }
 
-  public receive_initResponse() {
-    clearInterval(this.initPolling);
-    clearTimeout(this.initPollingTimeout);
+  public stopInitPolling() {
+    clearInterval(this.initPolling as number);
+    this.initPolling = false;
+    clearTimeout(this.initPollingTimeout as number);
+    this.initPollingTimeout = false;
   }
 
   public respond_languageRequest(languageData?: LanguageData) {
@@ -58,7 +62,7 @@ export class EnvelopeBusOuterMessageHandler {
   public receive(message: EnvelopeBusMessage<any>) {
     switch (message.type) {
       case EnvelopeBusMessageType.RETURN_INIT:
-        this.receive_initResponse();
+        this.stopInitPolling();
         break;
       case EnvelopeBusMessageType.REQUEST_LANGUAGE:
         this.impl.receive_languageRequest();
@@ -71,7 +75,7 @@ export class EnvelopeBusOuterMessageHandler {
         break;
       default:
         console.info(`Unknown message type received: ${message.type}"`);
-        return Promise.resolve();
+        break;
     }
   }
 }
