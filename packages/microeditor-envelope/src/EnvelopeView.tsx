@@ -3,7 +3,7 @@ import * as AppFormer from "appformer-js-core";
 import { EditorContainer } from "./EditorContainer";
 
 interface Props {
-  exposing: (self: Envelope) => void;
+  exposing: (self: EnvelopeView) => void;
 }
 
 interface State {
@@ -28,14 +28,14 @@ function Title(props: { text: string }) {
   return <></>;
 }
 
-export class Envelope extends React.Component<Props, State> {
+export class EnvelopeView extends React.Component<Props, State> {
   private static readonly defaultTitle = "AppFormer :: Kogito Envelope :: Editor";
 
   constructor(props: Props) {
     super(props);
     this.state = {
       editor: undefined,
-      title: Envelope.defaultTitle
+      title: EnvelopeView.defaultTitle
     };
     this.props.exposing(this);
   }
@@ -48,7 +48,7 @@ export class Envelope extends React.Component<Props, State> {
             value={{
               title: this.state.title,
               setTitle: (title: string) => new Promise(res => this.setState({ title: title }, res)),
-              setTitleDefault: () => new Promise(res => this.setState({ title: Envelope.defaultTitle }, res))
+              setTitleDefault: () => new Promise(res => this.setState({ title: EnvelopeView.defaultTitle }, res))
             }}
           >
             <Title text={this.state.title} />
@@ -59,8 +59,8 @@ export class Envelope extends React.Component<Props, State> {
     );
   }
 
-  public register(editor: AppFormer.Editor) {
-    return Promise.resolve().then(() => new Promise(res => this.setState({ editor: editor }, res)));
+  public setEditor(editor: AppFormer.Editor) {
+    return new Promise(res => this.setState({ editor: editor }, res));
   }
 
   public getEditor() {

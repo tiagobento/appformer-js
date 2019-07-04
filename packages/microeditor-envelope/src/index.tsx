@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { AppFormerKogitoEnvelope, Args } from "./AppFormerKogitoEnvelope";
+import { EnvelopeController } from "./EnvelopeController";
 import { BusinessCentralClientEditorFactory } from "./GwtAppFormerEditor";
+import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 
 declare global {
-  export interface AppFormer {
-    KogitoEnvelope: AppFormerKogitoEnvelope;
+  export class Kogito {
+    public static EnvelopeController: EnvelopeController;
   }
 
   //Exposed API of AppFormerGwt
@@ -31,6 +32,18 @@ declare global {
   }
 }
 
+export interface Args {
+  container: HTMLElement;
+  busApi: EnvelopeBusApi;
+  clientSideOnly: boolean;
+}
+
 export function init(args: Args) {
-  return AppFormerKogitoEnvelope.init(args);
+  window.erraiBusRemoteCommunicationEnabled = !args.clientSideOnly;
+
+  const envelopeController = new EnvelopeController(args.busApi);
+
+  return envelopeController.renderView(args.container).then(() => {
+    Kogito.EnvelopeController = envelopeController;
+  });
 }

@@ -1,16 +1,16 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
-import { Envelope } from "./app/Envelope";
+import { EnvelopeView } from "./EnvelopeView";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 import { Resource } from "appformer-js-microeditor-router";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 import { LanguageData } from "appformer-js-microeditor-router/src";
 import { GwtAppFormerEditor } from "./GwtAppFormerEditor";
 
-export class AppFormerKogitoEnvelope {
-  private envelope?: Envelope;
-  public readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
+export class EnvelopeController {
+  private readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
+  private envelopeView?: EnvelopeView;
 
   constructor(busApi: EnvelopeBusApi) {
     this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(busApi, self =>
@@ -37,7 +37,7 @@ export class AppFormerKogitoEnvelope {
 
         window.appFormerGwtFinishedLoading = () => {
           return Promise.resolve()
-            .then(() => this.registerEditor(() => new GwtAppFormerEditor(languageData.editorId)))
+            .then(() => this.openEditor(new GwtAppFormerEditor(languageData.editorId)))
             .then(() => self.request_setContentResponse());
         };
 
@@ -48,15 +48,10 @@ export class AppFormerKogitoEnvelope {
     };
   }
 
-  public startListeningOnMessageBus() {
-    this.envelopeBusInnerMessageHandler.startListening();
-  }
-
-  public registerEditor(editorDelegate: () => AppFormer.Editor) {
+  private openEditor(editor: AppFormer.Editor) {
     //TODO: Create messages to control the lifecycle of enveloped components?
     //TODO: No-op when same Editor class?
 
-    const editor = editorDelegate.apply(this);
     const previousEditor = this.getEditor();
 
     if (previousEditor) {
@@ -70,7 +65,7 @@ export class AppFormerKogitoEnvelope {
     editor.af_onStartup();
     console.info(`${editor.af_componentId} - STARTUP`);
 
-    return this.envelope!.register(editor).then(() => {
+    return this.envelopeView!.setEditor(editor).then(() => {
       editor.af_onOpen();
       console.info(`${editor.af_componentId} - OPEN`);
 
@@ -79,7 +74,7 @@ export class AppFormerKogitoEnvelope {
   }
 
   private getEditor(): AppFormer.Editor | undefined {
-    return this.envelope!.getEditor();
+    return this.envelopeView!.getEditor();
   }
 
   private loadResource(resource: Resource) {
@@ -101,26 +96,12 @@ export class AppFormerKogitoEnvelope {
     });
   }
 
-  public static init(args: Args): Promise<AppFormerKogitoEnvelope> {
-    window.erraiBusRemoteCommunicationEnabled = !args.clientSideOnly;
-
-    const kogitoEnvelope = new AppFormerKogitoEnvelope(args.busApi);
-
-    return Promise.resolve()
-      .then(() => this.renderEnvelope(kogitoEnvelope, args.container))
-      .then(() => kogitoEnvelope.startListeningOnMessageBus())
-      .then(() => (window.AppFormer.KogitoEnvelope = kogitoEnvelope));
-  }
-
-  private static renderEnvelope(kogitoEnvelope: AppFormerKogitoEnvelope, container: HTMLElement) {
-    return new Promise(res =>
-      ReactDOM.render(<Envelope exposing={self => (kogitoEnvelope.envelope = self)} />, container, res)
+  public renderView(container: HTMLElement) {
+    return new Promise<EnvelopeController>(resolve =>
+      ReactDOM.render(<EnvelopeView exposing={self => (this.envelopeView = self)} />, container, () => {
+        this.envelopeBusInnerMessageHandler.startListening();
+        resolve();
+      })
     );
   }
-}
-
-export interface Args {
-  container: HTMLElement;
-  busApi: EnvelopeBusApi;
-  clientSideOnly: boolean;
 }
