@@ -78,6 +78,6 @@ export class GwtAppFormerEditor extends AppFormer.Editor {
       if (panelHeader) {
         panelHeader.remove();
       }
-    }, 1000);
+    }, 100);
   }
 }

@@ -19,10 +19,6 @@ import { BusinessCentralClientEditorFactory } from "./GwtAppFormerEditor";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 
 declare global {
-  export class Kogito {
-    public static EnvelopeController: EnvelopeController;
-  }
-
   //Exposed API of AppFormerGwt
   interface Window {
     gwtEditorBeans: Map<string, BusinessCentralClientEditorFactory>;
@@ -43,7 +39,5 @@ export function init(args: Args) {
 
   const envelopeController = new EnvelopeController(args.busApi);
 
-  return envelopeController.renderView(args.container).then(() => {
-    Kogito.EnvelopeController = envelopeController;
-  });
+  return envelopeController.renderView(args.container);
 }

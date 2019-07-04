@@ -51,16 +51,7 @@ export class EnvelopeController {
   private openEditor(editor: AppFormer.Editor) {
     //TODO: Create messages to control the lifecycle of enveloped components?
     //TODO: No-op when same Editor class?
-
-    const previousEditor = this.getEditor();
-
-    if (previousEditor) {
-      previousEditor.af_onClose();
-      console.info(`${previousEditor.af_componentId} - CLOSE`);
-
-      previousEditor!.af_onShutdown();
-      console.info(`${previousEditor!.af_componentId} - SHUTDOWN`);
-    }
+    //TODO: What about close and shutdown methods?
 
     editor.af_onStartup();
     console.info(`${editor.af_componentId} - STARTUP`);
