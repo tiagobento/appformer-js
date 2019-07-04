@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import * as AppFormer from "appformer-js-core";
-import { GwtEditor } from "./AppFormerGwtApi";
+import { GwtEditor } from "./GwtEditor";
 
 export class GwtEditorWrapper extends AppFormer.Editor {
   public af_componentTitle: string;

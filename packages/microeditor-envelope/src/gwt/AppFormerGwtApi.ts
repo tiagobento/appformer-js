@@ -1,31 +1,22 @@
 import { Resource } from "appformer-js-microeditor-router";
+import { GwtEditor } from "./GwtEditor";
 
 declare global {
   //Exposed API of AppFormerGwt
   interface Window {
-    gwtEditorBeans: Map<string, GwtEditorFactory>;
+    gwtEditorBeans: Map<string, { get(): GwtEditor }>;
     appFormerGwtFinishedLoading: () => any;
     erraiBusApplicationRoot: string;
     erraiBusRemoteCommunicationEnabled: boolean;
   }
 }
 
-export interface GwtEditorFactory {
-  get(): GwtEditor;
-}
-
-export interface GwtEditor {
-  getContent(): Promise<string>;
-  setContent(content: string): void;
-  isDirty(): boolean;
-}
-
 export class AppFormerGwtApi {
-  public setErraiDomain(erraiDomain: string): void {
-    window.erraiBusApplicationRoot = erraiDomain;
+  public setErraiDomain(backendDomain: string): void {
+    window.erraiBusApplicationRoot = backendDomain;
   }
 
-  public onFinishedLoading(callback: () => Promise<void | never>) {
+  public onFinishedLoading(callback: () => Promise<any>) {
     window.appFormerGwtFinishedLoading = callback;
   }
 

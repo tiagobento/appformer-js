@@ -4,7 +4,7 @@ import * as AppFormer from "appformer-js-core";
 import { LoadingScreen } from "./LoadingScreen";
 
 interface Props {
-  exposing: (self: EnvelopeView) => void;
+  exposing: (self: EditorEnvelopeView) => void;
 }
 
 interface State {
@@ -12,7 +12,7 @@ interface State {
   loading: boolean;
 }
 
-export class EnvelopeView extends React.Component<Props, State> {
+export class EditorEnvelopeView extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { editor: undefined, loading: true };

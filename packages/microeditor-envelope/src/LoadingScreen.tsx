@@ -1,16 +1,17 @@
 import * as React from "react";
 import { useState } from "react";
 
+const FADE_OUT_DELAY = 400;
+
 export function LoadingScreen(props: { visible: boolean }) {
-  const fadeOutDelay = 400;
   let cssAnimation;
   const [mustRender, setMustRender] = useState(true);
 
   if (props.visible) {
     cssAnimation = { opacity: 1 };
   } else {
-    cssAnimation = { opacity: 0, transition: `opacity ${fadeOutDelay}ms` };
-    setTimeout(() => setMustRender(false), fadeOutDelay);
+    cssAnimation = { opacity: 0, transition: `opacity ${FADE_OUT_DELAY}ms` };
+    setTimeout(() => setMustRender(false), FADE_OUT_DELAY);
   }
 
   return (

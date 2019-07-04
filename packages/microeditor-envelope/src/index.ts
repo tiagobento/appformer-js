@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {EnvelopeController} from "./EnvelopeController";
-import {EnvelopeBusApi} from "appformer-js-microeditor-envelope-protocol";
-import {AppFormerGwtApi} from "./AppFormerGwtApi";
+import { EditorEnvelopeController } from "./EditorEnvelopeController";
+import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
+import { AppFormerGwtApi } from "./gwt/AppFormerGwtApi";
+import { GwtEditorWrapperFactory } from "./gwt/GwtEditorWrapperFactory";
 
 export interface Args {
   container: HTMLElement;
@@ -27,5 +28,8 @@ export interface Args {
 export function init(args: Args) {
   const appFormerGwtApi = new AppFormerGwtApi();
   appFormerGwtApi.setClientSideOnly(args.clientSideOnly);
-  return new EnvelopeController(args.busApi, appFormerGwtApi).renderView(args.container);
+
+  const editorFactory = new GwtEditorWrapperFactory(appFormerGwtApi);
+
+  return new EditorEnvelopeController(args.busApi, editorFactory).renderView(args.container);
 }
