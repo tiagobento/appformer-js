@@ -51,8 +51,8 @@ export class KogitoEditor {
           self.request_initResponse("vscode");
         },
         receive_languageRequest: () => {
-          const fileExtension = this.path.split(".").pop()!;
-          self.respond_languageRequest(this.router.getLanguageData(fileExtension));
+          const pathFileExtension = this.path.split(".").pop()!;
+          self.respond_languageRequest(this.router.getLanguageData(pathFileExtension));
         },
         receive_getContentResponse: (content: string) => {
           fs.writeFileSync(this.path, content);
@@ -66,11 +66,7 @@ export class KogitoEditor {
   }
 
   public requestSave() {
-    if (this.path.length > 0) {
-      this.envelopeBusOuterMessageHandler.request_getContentResponse();
-    } else {
-      console.info("Save skipped because path is empty.");
-    }
+    this.envelopeBusOuterMessageHandler.request_getContentResponse();
   }
 
   public setupEnvelopeBus() {
@@ -81,6 +77,7 @@ export class KogitoEditor {
         this.context.subscriptions
       )
     );
+
     this.envelopeBusOuterMessageHandler.startInitPolling();
   }
 
@@ -98,6 +95,20 @@ export class KogitoEditor {
       this,
       this.context.subscriptions
     );
+  }
+
+  public setupPanelOnDidDispose() {
+    this.panel.onDidDispose(
+      () => {
+        this.editorStore.close(this);
+      },
+      this,
+      this.context.subscriptions
+    );
+  }
+
+  private getWebviewIndexJsPath() {
+    return this.router.getRelativePathTo("dist/webview/index.js").toString();
   }
 
   public setupWebviewContent() {
@@ -125,13 +136,5 @@ export class KogitoEditor {
             </body>
         </html>
     `;
-  }
-
-  private getWebviewIndexJsPath() {
-    return this.router.getRelativePathTo("dist/webview/index.js").toString();
-  }
-
-  public sameAs(editor: KogitoEditor) {
-    return this.path === editor.path;
   }
 }

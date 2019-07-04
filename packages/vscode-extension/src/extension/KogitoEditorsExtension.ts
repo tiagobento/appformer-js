@@ -49,6 +49,10 @@ export class KogitoEditorsExtension {
     );
   }
 
+  public registerCustomSaveAllCommand() {
+    //TODO: Implement
+  }
+
   public startReplacingTextEditorsByKogitoEditorsAsTheyOpenIfLanguageIsSupported() {
     this.context.subscriptions.push(
       vscode.window.onDidChangeActiveTextEditor((textEditor?: vscode.TextEditor) => {

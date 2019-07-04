@@ -2,16 +2,20 @@ import * as vscode from "vscode";
 import { KogitoEditorsExtension } from "./KogitoEditorsExtension";
 import { KogitoEditorStore } from "./KogitoEditorStore";
 import { KogitoEditorFactory } from "./KogitoEditorFactory";
-import {LocalRouter} from "./LocalRouter";
+import { LocalRouter } from "./LocalRouter";
 
 export function activate(context: vscode.ExtensionContext) {
   console.info("Extension is alive.");
+
   const router = new LocalRouter(context);
   const kogitoEditorStore = new KogitoEditorStore();
   const kogitoEditorFactory = new KogitoEditorFactory(context, router, kogitoEditorStore);
   const kieEditorsExtension = new KogitoEditorsExtension(context, kogitoEditorStore, kogitoEditorFactory);
+
   kieEditorsExtension.startReplacingTextEditorsByKogitoEditorsAsTheyOpenIfLanguageIsSupported();
   kieEditorsExtension.registerCustomSaveCommand();
+  kieEditorsExtension.registerCustomSaveAllCommand();
+
   console.info("Extension is successfully setup.");
 }
 
