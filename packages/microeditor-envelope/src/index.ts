@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-import { EnvelopeController } from "./EnvelopeController";
-import { BusinessCentralClientEditorFactory } from "./GwtAppFormerEditor";
-import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
-
-declare global {
-  //Exposed API of AppFormerGwt
-  interface Window {
-    gwtEditorBeans: Map<string, BusinessCentralClientEditorFactory>;
-    appFormerGwtFinishedLoading: () => any;
-    erraiBusApplicationRoot: string;
-    erraiBusRemoteCommunicationEnabled: boolean;
-  }
-}
+import {EnvelopeController} from "./EnvelopeController";
+import {EnvelopeBusApi} from "appformer-js-microeditor-envelope-protocol";
+import {AppFormerGwtApi} from "./AppFormerGwtApi";
 
 export interface Args {
   container: HTMLElement;
@@ -35,6 +25,7 @@ export interface Args {
 }
 
 export function init(args: Args) {
-  window.erraiBusRemoteCommunicationEnabled = !args.clientSideOnly;
-  return new EnvelopeController(args.busApi).renderView(args.container);
+  const appFormerGwtApi = new AppFormerGwtApi();
+  appFormerGwtApi.setClientSideOnly(args.clientSideOnly);
+  return new EnvelopeController(args.busApi, appFormerGwtApi).renderView(args.container);
 }

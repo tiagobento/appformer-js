@@ -16,27 +16,18 @@
 
 import * as React from "react";
 import * as AppFormer from "appformer-js-core";
+import { GwtEditor } from "./AppFormerGwtApi";
 
-export interface BusinessCentralClientEditorFactory {
-  get(): BusinessCentralClientEditor;
-}
-
-export interface BusinessCentralClientEditor {
-  getContent(): Promise<string>;
-  setContent(content: string): void;
-  isDirty(): boolean;
-}
-
-export class GwtAppFormerEditor extends AppFormer.Editor {
+export class GwtEditorWrapper extends AppFormer.Editor {
   public af_componentTitle: string;
 
-  private businessCentralClientEditor: BusinessCentralClientEditor;
+  private gwtEditor: GwtEditor;
 
-  constructor(erraiCdiBeanName: string) {
-    super("appformer-gwt-client-editor");
-    this.af_componentTitle = "GwtMicroEditor";
+  constructor(gwtEditor: GwtEditor) {
+    super("gwt-editor-wrapper");
+    this.af_componentTitle = "GwtEditorWrapper";
     this.af_isReact = true;
-    this.businessCentralClientEditor = window.gwtEditorBeans.get(erraiCdiBeanName)!.get();
+    this.gwtEditor = gwtEditor;
   }
 
   public af_onOpen(): void {
@@ -50,16 +41,16 @@ export class GwtAppFormerEditor extends AppFormer.Editor {
   }
 
   public getContent(): Promise<string> {
-    return this.businessCentralClientEditor.getContent();
+    return this.gwtEditor.getContent();
   }
 
   public isDirty(): boolean {
-    return this.businessCentralClientEditor.isDirty();
+    return this.gwtEditor.isDirty();
   }
 
   public setContent(content: string): Promise<void> {
     //FIXME: Make setContent return a promise.
-    this.businessCentralClientEditor.setContent(content.trim());
+    this.gwtEditor.setContent(content.trim());
     return Promise.resolve();
   }
 

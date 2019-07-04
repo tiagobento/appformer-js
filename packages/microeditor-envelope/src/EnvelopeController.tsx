@@ -3,22 +3,25 @@ import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
 import { EnvelopeView } from "./EnvelopeView";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
-import { Resource } from "appformer-js-microeditor-router";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 import { LanguageData } from "appformer-js-microeditor-router/src";
-import { GwtAppFormerEditor } from "./GwtAppFormerEditor";
+import { GwtEditorWrapper } from "./GwtEditorWrapper";
+import { AppFormerGwtApi } from "./AppFormerGwtApi";
 
 export class EnvelopeController {
   private static ESTIMATED_TIME_TO_WAIT_AFTER_EMPTY_SET_CONTENT = 100;
 
   private readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
   private envelopeView?: EnvelopeView;
+  private appFormerGwtApi: AppFormerGwtApi;
 
-  constructor(busApi: EnvelopeBusApi) {
+  constructor(busApi: EnvelopeBusApi, appFormerGwtApi: AppFormerGwtApi) {
+    this.appFormerGwtApi = appFormerGwtApi;
     this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(busApi, self =>
       this.setupEnvelopeBusInnerMessageHandler(self)
     );
   }
+
   private setupEnvelopeBusInnerMessageHandler(self: EnvelopeBusInnerMessageHandler) {
     return {
       receive_contentResponse: (content: string) => {
@@ -37,17 +40,15 @@ export class EnvelopeController {
         }
       },
       receive_languageResponse: (languageData: LanguageData) => {
-        window.erraiBusApplicationRoot = languageData.erraiDomain; //needed only for backend communication
+        this.appFormerGwtApi.setErraiDomain(languageData.erraiDomain); //needed only for backend communication
 
-        window.appFormerGwtFinishedLoading = () => {
+        this.appFormerGwtApi.onFinishedLoading(() => {
           return Promise.resolve()
-            .then(() => this.openEditor(new GwtAppFormerEditor(languageData.editorId)))
+            .then(() => this.openEditor(new GwtEditorWrapper(this.appFormerGwtApi.getEditor(languageData.editorId))))
             .then(() => self.request_contentResponse());
-        };
-
-        languageData.resources.forEach(resource => {
-          this.loadResource(resource);
         });
+
+        this.appFormerGwtApi.loadResources(languageData.resources);
       }
     };
   }
@@ -67,37 +68,11 @@ export class EnvelopeController {
     //TODO: What about close and shutdown methods?
 
     editor.af_onStartup();
-    console.info(`${editor.af_componentId} - STARTUP`);
-
-    return this.envelopeView!.setEditor(editor).then(() => {
-      editor.af_onOpen();
-      console.info(`${editor.af_componentId} - OPEN`);
-
-      return editor;
-    });
+    return this.envelopeView!.setEditor(editor).then(() => editor.af_onOpen());
   }
 
-  private getEditor(): AppFormer.Editor | undefined {
+  private getEditor() {
     return this.envelopeView!.getEditor();
-  }
-
-  private loadResource(resource: Resource) {
-    resource.paths.forEach(path => {
-      switch (resource.type) {
-        case "css":
-          const link = document.createElement("link");
-          link.href = path;
-          link.rel = "text/css";
-          document.body.appendChild(link);
-          break;
-        case "js":
-          const script = document.createElement("script");
-          script.src = path;
-          script.type = "text/javascript";
-          document.body.appendChild(script);
-          break;
-      }
-    });
   }
 
   public renderView(container: HTMLElement) {
