@@ -17,7 +17,7 @@
 import * as MicroEditorEnvelope from "./index";
 
 MicroEditorEnvelope.init({
-  container: document.getElementById("app")!,
+  container: document.getElementById("envelope-app")!,
   busApi: window.parent,
   //FIXME: change it to "true" once bpmn editor is also client side.
   //FIXME: maybe this information should live on LanguageData

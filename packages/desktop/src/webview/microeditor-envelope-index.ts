@@ -17,7 +17,7 @@
 import * as MicroEditorEnvelope from "appformer-js-microeditor-envelope";
 
 MicroEditorEnvelope.init({
-  container: document.getElementById("microeditor-container")!,
+  container: document.getElementById("envelope-app")!,
   busApi: window.parent,
   clientSideOnly: false
 });

@@ -23,7 +23,10 @@ export class EnvelopeController {
       receive_setContentResponse: (content: string) => {
         const editor = this.getEditor();
         if (editor) {
-          editor.setContent(content);
+          editor
+            .setContent("")
+            .then(() => this.envelopeView!.signalLoadingFinished())
+            .then(() => editor.setContent(content));
         }
       },
       receive_getContentRequest: () => {

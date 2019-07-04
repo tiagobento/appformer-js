@@ -5,7 +5,7 @@ declare global {
 }
 
 MicroEditorEnvelope.init({
-  container: document.getElementById("microeditor-envelope-container")!,
+  container: document.getElementById("envelope-app")!,
   busApi: acquireVsCodeApi(),
   clientSideOnly: true
 });

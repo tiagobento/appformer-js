@@ -115,25 +115,26 @@ export class KogitoEditor {
     this.panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
-            <head>
-                <style>
+        <head>
+            <style>
                 html, body, session, main, div#app {
                     margin: 0;
                     border: 0;
                     padding: 0;
                     overflow: hidden;
                 }
-                </style>
-    
-                <title></title>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-            </head>
-            <body>
-            <div id="microeditor-envelope-container"></div>
-            <script src="${this.getWebviewIndexJsPath()}"></script>
-            </body>
+            </style>
+        
+            <title></title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        </head>
+        <body>
+        <div id="loading-screen" style="z-index:100;position:relative"></div>
+        <div id="envelope-app"></div>
+        <script src="${this.getWebviewIndexJsPath()}"></script>
+        </body>
         </html>
     `;
   }
