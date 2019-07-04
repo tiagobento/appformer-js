@@ -25,8 +25,18 @@ app.on("ready", () => {
 
   const menu = Menu.buildFromTemplate([
     {
-      label: "Electron",
-      submenu: []
+      label: app.getName(),
+      submenu: [
+        { role: "about" },
+        { type: "separator" },
+        { role: "services" },
+        { type: "separator" },
+        { role: "hide" },
+        { role: "hideothers" },
+        { role: "unhide" },
+        { type: "separator" },
+        { role: "quit" }
+      ]
     },
     {
       label: "File",
@@ -40,6 +50,7 @@ app.on("ready", () => {
       ]
     }
   ]);
+
   Menu.setApplicationMenu(menu);
 
   const mainWindow = new BrowserWindow({

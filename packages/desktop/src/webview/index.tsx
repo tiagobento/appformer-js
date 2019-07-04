@@ -54,7 +54,7 @@ import { EnvelopeBusOuterMessageHandler } from "appformer-js-microeditor-envelop
 const ipc = electron.ipcRenderer;
 
 document.addEventListener("DOMContentLoaded", () => {
-  ReactDOM.render(<App />, document.getElementById("app")!, () => {
+  ReactDOM.render(<App />, document.getElementById("desktop-app")!, () => {
     ipc.send("mainWindowLoaded");
   });
 });
@@ -284,12 +284,12 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
       })
     );
 
-    envelopeBusOuterMessageHandler.startInitPolling();
-
     ipc.on("returnContent", (event: any, content: string) =>
       envelopeBusOuterMessageHandler.respond_contentRequest(content)
     );
     ipc.on("requestSave", () => envelopeBusOuterMessageHandler.request_contentResponse());
+
+    envelopeBusOuterMessageHandler.startInitPolling();
 
     const handler = (msg: any) => {
       envelopeBusOuterMessageHandler.receive(msg.data);

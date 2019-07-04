@@ -22,7 +22,7 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
     index: "./src/index.ts",
-    "index-for-html": "./src/index-for-html.ts"
+    "standaloneIndex": "./src/standalone/index.ts"
   },
   output: {
     path: path.resolve(__dirname, "./dist"),

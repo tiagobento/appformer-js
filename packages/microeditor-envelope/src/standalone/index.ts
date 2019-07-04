@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as MicroEditorEnvelope from "./index";
+import * as MicroEditorEnvelope from "..";
 
 MicroEditorEnvelope.init({
   container: document.getElementById("envelope-app")!,
