@@ -21,7 +21,7 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    index: "./src/index.tsx",
+    index: "./src/index.ts",
     "index-for-html": "./src/index-for-html.ts"
   },
   output: {

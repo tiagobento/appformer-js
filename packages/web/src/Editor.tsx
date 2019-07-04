@@ -54,15 +54,15 @@ export function Editor(props: { match: match<{ space: string; project: string; f
         receive_languageRequest: () => {
           self.respond_languageRequest(router.get(fileExtension));
         },
-        receive_getContentResponse: (content: string) => {
+        receive_contentResponse: (content: string) => {
           setFileContentService(props.match.params.space, props.match.params.project, decodedFilePath, content).then(
             v => setEphemeralStatus("Saved.")
           );
         },
-        receive_setContentRequest: () => {
+        receive_contentRequest: () => {
           getFileContentService(props.match.params.space, props.match.params.project, decodedFilePath)
             .then(res => res.text())
-            .then(content => self.respond_setContentRequest(content.trim()));
+            .then(content => self.respond_contentRequest(content.trim()));
         }
       })
     );
@@ -88,7 +88,7 @@ export function Editor(props: { match: match<{ space: string; project: string; f
   };
 
   const save = () => {
-    envelopeBusOuterMessageHandler.request_getContentResponse();
+    envelopeBusOuterMessageHandler.request_contentResponse();
   };
 
   return (

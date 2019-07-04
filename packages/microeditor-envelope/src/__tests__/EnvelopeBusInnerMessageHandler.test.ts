@@ -15,14 +15,14 @@ beforeEach(() => {
       postMessage: (message, targetOrigin) => sentMessages.push([message, targetOrigin])
     },
     self => ({
-      receive_setContentResponse: (content: string) => {
-        receivedMessages.push(["setContentResponse", content]);
+      receive_contentResponse: (content: string) => {
+        receivedMessages.push(["contentResponse", content]);
       },
       receive_languageResponse: (languageData: LanguageData) => {
         receivedMessages.push(["languageResponse", languageData]);
       },
-      receive_getContentRequest: () => {
-        receivedMessages.push(["getContentRequest", undefined]);
+      receive_contentRequest: () => {
+        receivedMessages.push(["contentRequest", undefined]);
       }
     })
   );
@@ -113,18 +113,18 @@ describe("receive", () => {
     expect(receivedMessages).toEqual([["languageResponse", languageData]]);
   });
 
-  test("setContentResponse", async () => {
+  test("contentResponse", async () => {
     handler.startListening();
-    await incomingMessage({ type: EnvelopeBusMessageType.RETURN_SET_CONTENT, data: "foo" });
+    await incomingMessage({ type: EnvelopeBusMessageType.RETURN_CONTENT, data: "foo" });
 
-    expect(receivedMessages).toEqual([["setContentResponse", "foo"]]);
+    expect(receivedMessages).toEqual([["contentResponse", "foo"]]);
   });
 
-  test("getContentRequest", async () => {
+  test("contentRequest", async () => {
     handler.startListening();
-    await incomingMessage({ type: EnvelopeBusMessageType.REQUEST_GET_CONTENT, data: undefined });
+    await incomingMessage({ type: EnvelopeBusMessageType.REQUEST_CONTENT, data: undefined });
 
-    expect(receivedMessages).toEqual([["getContentRequest", undefined]]);
+    expect(receivedMessages).toEqual([["contentRequest", undefined]]);
   });
 });
 
@@ -147,9 +147,9 @@ describe("send", () => {
     expect(sentMessages).toEqual([[{ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined }, "tgt-orgn"]]);
   });
 
-  test("request setContentResponse", () => {
-    handler.request_setContentResponse();
-    expect(sentMessages).toEqual([[{ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined }, "tgt-orgn"]]);
+  test("request contentResponse", () => {
+    handler.request_contentResponse();
+    expect(sentMessages).toEqual([[{ type: EnvelopeBusMessageType.REQUEST_CONTENT, data: undefined }, "tgt-orgn"]]);
   });
 
   test("respond initRequest", () => {
@@ -157,9 +157,9 @@ describe("send", () => {
     expect(sentMessages).toEqual([[{ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined }, "tgt-orgn"]]);
   });
 
-  test("respond getContentRequest", () => {
-    handler.respond_getContentRequest("some");
-    expect(sentMessages).toEqual([[{ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: "some" }, "tgt-orgn"]]);
+  test("respond contentRequest", () => {
+    handler.respond_contentRequest("some");
+    expect(sentMessages).toEqual([[{ type: EnvelopeBusMessageType.RETURN_CONTENT, data: "some" }, "tgt-orgn"]]);
   });
 });
 

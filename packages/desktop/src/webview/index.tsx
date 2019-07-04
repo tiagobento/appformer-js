@@ -275,10 +275,10 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
         receive_languageRequest: () => {
           self.respond_languageRequest(router.get(openFileExtension));
         },
-        receive_getContentResponse: (content: string) => {
+        receive_contentResponse: (content: string) => {
           ipc.send("writeContent", { path: props.openFile.path, content: content });
         },
-        receive_setContentRequest: () => {
+        receive_contentRequest: () => {
           ipc.send("requestContent", { relativePath: props.openFile.path });
         }
       })
@@ -287,9 +287,9 @@ function Editor(props: { openFile: File; setPage: (s: Pages) => void }) {
     envelopeBusOuterMessageHandler.startInitPolling();
 
     ipc.on("returnContent", (event: any, content: string) =>
-      envelopeBusOuterMessageHandler.respond_setContentRequest(content)
+      envelopeBusOuterMessageHandler.respond_contentRequest(content)
     );
-    ipc.on("requestSave", () => envelopeBusOuterMessageHandler.request_getContentResponse());
+    ipc.on("requestSave", () => envelopeBusOuterMessageHandler.request_contentResponse());
 
     const handler = (msg: any) => {
       envelopeBusOuterMessageHandler.receive(msg.data);

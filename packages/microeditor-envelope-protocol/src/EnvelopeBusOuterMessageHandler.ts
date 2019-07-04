@@ -6,8 +6,8 @@ import { EnvelopeBusApi } from "./EnvelopeBusApi";
 export interface EnvelopeBusOuterMessageHandlerImpl {
   pollInit(): void;
   receive_languageRequest(): void;
-  receive_setContentRequest(): void;
-  receive_getContentResponse(content: string): void;
+  receive_contentRequest(): void;
+  receive_contentResponse(content: string): void;
 }
 
 export class EnvelopeBusOuterMessageHandler {
@@ -52,12 +52,12 @@ export class EnvelopeBusOuterMessageHandler {
     this.busApi.postMessage({ type: EnvelopeBusMessageType.RETURN_LANGUAGE, data: languageData });
   }
 
-  public respond_setContentRequest(content: string) {
-    this.busApi.postMessage({ type: EnvelopeBusMessageType.RETURN_SET_CONTENT, data: content });
+  public respond_contentRequest(content: string) {
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.RETURN_CONTENT, data: content });
   }
 
-  public request_getContentResponse() {
-    this.busApi.postMessage({ type: EnvelopeBusMessageType.REQUEST_GET_CONTENT, data: undefined });
+  public request_contentResponse() {
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.REQUEST_CONTENT, data: undefined });
   }
 
   public request_initResponse(origin: string) {
@@ -72,11 +72,11 @@ export class EnvelopeBusOuterMessageHandler {
       case EnvelopeBusMessageType.REQUEST_LANGUAGE:
         this.impl.receive_languageRequest();
         break;
-      case EnvelopeBusMessageType.RETURN_GET_CONTENT:
-        this.impl.receive_getContentResponse(message.data as string);
+      case EnvelopeBusMessageType.RETURN_CONTENT:
+        this.impl.receive_contentResponse(message.data as string);
         break;
-      case EnvelopeBusMessageType.REQUEST_SET_CONTENT:
-        this.impl.receive_setContentRequest();
+      case EnvelopeBusMessageType.REQUEST_CONTENT:
+        this.impl.receive_contentRequest();
         break;
       default:
         console.info(`Unknown message type received: ${message.type}"`);

@@ -181,13 +181,13 @@ function initContentScript() {
       receive_languageRequest: () => {
         self.respond_languageRequest(router.get(openFileExtension));
       },
-      receive_getContentResponse: (content: string) => {
+      receive_contentResponse: (content: string) => {
         enableCommitButton();
         getGitHubEditor().CodeMirror.setValue(content);
       },
-      receive_setContentRequest: () => {
+      receive_contentRequest: () => {
         const githubEditorContent = getGitHubEditor().CodeMirror.getValue() || "";
-        self.respond_setContentRequest(githubEditorContent);
+        self.respond_contentRequest(githubEditorContent);
       }
     })
   );
@@ -229,7 +229,7 @@ function initContentScript() {
       envelopeBusOuterMessageHandler.startInitPolling();
       insertAfterGitHubEditor(embeddedEditorIframe);
       embeddedEditorIframe.style.cssText = originalCss;
-      envelopeBusOuterMessageHandler.request_getContentResponse();
+      envelopeBusOuterMessageHandler.request_contentResponse();
       buttonsDiv.remove();
     };
 
@@ -249,7 +249,7 @@ function initContentScript() {
   setInterval(
     () => {
       enableCommitButton();
-      envelopeBusOuterMessageHandler.request_getContentResponse();
+      envelopeBusOuterMessageHandler.request_contentResponse();
     },
     1000,
     3000

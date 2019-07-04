@@ -36,8 +36,5 @@ export interface Args {
 
 export function init(args: Args) {
   window.erraiBusRemoteCommunicationEnabled = !args.clientSideOnly;
-
-  const envelopeController = new EnvelopeController(args.busApi);
-
-  return envelopeController.renderView(args.container);
+  return new EnvelopeController(args.busApi).renderView(args.container);
 }

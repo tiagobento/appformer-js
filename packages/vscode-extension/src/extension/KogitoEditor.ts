@@ -54,19 +54,19 @@ export class KogitoEditor {
           const pathFileExtension = this.path.split(".").pop()!;
           self.respond_languageRequest(this.router.getLanguageData(pathFileExtension));
         },
-        receive_getContentResponse: (content: string) => {
+        receive_contentResponse: (content: string) => {
           fs.writeFileSync(this.path, content);
           vscode.window.setStatusBarMessage("Saved successfully!", 3000);
         },
-        receive_setContentRequest: () => {
-          self.respond_setContentRequest(fs.readFileSync(this.path).toString());
+        receive_contentRequest: () => {
+          self.respond_contentRequest(fs.readFileSync(this.path).toString());
         }
       })
     );
   }
 
   public requestSave() {
-    this.envelopeBusOuterMessageHandler.request_getContentResponse();
+    this.envelopeBusOuterMessageHandler.request_contentResponse();
   }
 
   public setupEnvelopeBus() {

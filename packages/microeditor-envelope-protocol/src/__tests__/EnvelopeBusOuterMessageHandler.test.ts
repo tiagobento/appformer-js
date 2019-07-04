@@ -23,11 +23,11 @@ beforeEach(() => {
       receive_languageRequest: () => {
         receivedMessages.push("languageRequest");
       },
-      receive_setContentRequest: () => {
-        receivedMessages.push("setContentRequest");
+      receive_contentRequest: () => {
+        receivedMessages.push("contentRequest");
       },
-      receive_getContentResponse: (content: string) => {
-        receivedMessages.push("getContentResponse_" + content);
+      receive_contentResponse: (content: string) => {
+        receivedMessages.push("contentResponse_" + content);
       }
     })
   );
@@ -84,24 +84,24 @@ describe("receive", () => {
     expect(receivedMessages).toEqual(["languageRequest"]);
   });
 
-  test("set content request", () => {
-    handler.receive({ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined });
-    expect(receivedMessages).toEqual(["setContentRequest"]);
+  test("content request", () => {
+    handler.receive({ type: EnvelopeBusMessageType.REQUEST_CONTENT, data: undefined });
+    expect(receivedMessages).toEqual(["contentRequest"]);
   });
 
-  test("get content response", () => {
-    handler.receive({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: "foo" });
-    expect(receivedMessages).toEqual(["getContentResponse_foo"]);
+  test("content response", () => {
+    handler.receive({ type: EnvelopeBusMessageType.RETURN_CONTENT, data: "foo" });
+    expect(receivedMessages).toEqual(["contentResponse_foo"]);
   });
 });
 
 describe("send", () => {
-  test("request getContentResponse", () => {
-    handler.request_getContentResponse();
-    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.REQUEST_GET_CONTENT, data: undefined }]);
+  test("request contentResponse", () => {
+    handler.request_contentResponse();
+    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.REQUEST_CONTENT, data: undefined }]);
   });
 
-  test("request setContentRequest", () => {
+  test("request init", () => {
     handler.request_initResponse("test-origin");
     expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.REQUEST_INIT, data: "test-origin" }]);
   });
@@ -112,8 +112,8 @@ describe("send", () => {
     expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.RETURN_LANGUAGE, data: languageData }]);
   });
 
-  test("respond setContentRequest", () => {
-    handler.respond_setContentRequest("bar");
-    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.RETURN_SET_CONTENT, data: "bar" }]);
+  test("respond contentRequest", () => {
+    handler.respond_contentRequest("bar");
+    expect(sentMessages).toEqual([{ type: EnvelopeBusMessageType.RETURN_CONTENT, data: "bar" }]);
   });
 });

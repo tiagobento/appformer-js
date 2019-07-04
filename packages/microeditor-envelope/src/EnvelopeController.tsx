@@ -9,6 +9,8 @@ import { LanguageData } from "appformer-js-microeditor-router/src";
 import { GwtAppFormerEditor } from "./GwtAppFormerEditor";
 
 export class EnvelopeController {
+  private static ESTIMATED_TIME_TO_WAIT_AFTER_EMPTY_SET_CONTENT = 100;
+
   private readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
   private envelopeView?: EnvelopeView;
 
@@ -17,22 +19,21 @@ export class EnvelopeController {
       this.setupEnvelopeBusInnerMessageHandler(self)
     );
   }
-
   private setupEnvelopeBusInnerMessageHandler(self: EnvelopeBusInnerMessageHandler) {
     return {
-      receive_setContentResponse: (content: string) => {
+      receive_contentResponse: (content: string) => {
         const editor = this.getEditor();
         if (editor) {
           editor
             .setContent("")
-            .then(() => this.envelopeView!.signalLoadingFinished())
+            .then(() => this.waitForEmptySetContentThenSetLoadingFinished())
             .then(() => editor.setContent(content));
         }
       },
-      receive_getContentRequest: () => {
+      receive_contentRequest: () => {
         const editor = this.getEditor();
         if (editor) {
-          editor.getContent().then(content => self.respond_getContentRequest(content));
+          editor.getContent().then(content => self.respond_contentRequest(content));
         }
       },
       receive_languageResponse: (languageData: LanguageData) => {
@@ -41,7 +42,7 @@ export class EnvelopeController {
         window.appFormerGwtFinishedLoading = () => {
           return Promise.resolve()
             .then(() => this.openEditor(new GwtAppFormerEditor(languageData.editorId)))
-            .then(() => self.request_setContentResponse());
+            .then(() => self.request_contentResponse());
         };
 
         languageData.resources.forEach(resource => {
@@ -49,6 +50,15 @@ export class EnvelopeController {
         });
       }
     };
+  }
+
+  private waitForEmptySetContentThenSetLoadingFinished() {
+    return new Promise(res => {
+      setTimeout(
+        () => this.envelopeView!.setLoadingFinished().then(res),
+        EnvelopeController.ESTIMATED_TIME_TO_WAIT_AFTER_EMPTY_SET_CONTENT
+      );
+    });
   }
 
   private openEditor(editor: AppFormer.Editor) {

@@ -3,9 +3,9 @@ import { LanguageData } from "appformer-js-microeditor-router";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 
 export interface Impl {
-  receive_setContentResponse(content: string): void;
+  receive_contentResponse(content: string): void;
   receive_languageResponse(languageData: LanguageData): void;
-  receive_getContentRequest(): void;
+  receive_contentRequest(): void;
 }
 
 export class EnvelopeBusInnerMessageHandler {
@@ -45,16 +45,16 @@ export class EnvelopeBusInnerMessageHandler {
     return this.send({ type: EnvelopeBusMessageType.RETURN_INIT, data: undefined });
   }
 
-  public respond_getContentRequest(content: string) {
-    return this.send({ type: EnvelopeBusMessageType.RETURN_GET_CONTENT, data: content });
+  public respond_contentRequest(content: string) {
+    return this.send({ type: EnvelopeBusMessageType.RETURN_CONTENT, data: content });
   }
 
   public request_languageResponse() {
     return this.send({ type: EnvelopeBusMessageType.REQUEST_LANGUAGE, data: undefined });
   }
 
-  public request_setContentResponse() {
-    return this.send({ type: EnvelopeBusMessageType.REQUEST_SET_CONTENT, data: undefined });
+  public request_contentResponse() {
+    return this.send({ type: EnvelopeBusMessageType.REQUEST_CONTENT, data: undefined });
   }
 
   private receive_initRequest(targetOrigin: string) {
@@ -77,11 +77,11 @@ export class EnvelopeBusInnerMessageHandler {
       case EnvelopeBusMessageType.RETURN_LANGUAGE:
         this.impl.receive_languageResponse(message.data as LanguageData);
         break;
-      case EnvelopeBusMessageType.RETURN_SET_CONTENT:
-        this.impl.receive_setContentResponse(message.data as string);
+      case EnvelopeBusMessageType.RETURN_CONTENT:
+        this.impl.receive_contentResponse(message.data as string);
         break;
-      case EnvelopeBusMessageType.REQUEST_GET_CONTENT:
-        this.impl.receive_getContentRequest();
+      case EnvelopeBusMessageType.REQUEST_CONTENT:
+        this.impl.receive_contentRequest();
         break;
       default:
         console.info(`Unknown message type received: ${message.type}"`);
