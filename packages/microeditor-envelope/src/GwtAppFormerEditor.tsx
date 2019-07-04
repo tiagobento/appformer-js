@@ -58,6 +58,7 @@ export class GwtAppFormerEditor extends AppFormer.Editor {
   }
 
   public setContent(content: string): Promise<void> {
+    //FIXME: Make setContent return a promise.
     this.businessCentralClientEditor.setContent(content.trim());
     return Promise.resolve();
   }
