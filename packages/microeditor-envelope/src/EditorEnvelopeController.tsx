@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import * as AppFormer from "appformer-js-core";
 import { EditorEnvelopeView } from "./EditorEnvelopeView";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
@@ -7,17 +6,27 @@ import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 import { LanguageData } from "appformer-js-microeditor-router";
 import { EditorFactory } from "./EditorFactory";
 import { SpecialDomElements } from "./SpecialDomElements";
+import { Renderer } from "./Renderer";
 
 export class EditorEnvelopeController {
-  private static ESTIMATED_TIME_TO_WAIT_AFTER_EMPTY_SET_CONTENT = 100;
+  public static readonly ESTIMATED_TIME_TO_WAIT_AFTER_EMPTY_SET_CONTENT = 100;
 
-  private readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
   private readonly editorFactory: EditorFactory;
+  private readonly specialDomElements: SpecialDomElements;
+  private readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
 
   private editorEnvelopeView?: EditorEnvelopeView;
+  private renderer: Renderer;
 
-  constructor(busApi: EnvelopeBusApi, editorFactory: EditorFactory) {
+  constructor(
+    busApi: EnvelopeBusApi,
+    editorFactory: EditorFactory,
+    specialDomElements: SpecialDomElements,
+    renderer: Renderer
+  ) {
+    this.renderer = renderer;
     this.editorFactory = editorFactory;
+    this.specialDomElements = specialDomElements;
     this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(busApi, self => ({
       receive_contentResponse: (content: string) => {
         const editor = this.getEditor();
@@ -67,19 +76,26 @@ export class EditorEnvelopeController {
     return this.editorEnvelopeView!.getEditor();
   }
 
-  public renderView(container: HTMLElement, specialDomElements: SpecialDomElements) {
-    return new Promise<EditorEnvelopeController>(resolve =>
-      ReactDOM.render(
+  private render(container: HTMLElement) {
+    return new Promise<void>(res =>
+      this.renderer.render(
         <EditorEnvelopeView
           exposing={self => (this.editorEnvelopeView = self)}
-          loadingScreenContainer={specialDomElements.loadingScreenContainer}
+          loadingScreenContainer={this.specialDomElements.loadingScreenContainer}
         />,
         container,
-        () => {
-          this.envelopeBusInnerMessageHandler.startListening();
-          resolve();
-        }
+        res
       )
     );
+  }
+
+  public start(container: HTMLElement): Promise<void> {
+    return this.render(container).then(() => {
+      this.envelopeBusInnerMessageHandler.startListening();
+    });
+  }
+
+  public stop() {
+    this.envelopeBusInnerMessageHandler.stopListening();
   }
 }

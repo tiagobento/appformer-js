@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as ReactDOM from "react-dom";
 import { EditorEnvelopeController } from "./EditorEnvelopeController";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 import { AppFormerGwtApi } from "./gwt/AppFormerGwtApi";
@@ -30,8 +31,10 @@ export function init(args: Args) {
   const specialDomElements = new SpecialDomElements();
   const appFormerGwtApi = new AppFormerGwtApi();
   const editorFactory = new GwtEditorWrapperFactory(appFormerGwtApi);
-  const editorEnvelopeController = new EditorEnvelopeController(args.busApi, editorFactory);
+  const editorEnvelopeController = new EditorEnvelopeController(args.busApi, editorFactory, specialDomElements, {
+    render: (e, c, cl) => ReactDOM.render(e, c, cl)
+  });
 
   appFormerGwtApi.setClientSideOnly(args.clientSideOnly);
-  return editorEnvelopeController.renderView(args.container, specialDomElements);
+  return editorEnvelopeController.start(args.container);
 }
