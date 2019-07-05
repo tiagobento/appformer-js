@@ -3,6 +3,7 @@ import { LanguageData } from "appformer-js-microeditor-router/src";
 import * as AppFormer from "appformer-js-core";
 import { GwtEditorWrapper } from "./GwtEditorWrapper";
 import { EditorFactory } from "../EditorFactory";
+import { Resource } from "appformer-js-microeditor-router";
 
 export class GwtEditorWrapperFactory implements EditorFactory {
   private readonly appFormerGwtApi: AppFormerGwtApi;
@@ -20,7 +21,27 @@ export class GwtEditorWrapperFactory implements EditorFactory {
         return Promise.resolve();
       });
 
-      this.appFormerGwtApi.loadResources(languageData.resources);
+      languageData.resources.forEach(resource => {
+        this.loadResource(resource);
+      });
+    });
+  }
+  private loadResource(resource: Resource) {
+    resource.paths.forEach(path => {
+      switch (resource.type) {
+        case "css":
+          const link = document.createElement("link");
+          link.href = path;
+          link.rel = "text/css";
+          document.body.appendChild(link);
+          break;
+        case "js":
+          const script = document.createElement("script");
+          script.src = path;
+          script.type = "text/javascript";
+          document.body.appendChild(script);
+          break;
+      }
     });
   }
 }

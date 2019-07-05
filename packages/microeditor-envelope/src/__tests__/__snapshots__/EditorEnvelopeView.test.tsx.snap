@@ -21,9 +21,9 @@ exports[`EditorEnvelopeView after loading stops and editor is set 1`] = `
       visible={false}
     />
   </Portal>
-  <div>
-    This is a dummy editor!
-  </div>
+  <DummyEditorComponent
+    exposing={[Function]}
+  />
 </Fragment>
 `;
 

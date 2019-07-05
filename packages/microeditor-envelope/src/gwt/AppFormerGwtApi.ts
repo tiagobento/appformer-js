@@ -1,5 +1,5 @@
-import { Resource } from "appformer-js-microeditor-router";
 import { GwtEditor } from "./GwtEditor";
+import { Resource } from "appformer-js-microeditor-router";
 
 declare global {
   //Exposed API of AppFormerGwt
@@ -31,30 +31,5 @@ export class AppFormerGwtApi {
 
   public setClientSideOnly(clientSideOnly: boolean) {
     window.erraiBusRemoteCommunicationEnabled = !clientSideOnly;
-  }
-
-  public loadResources(resources: Resource[]) {
-    resources.forEach(resource => {
-      this.loadResource(resource);
-    });
-  }
-
-  private loadResource(resource: Resource) {
-    resource.paths.forEach(path => {
-      switch (resource.type) {
-        case "css":
-          const link = document.createElement("link");
-          link.href = path;
-          link.rel = "text/css";
-          document.body.appendChild(link);
-          break;
-        case "js":
-          const script = document.createElement("script");
-          script.src = path;
-          script.type = "text/javascript";
-          document.body.appendChild(script);
-          break;
-      }
-    });
   }
 }
