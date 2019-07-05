@@ -5,6 +5,7 @@ import { LoadingScreen } from "./LoadingScreen";
 
 interface Props {
   exposing: (self: EditorEnvelopeView) => void;
+  loadingScreenContainer: HTMLElement;
 }
 
 interface State {
@@ -19,12 +20,12 @@ export class EditorEnvelopeView extends React.Component<Props, State> {
     this.props.exposing(this);
   }
 
-  public setEditor(editor: AppFormer.Editor) {
-    return new Promise(res => this.setState({ editor: editor }, res));
-  }
-
   public getEditor() {
     return this.state.editor;
+  }
+
+  public setEditor(editor: AppFormer.Editor) {
+    return new Promise(res => this.setState({ editor: editor }, res));
   }
 
   public setLoadingFinished() {
@@ -32,12 +33,7 @@ export class EditorEnvelopeView extends React.Component<Props, State> {
   }
 
   private LoadingScreenPortal() {
-    const container = document.getElementById("loading-screen");
-    if (!container) {
-      throw new Error("Loading screen container is not available");
-    }
-
-    return ReactDOM.createPortal(<LoadingScreen visible={this.state.loading} />, container!);
+    return ReactDOM.createPortal(<LoadingScreen visible={this.state.loading} />, this.props.loadingScreenContainer!);
   }
 
   public render() {

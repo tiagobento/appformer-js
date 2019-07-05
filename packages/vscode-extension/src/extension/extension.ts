@@ -8,13 +8,13 @@ export function activate(context: vscode.ExtensionContext) {
   console.info("Extension is alive.");
 
   const router = new LocalRouter(context);
-  const kogitoEditorStore = new KogitoEditorStore();
-  const kogitoEditorFactory = new KogitoEditorFactory(context, router, kogitoEditorStore);
-  const kieEditorsExtension = new KogitoEditorsExtension(context, kogitoEditorStore, kogitoEditorFactory);
+  const editorStore = new KogitoEditorStore();
+  const editorFactory = new KogitoEditorFactory(context, router, editorStore);
+  const extension = new KogitoEditorsExtension(context, editorStore, editorFactory);
 
-  kieEditorsExtension.startReplacingTextEditorsByKogitoEditorsAsTheyOpenIfLanguageIsSupported();
-  kieEditorsExtension.registerCustomSaveCommand();
-  kieEditorsExtension.registerCustomSaveAllCommand();
+  extension.startReplacingTextEditorsByKogitoEditorsAsTheyOpenIfLanguageIsSupported();
+  extension.registerCustomSaveCommand();
+  extension.registerCustomSaveAllCommand();
 
   console.info("Extension is successfully setup.");
 }

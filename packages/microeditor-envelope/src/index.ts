@@ -18,6 +18,7 @@ import { EditorEnvelopeController } from "./EditorEnvelopeController";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 import { AppFormerGwtApi } from "./gwt/AppFormerGwtApi";
 import { GwtEditorWrapperFactory } from "./gwt/GwtEditorWrapperFactory";
+import { SpecialDomElements } from "./SpecialDomElements";
 
 export interface Args {
   container: HTMLElement;
@@ -26,10 +27,11 @@ export interface Args {
 }
 
 export function init(args: Args) {
+  const specialDomElements = new SpecialDomElements();
   const appFormerGwtApi = new AppFormerGwtApi();
-  appFormerGwtApi.setClientSideOnly(args.clientSideOnly);
-
   const editorFactory = new GwtEditorWrapperFactory(appFormerGwtApi);
+  const editorEnvelopeController = new EditorEnvelopeController(args.busApi, editorFactory);
 
-  return new EditorEnvelopeController(args.busApi, editorFactory).renderView(args.container);
+  appFormerGwtApi.setClientSideOnly(args.clientSideOnly);
+  return editorEnvelopeController.renderView(args.container, specialDomElements);
 }

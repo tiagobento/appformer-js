@@ -20,24 +20,24 @@ import { KogitoEditorFactory } from "./KogitoEditorFactory";
 
 export class KogitoEditorsExtension {
   private readonly context: vscode.ExtensionContext;
-  private readonly kogitoEditorStore: KogitoEditorStore;
-  private readonly kogitoEditorFactory: KogitoEditorFactory;
+  private readonly editorStore: KogitoEditorStore;
+  private readonly editorFactory: KogitoEditorFactory;
 
   constructor(
     context: vscode.ExtensionContext,
-    kogitoEditorStore: KogitoEditorStore,
-    kogitoEditorFactory: KogitoEditorFactory
+    editorStore: KogitoEditorStore,
+    editorFactory: KogitoEditorFactory
   ) {
     this.context = context;
-    this.kogitoEditorStore = kogitoEditorStore;
-    this.kogitoEditorFactory = kogitoEditorFactory;
+    this.editorStore = editorStore;
+    this.editorFactory = editorFactory;
   }
 
   public registerCustomSaveCommand() {
     this.context.subscriptions.push(
       vscode.commands.registerCommand("workbench.action.files.save", () => {
         // If a kogito editor is active, its content is saved manually.
-        this.kogitoEditorStore.withActive(editor => editor.requestSave());
+        this.editorStore.withActive(editor => editor.requestSave());
 
         // If a text editor is active, we save it normally.
         if (vscode.window.activeTextEditor) {
@@ -69,7 +69,7 @@ export class KogitoEditorsExtension {
 
   private replaceTextEditorByKogitoEditor(textEditor: vscode.TextEditor) {
     vscode.commands.executeCommand("workbench.action.closeActiveEditor").then(() => {
-      this.kogitoEditorFactory.openNew(textEditor.document.uri.path);
+      this.editorFactory.openNew(textEditor.document.uri.path);
       return Promise.resolve();
     });
   }

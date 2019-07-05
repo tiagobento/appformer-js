@@ -6,6 +6,7 @@ import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
 import { LanguageData } from "appformer-js-microeditor-router";
 import { EditorFactory } from "./EditorFactory";
+import { SpecialDomElements } from "./SpecialDomElements";
 
 export class EditorEnvelopeController {
   private static ESTIMATED_TIME_TO_WAIT_AFTER_EMPTY_SET_CONTENT = 100;
@@ -36,7 +37,7 @@ export class EditorEnvelopeController {
       receive_languageResponse: (languageData: LanguageData) => {
         this.editorFactory
           .createEditor(languageData)
-          .then(editor => this.openEditor(editor))
+          .then(editor => this.open(editor))
           .then(() => self.request_contentResponse());
       }
     }));
@@ -53,22 +54,32 @@ export class EditorEnvelopeController {
 
   //TODO: Create messages to control the lifecycle of enveloped components?
   //TODO: No-op when same Editor class?
+  //TODO: Can I open an editor if there's already an open one?
   //TODO: What about close and shutdown methods?
-  private openEditor(editor: AppFormer.Editor) {
-    editor.af_onStartup();
-    return this.editorEnvelopeView!.setEditor(editor).then(() => editor.af_onOpen());
+  private open(editor: AppFormer.Editor) {
+    return this.editorEnvelopeView!.setEditor(editor).then(() => {
+      editor.af_onStartup();
+      editor.af_onOpen();
+    });
   }
 
   private getEditor() {
     return this.editorEnvelopeView!.getEditor();
   }
 
-  public renderView(container: HTMLElement) {
+  public renderView(container: HTMLElement, specialDomElements: SpecialDomElements) {
     return new Promise<EditorEnvelopeController>(resolve =>
-      ReactDOM.render(<EditorEnvelopeView exposing={self => (this.editorEnvelopeView = self)} />, container, () => {
-        this.envelopeBusInnerMessageHandler.startListening();
-        resolve();
-      })
+      ReactDOM.render(
+        <EditorEnvelopeView
+          exposing={self => (this.editorEnvelopeView = self)}
+          loadingScreenContainer={specialDomElements.loadingScreenContainer}
+        />,
+        container,
+        () => {
+          this.envelopeBusInnerMessageHandler.startListening();
+          resolve();
+        }
+      )
     );
   }
 }

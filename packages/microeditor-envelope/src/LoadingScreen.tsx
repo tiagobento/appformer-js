@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 
-const FADE_OUT_DELAY = 400;
+export const FADE_OUT_DELAY = 400;
 
 export function LoadingScreen(props: { visible: boolean }) {
   let cssAnimation;
