@@ -26,6 +26,7 @@ export class GwtEditorWrapperFactory implements EditorFactory {
       });
     });
   }
+
   private loadResource(resource: Resource) {
     resource.paths.forEach(path => {
       switch (resource.type) {
